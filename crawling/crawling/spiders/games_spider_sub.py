@@ -53,6 +53,7 @@ def parse_perguntas(script):
             respostas.append({
                 'resposta': value['answer'],
                 'data_resposta': value['createdAt'],
+                'votos_resp_util': value['evaluation']['likes']
             })
 
     prs = []
@@ -63,7 +64,8 @@ def parse_perguntas(script):
             'pergunta': p['pergunta'],
             'data_pergunta': p['data_pergunta'],
             'resposta': r['resposta'],
-            'data_resposta': r['data_resposta']
+            'data_resposta': r['data_resposta'],
+            'votos_resp_util': r['votos_resp_util']
         })
         indiceR += 1
 
