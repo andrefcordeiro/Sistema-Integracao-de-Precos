@@ -60,7 +60,7 @@ def game_data_collect(response):
 class VideoGamesMercadoLivre(scrapy.Spider):
     name = 'mercado_livre_jogos'
 
-    start_urls = ['https://games.mercadolivre.com.br/video-games/']
+    start_urls = ['https://games.mercadolivre.com.br/video-games/ps4/#applied_filter_id%3DVIDEO_GAME_PLATFORM%26applied_filter_name%3DPlataforma%26applied_filter_order%3D4%26applied_value_id%3D126551%26applied_value_name%3DPS4%26applied_value_order%3D24%26applied_value_results%3D35376%26is_custom%3Dfalse']
 
     def parse(self, response, **kwargs):
         produtos_urls = response.xpath('//div[@class="ui-search-result__image"]/a/@href').getall()
