@@ -23,7 +23,7 @@ def collect_avaliacoes(avaliacoes):
     for avaliacao in avaliacoes:
         ava.append({
             'titulo': avaliacao.xpath('*//p[@class="ui-pdp-reviews__comments__review-comment__title"]/text()').get(),
-            'texto': avaliacao.xpath('*//p[@class="ui-pdp-reviews__comments__review-comment__comment"]').get()
+            'texto': avaliacao.xpath('*//p[@class="ui-pdp-reviews__comments__review-comment__comment"]/text()').get()
             # 'estrelas': avaliacao.xpath('*//div[@class="uui-pdp-reviews__comments__review-comment__rating"]')
         })
 
