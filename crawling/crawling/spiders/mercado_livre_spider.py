@@ -8,11 +8,10 @@ def collect_perguntas(perguntas):
 
     for pergunta in perguntas:
         quotes.append({
-            'pergunta': perg_resp_container.xpath('*//span[@class="ui-pdp-color--BLACK ui-pdp-size--SMALL ui-pdp-family--REGULAR ui-pdp-qadb__questions-list__question__label"]/text()').get(),
+            'pergunta': perguntas.xpath('*//span[@class="ui-pdp-color--BLACK ui-pdp-size--SMALL ui-pdp-family--REGULAR ui-pdp-qadb__questions-list__question__label"]/text()').get(),
             'nome': '',
             'data_pegunta': '',
-            'resposta': p.xpath(
-                '*//span[@class="ui-pdp-color--GRAY ui-pdp-size--SMALL ui-pdp-family--REGULAR ui-pdp-qadb__questions-list__answer-item__answer"]/text()').get(),
+            'resposta': perguntas.xpath('*//span[@class="ui-pdp-color--GRAY ui-pdp-size--SMALL ui-pdp-family--REGULAR ui-pdp-qadb__questions-list__answer-item__answer"]/text()').get(),
             'data_resposta': '',
             'votos_perg': ''
         })
@@ -75,4 +74,4 @@ class VideoGamesMercadoLivre(scrapy.Spider):
         
         prox_pag = response.xpath('*//li[@class="andes-pagination__button andes-pagination__button--next"]/a/@href').get()
         if prox_pag is not None:
-            yield scrapy.Request(response.urljoin(prox_page), callback=self.parse)
+            yield scrapy.Request(response.urljoin(prox_pag), callback=self.parse)
