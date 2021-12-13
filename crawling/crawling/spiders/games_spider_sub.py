@@ -114,10 +114,12 @@ class GamesSpiderSubmarino(scrapy.Spider):
 
         for link_game in links_games:
             url = response.urljoin(link_game)
-            yield scrapy.Request(get_scraperapi_url(url), callback=parse_game)
+            yield scrapy.Request(url, callback=parse_game)
+            # yield scrapy.Request(get_scraperapi_url(url), callback=parse_game)
 
         # Avança para a próxima página
-        next_pag = response.xpath('*//li[@class="a-last"]/a/@href').get()
+        links_paginacao = response.xpath('*//ul[@class="pagination-product-grid pagination"]/li')
+        next_pag = links_paginacao[len(links_paginacao) - 1].xpath('*//@href').get()
         if next_pag is not None:
-            # juntando a url padrão do site com a url para a próxima página
-            yield scrapy.Request(get_scraperapi_url(response.urljoin(next_pag)), callback=self.parse)
+            yield response.follow(next_pag, callback=self.parse)  # visita proxima página
+            # yield response.follow(get_scraperapi_url(next_pag), callback=self.parse)  # visita proxima página
