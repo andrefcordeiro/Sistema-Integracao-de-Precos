@@ -14,10 +14,11 @@ NEWSPIDER_MODULE = 'crawling.spiders'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = 'crawling (+http://www.yourdomain.com)'
-# USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.93 Safari/537.36'
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 ' \
+             'Safari/537.36 OPR/81.0.4196.61 '
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = False
+# ROBOTSTXT_OBEY = False
 
 # PROXY_POOL_ENABLED = True
 
@@ -54,8 +55,8 @@ DEFAULT_REQUEST_HEADERS = {
 # }
 
 DOWNLOADER_MIDDLEWARES = {
-    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-    'scrapy_user_agents.middlewares.RandomUserAgentMiddleware': 400,
+    # 'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+    # 'scrapy_user_agents.middlewares.RandomUserAgentMiddleware': 400,
     'scrapy_proxy_pool.middlewares.ProxyPoolMiddleware': 610,
     'scrapy_proxy_pool.middlewares.BanDetectionMiddleware': 620,
 }
