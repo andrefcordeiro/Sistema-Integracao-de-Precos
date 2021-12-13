@@ -92,12 +92,26 @@ def parse_vendedora(response):
     return vend
 
 
+def parse_data_lancamento(detalhes):
+    items_detalhes = detalhes.xpath('*//span[@class="a-list-item"]')
+
+    for it in items_detalhes:
+        texto = it.xpath('*//text()')[0].get()
+        if texto is None:
+            break
+        texto_format = texto.replace("\n", "").replace(" ", "").replace("\u200f", "").replace("\u200e", "").strip()
+        if texto_format == "Datadelançamento:":
+            return it.xpath('*//text()')[1].get()
+
+
 # Pega as informações da página do jogo
 def parse_game(response):  # Pega as informações da página do jogo
     desc = response.css('div#productDescription')
     parcelado = response.xpath("//div[@id='installmentCalculator_feature_div']/span/text()").get()
     capa = response.xpath('//div[@id="imgTagWrapperId"]/img/@src').get()
     avaliacoes = response.xpath('//div[@class="a-section review aok-relative"]')
+    detalhes = \
+        response.xpath('*//ul[@class="a-unordered-list a-nostyle a-vertical a-spacing-none detail-bullet-list"]')[0]
 
     game = {
         'titulo': response.css('#productTitle::text').extract_first().strip(' '),
@@ -107,6 +121,7 @@ def parse_game(response):  # Pega as informações da página do jogo
         'transportadora': response.xpath('//div[@class="tabular-buybox-text a-spacing-none"]/span/text()').get(),
         'parcelas': parcelado,
         'url_capa': capa,
+        'data_lancamento': parse_data_lancamento(detalhes),
         'avaliacoes': parse_avaliacoes(avaliacoes),
         'perguntas': []
     }
@@ -144,4 +159,3 @@ class GamesSpiderAmazon(scrapy.Spider):
         next_pag = response.xpath('*//li[@class="a-last"]/a/@href').get()
         if next_pag is not None:
             yield scrapy.Request(get_scraperapi_url(response.urljoin(next_pag)), callback=self.parse)
-
