@@ -10,10 +10,10 @@
 <h1><%= "Página inicial" %>
 </h1>
 <br/>
-<div style="display: flex; flex-direction: column; margin: 20px">
-    <a href="${pageContext.servletContext.contextPath}/website/create">
+<div class="container" style="display:flex; flex-direction: column">
+    <a href="${pageContext.servletContext.contextPath}/loja/create">
         Cadastrar website/loja</a>
-    <a href="${pageContext.servletContext.contextPath}/website/get">
+    <a href="${pageContext.servletContext.contextPath}/loja/get">
         Consultar dados cadastrados de um website/loja</a>
 </div>
 </body>
