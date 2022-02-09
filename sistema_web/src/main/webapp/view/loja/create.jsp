@@ -14,7 +14,9 @@
 </head>
 <body>
 
-<h1> Cadastrar website/loja </h1>
+<jsp:include page="../header.jsp"/>
+
+<h1 class="display-3"> Cadastrar website/loja </h1>
 
 <div class="container">
     <form class="form"
@@ -35,7 +37,7 @@
         </div>
 
         <div class="text-center">
-            <button class="btn btn-lg btn-primary" type="submit">Cadastrar</button>
+            <button class="btn btn-dark" type="submit">Cadastrar</button>
         </div>
     </form>
 </div>
