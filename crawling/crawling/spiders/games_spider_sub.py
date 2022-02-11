@@ -94,7 +94,7 @@ def parse_game(response):
         'descricao': '\n'.join(desc_array),
         'vendedora': vendedora,
         'transportadora': trasportadora,
-        'qtdParcelas': response.xpath('//p[@class="src__Text-sc-162utrw-0 ibyqZE"]/text()').getall()[0].split(' ')[1],
+        'parcelas': response.xpath('//p[@class="src__Text-sc-162utrw-0 ibyqZE"]/text()').getall()[0].split(' ')[1],
         'urlCapa': capa,
         'avaliacoes': parse_avaliacoes(avaliacoes),
         'perguntas': parse_perguntas(script)
