@@ -1,4 +1,5 @@
 
+
 CREATE SCHEMA "integ_preco";
 
 CREATE TABLE integ_preco.loja(
@@ -61,14 +62,15 @@ CREATE TABLE integ_preco.avaliacao(
 	nome_loja VARCHAR(20),
 	texto VARCHAR NOT NULL,
 	data_realizacao DATE,
+	data_coleta DATE,
 	qtd_estrelas INT NOT NULL,
 	votos_aval_util INT,
 	nome_avaliador VARCHAR(50),
 	pais_avaliador VARCHAR(30),
 	
 	CONSTRAINT pk_avaliacao PRIMARY KEY(titulo, nome_loja, id_jogo),
-	CONSTRAINT fk_avaliacao_oferta FOREIGN KEY(id_jogo, nome_loja)
-		REFERENCES integ_preco.oferta_jogo(id_jogo, nome_loja)
+	CONSTRAINT fk_avaliacao_oferta FOREIGN KEY(id_jogo, nome_loja, data_coleta)
+		REFERENCES integ_preco.historico_jogo_ofertado(id_jogo, nome_loja, data_coleta)
 	CONSTRAINT ck_avaliacao_estrelas CHECK (qtd_estrelas <= 5)
 );
 
@@ -109,3 +111,4 @@ CREATE TABLE integ_preco.versao_script(
 	CONSTRAINT fk_versao FOREIGN KEY(num_script)
 		REFERENCES integ_preco.script_crawling(num)
 );
+
