@@ -18,7 +18,7 @@
 
 <div class="container">
     <form class="form"
-          action="${pageContext.servletContext.contextPath}/jogo/create"
+          action="${pageContext.servletContext.contextPath}/crawling/create"
           enctype="multipart/form-data"
           method="POST">
 

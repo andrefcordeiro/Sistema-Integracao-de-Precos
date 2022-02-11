@@ -2,23 +2,16 @@ package com.uel.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 
-public class JogoLojaDTO {
+public class HistJogoOfertado {
 
   private String nomeLoja;
-  private Jogo jogo;
-
-  private String nomeVendedor;
-  private String nomeTransportadora;
-
+  private Integer idJogo;
   private LocalDate dataColeta;
   private BigDecimal preco;
   private Integer qtdParcelas;
   private BigDecimal valorParcela;
   private Double mediaAval;
-
-  private List<HistJogoOfertado> histJogoOfertadoList;
 
   public String getNomeLoja() {
     return nomeLoja;
@@ -28,28 +21,12 @@ public class JogoLojaDTO {
     this.nomeLoja = nomeLoja;
   }
 
-  public Jogo getJogo() {
-    return jogo;
+  public Integer getIdJogo() {
+    return idJogo;
   }
 
-  public void setJogo(Jogo jogo) {
-    this.jogo = jogo;
-  }
-
-  public String getNomeVendedor() {
-    return nomeVendedor;
-  }
-
-  public void setNomeVendedor(String nomeVendedor) {
-    this.nomeVendedor = nomeVendedor;
-  }
-
-  public String getNomeTransportadora() {
-    return nomeTransportadora;
-  }
-
-  public void setNomeTransportadora(String nomeTransportadora) {
-    this.nomeTransportadora = nomeTransportadora;
+  public void setIdJogo(Integer idJogo) {
+    this.idJogo = idJogo;
   }
 
   public LocalDate getDataColeta() {
@@ -90,13 +67,5 @@ public class JogoLojaDTO {
 
   public void setMediaAval(Double mediaAval) {
     this.mediaAval = mediaAval;
-  }
-
-  public List<HistJogoOfertado> getHistJogoOfertadoList() {
-    return histJogoOfertadoList;
-  }
-
-  public void setHistJogoOfertadoList(List<HistJogoOfertado> histJogoOfertadoList) {
-    this.histJogoOfertadoList = histJogoOfertadoList;
   }
 }

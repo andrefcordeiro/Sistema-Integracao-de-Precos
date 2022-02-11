@@ -1,7 +1,7 @@
 package com.uel.controller;
 
 import com.uel.dao.DAO;
-import com.uel.dao.DAOFactory;
+import com.uel.dao.factory.DAOFactory;
 import com.uel.model.Loja;
 import java.io.*;
 import java.sql.SQLException;

@@ -19,7 +19,7 @@
         <div class="column col-6">
             <button class="col-5 btn btn-outline-dark">Consultar jogos</button>
             <a class="col-5 btn btn-outline-dark"
-               href="${pageContext.servletContext.contextPath}/jogo/create?nome_loja=${loja.nome}">
+               href="${pageContext.servletContext.contextPath}/crawling/create?nome_loja=${loja.nome}">
                 Inserir novos dados</a>
         </div>
     </div>

@@ -1,7 +1,6 @@
 package com.uel.controller;
 
 import java.io.File;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,11 +12,11 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
-@WebServlet(name = "JogoServlet", urlPatterns = {
-    "/jogo",
-    "/jogo/create",
+@WebServlet(name = "CrawlingServlet", urlPatterns = {
+    "/crawling",
+    "/crawling/create",
 })
-public class JogoServlet extends HttpServlet {
+public class CrawlingServlet extends HttpServlet {
 
   private static final Integer MAX_FILE_SIZE = 1024 * 1024 * 4;
   private static final Integer MAX_MEM_SIZE = 1024 * 1024 * 4;
@@ -33,7 +32,7 @@ public class JogoServlet extends HttpServlet {
 
     switch (servletPath) {
 
-      case "/jogo/create":
+      case "/crawling/create":
 
         DiskFileItemFactory factory = new DiskFileItemFactory();
         factory.setSizeThreshold(MAX_MEM_SIZE);
@@ -69,13 +68,16 @@ public class JogoServlet extends HttpServlet {
             }
           }
 
-          dispatcher = request.getRequestDispatcher("/view/jogo/sucessCreate.jsp");
+          inserirJogos();
+          inserirScriptCrawling();
+
+          dispatcher = request.getRequestDispatcher("/view/crawling/sucessCreate.jsp");
           dispatcher.forward(request, response);
 
         } catch (Exception e) {
-          Logger.getLogger(JogoServlet.class.getName()).log(Level.SEVERE, "Controller", e);
+          Logger.getLogger(CrawlingServlet.class.getName()).log(Level.SEVERE, "Controller", e);
           session.setAttribute("error", "Erro ao fazer upload do arquivo.");
-          dispatcher = request.getRequestDispatcher("/view/jogo/errorCreate.jsp");
+          dispatcher = request.getRequestDispatcher("/view/crawling/errorCreate.jsp");
           dispatcher.forward(request, response);
 
         }
@@ -83,6 +85,13 @@ public class JogoServlet extends HttpServlet {
     }
   }
 
+  private void inserirJogos() {
+
+  }
+
+  private void inserirScriptCrawling() {
+
+  }
 
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -91,12 +100,12 @@ public class JogoServlet extends HttpServlet {
     RequestDispatcher dispatcher;
 
     switch (request.getServletPath()) {
-      case "/jogo/create":
+      case "/crawling/create":
 
         String nome = request.getParameter("nome_loja");
         request.setAttribute("nome_loja", nome);
 
-        dispatcher = request.getRequestDispatcher("/view/jogo/create.jsp");
+        dispatcher = request.getRequestDispatcher("/view/crawling/create.jsp");
         dispatcher.forward(request, response);
         break;
     }
