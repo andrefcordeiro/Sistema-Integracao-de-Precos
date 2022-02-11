@@ -2,23 +2,23 @@ package com.uel.model;
 
 public class Jogo {
 
-  private Integer id;
+  private Integer idJogo;
   private String titulo;
   private String desenvolvedora;
-  private String capa;
-  private String ano_lancamento;
+  private String urlCapa;
+  private Integer anoLancamento;
   private String genero;
   private String descricao;
   private String multijogador;
   private String fabricante;
   private String marca;
 
-  public Integer getId() {
-    return id;
+  public Integer getIdJogo() {
+    return idJogo;
   }
 
-  public void setId(Integer id) {
-    this.id = id;
+  public void setIdJogo(Integer idJogo) {
+    this.idJogo = idJogo;
   }
 
   public String getTitulo() {
@@ -37,20 +37,20 @@ public class Jogo {
     this.desenvolvedora = desenvolvedora;
   }
 
-  public String getCapa() {
-    return capa;
+  public String getUrlCapa() {
+    return urlCapa;
   }
 
-  public void setCapa(String capa) {
-    this.capa = capa;
+  public void setUrlCapa(String urlCapa) {
+    this.urlCapa = urlCapa;
   }
 
-  public String getAno_lancamento() {
-    return ano_lancamento;
+  public Integer getAnoLancamento() {
+    return anoLancamento;
   }
 
-  public void setAno_lancamento(String ano_lancamento) {
-    this.ano_lancamento = ano_lancamento;
+  public void setAnoLancamento(Integer anoLancamento) {
+    this.anoLancamento = anoLancamento;
   }
 
   public String getGenero() {

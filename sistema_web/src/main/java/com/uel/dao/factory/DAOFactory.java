@@ -1,5 +1,6 @@
-package com.uel.dao;
+package com.uel.dao.factory;
 
+import com.uel.dao.LojaDAO;
 import com.uel.jdbc.ConnectionFactory;
 import java.io.IOException;
 import java.sql.Connection;
