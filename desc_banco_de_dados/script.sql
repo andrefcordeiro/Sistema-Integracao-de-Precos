@@ -1,4 +1,8 @@
 
+-- SELECT * FROM integ_preco.loja;
+
+-- DELETE FROM integ_preco.loja;
+
 CREATE SCHEMA "integ_preco";
 
 CREATE TABLE integ_preco.loja(
@@ -11,20 +15,30 @@ CREATE TABLE integ_preco.loja(
 CREATE SEQUENCE id_jogo_seq START 1;
 
 CREATE TABLE integ_preco.jogo(
-	id INT DEFAULT NEXTVAL("id_jogo_seq"),
+	id_jogo INT DEFAULT nextval('id_jogo_seq'),
 	titulo VARCHAR(50) NOT NULL,
 	desenvolvedora VARCHAR(30),
 	ano_lancamento INT,
-	capa BYTEA NOT NULL,
+	url_capa VARCHAR NOT NULL,
 	fabricante VARCHAR(30),
 	marca VARCHAR(30),
 	descricao VARCHAR NOT NULL,
 	multijogador CHAR(1),
 	genero VARCHAR(30),
 	
-	CONSTRAINT pk_jogo PRIMARY KEY(id),
+	CONSTRAINT pk_jogo PRIMARY KEY(id_jogo),
 	CONSTRAINT un_jogo UNIQUE(titulo)
 );
+
+DROP TABLE integ_preco.jogo CASCADE
+
+-- ALTER TABLE integ_preco.jogo rename capa to url_capa
+
+-- INSERT INTO integ_preco.jogo(titulo, ano_lancamento, url_capa, descricao) 
+-- 	VALUES ('teste3', 2000, 'teste', 'teste') RETURNING id_jogo
+		
+-- SELECT * FROM integ_preco.jogo
+
 
 CREATE TABLE integ_preco.oferta_jogo(
 	nome_loja VARCHAR(20),
@@ -36,7 +50,7 @@ CREATE TABLE integ_preco.oferta_jogo(
 	CONSTRAINT fk_oferta_loja FOREIGN KEY(nome_loja)
 		REFERENCES integ_preco.loja(nome),
 	CONSTRAINT fk_oferta_jogo FOREIGN KEY(id_jogo)
-		REFERENCES integ_preco.jogo(id)
+		REFERENCES integ_preco.jogo(id_jogo)
 );
 
 
@@ -68,7 +82,7 @@ CREATE TABLE integ_preco.avaliacao(
 	
 	CONSTRAINT pk_avaliacao PRIMARY KEY(titulo, nome_loja, id_jogo),
 	CONSTRAINT fk_avaliacao_oferta FOREIGN KEY(id_jogo, nome_loja)
-		REFERENCES integ_preco.oferta_jogo(id_jogo, nome_loja)
+		REFERENCES integ_preco.oferta_jogo(id_jogo, nome_loja),
 	CONSTRAINT ck_avaliacao_estrelas CHECK (qtd_estrelas <= 5)
 );
 
@@ -78,7 +92,7 @@ CREATE TABLE integ_preco.pergunta_cliente(
 	nome_loja VARCHAR(20),
 	texto_pergunta VARCHAR NOT NULL,
 	texto_resposta VARCHAR,
-	votos_pergunta_util NOT NULL,
+	votos_pergunta_util INT NOT NULL,
 	data_pergunta DATE,
 	data_resposta DATE,
 	
@@ -90,7 +104,7 @@ CREATE TABLE integ_preco.pergunta_cliente(
 CREATE SEQUENCE script_crawl_seq START 1;
 
 CREATE TABLE integ_preco.script_crawling(
-	num INT DEFAULT NEXTVAL("script_crawl_seq"),
+	num INT DEFAULT nextval('script_crawl_seq'),
 	nome_loja VARCHAR(20) NOT NULL,
 	funcao_script VARCHAR NOT NULL,
 	
@@ -102,10 +116,13 @@ CREATE TABLE integ_preco.script_crawling(
 CREATE TABLE integ_preco.versao_script(
 	num_versao INT,
 	num_script INT,
-	data_implementacao DATE NOT NULL,
+	data_utilizacao DATE NOT NULL,
 	algoritmo VARCHAR NOT NULL,
 	
 	CONSTRAINT pk_versao PRIMARY KEY(num_versao, num_script),
 	CONSTRAINT fk_versao FOREIGN KEY(num_script)
 		REFERENCES integ_preco.script_crawling(num)
 );
+
+
+-- SELECT MAX(num_versao) FROM integ_preco.versao_script;
