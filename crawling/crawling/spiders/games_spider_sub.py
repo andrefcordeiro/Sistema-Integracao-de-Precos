@@ -21,12 +21,12 @@ def parse_avaliacoes(avaliacoes):
             '*//div[@class="review__Flex-l45my2-0 review__User-l45my2-5 iZmFFt"]/text()').getall()
 
         aval.append({
-            'nome_avaliador': nome_dat_aval[0],
+            'nomeAvaliador': nome_dat_aval[0],
             'titulo': avaliacao.xpath('*//h4[@class="review__Title-l45my2-3 cQPVrn"]/text()').get(),
             'data': nome_dat_aval[2],
             'texto': avaliacao.xpath(
                 '*//span[@class="src__Text-sc-154pg0p-0 src__TextUI-sc-1ht81y0-0 ealAWO"]/text()').get(),
-            'votos_aval_util':
+            'votosAvalUtil':
                 avaliacao.xpath('*//span[@class="review__LabelRecommentation-sc-4m3nj8-10 eklQuG"]/text()').getall()[1],
             'estrelas': len(avaliacao.xpath('*//polygon[@fill="#f2c832"]').getall())
         })
@@ -52,8 +52,8 @@ def parse_perguntas(script):
         if key.startswith('Answer'):
             respostas.append({
                 'resposta': value['answer'],
-                'data_resposta': value['createdAt'],
-                'votos_resp_util': value['evaluation']['likes']
+                'dataResposta': value['createdAt'],
+                'votosRespUtil': value['evaluation']['likes']
             })
 
     prs = []
@@ -62,10 +62,10 @@ def parse_perguntas(script):
         r = respostas[indiceR]
         prs.append({
             'pergunta': p['pergunta'],
-            'data_pergunta': p['data_pergunta'],
+            'dataPergunta': p['data_pergunta'],
             'resposta': r['resposta'],
-            'data_resposta': r['data_resposta'],
-            'votos_resp_util': r['votos_resp_util']
+            'dataResposta': r['data_resposta'],
+            'votosRespUtil': r['votos_resp_util']
         })
         indiceR += 1
 
@@ -76,22 +76,26 @@ def parse_perguntas(script):
 def parse_game(response):
     desc_array = response.xpath('//div[@class="description__HTMLContent-sc-1o6bsvv-1 dGafvC"]/text()').getall()
     preco = response.xpath('//div[@class="src__BestPrice-sc-1jnodg3-5 ykHPU priceSales"]/text()').getall()
-    capa = response.xpath('//div[@class="image__WrapperImages-oakrdw-1 dglFwu"]/div/picture/img/@src').get()
+    capa = response.xpath('//div[@class="image__WrapperImages-sc-oakrdw-1 kOCIiH"]/div/picture/img/@src').get()
 
     avaliacoes = response.xpath('//div[@class="review__Flex-l45my2-0 review__Wrapper-l45my2-1 kdCqbc"]')
     script = response.xpath('//script[contains(., "window.__APOLLO_STATE__ =")]/text()').extract_first().lstrip()[
              26:]  # script onde serão buscadas as perguntas
 
+    trasportadora = response.xpath('//div[@class="offers-box__Wrapper-sc-fiox0-0 cOLhck"]/p/strong/text()').get()
+    vendedora = response.xpath('//div[@class="offers-box__Wrapper-sc-fiox0-0 cOLhck"]/p/a/text()').get()
+    if vendedora is None:
+        vendedora = trasportadora
+
     games = {
-        'titulo': response.xpath('//h1[@class="src__Title-sc-1xq3hsd-0 bHxjvB"]/text()').get().lstrip(' ').rstrip(
-            ' '),
+        'titulo': response.xpath('//h1[@class="src__Title-sc-1xq3hsd-0 bHxjvB"]/text()').get().upper()
+            .lstrip(' ').rstrip(' '),
         'preco': preco[0] + preco[1],
         'descricao': '\n'.join(desc_array),
-        'vendedora': response.xpath('//div[@class="offers-box__Wrapper-fiox0-0 ea-dBtZ"]/p/a/text()').get(),
-        'transportadora': response.xpath(
-            '//div[@class="offers-box__Wrapper-fiox0-0 ea-dBtZ"]/p/strong/text()').get(),
-        'parcelado': response.xpath('//p[@class="src__Text-sc-162utrw-0 ibyqZE"]/text()').getall()[0].split(' ')[1],
-        'url_capa': capa,
+        'vendedora': vendedora,
+        'transportadora': trasportadora,
+        'qtdParcelas': response.xpath('//p[@class="src__Text-sc-162utrw-0 ibyqZE"]/text()').getall()[0].split(' ')[1],
+        'urlCapa': capa,
         'avaliacoes': parse_avaliacoes(avaliacoes),
         'perguntas': parse_perguntas(script)
 

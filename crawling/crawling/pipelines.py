@@ -20,13 +20,13 @@ class GamesPipeline(object):
 
     def open_spider(self, spider):
         if spider.name == 'games_amazon':
-            self.file = open('./output/amazon/games.json', 'wb')
+            self.file = open('../output/amazon/games.json', 'wb')
         if spider.name == 'games_submarino':
-            self.file = open('./output/submarino/games.json', 'wb')
+            self.file = open('../output/submarino/games.json', 'wb')
         if spider.name == 'mercado_livre_jogos':
-            self.file = open('./output/mercado_livre/games.json', 'wb')
+            self.file = open('../output/mercado_livre/games.json', 'wb')
         if spider.name == 'games_shoptime':
-            self.file = open('./output/shoptime/games.json', 'wb')
+            self.file = open('../output/shoptime/games.json', 'wb')
 
         self.exporter = JsonItemExporter(self.file, indent=2, ensure_ascii=False)
         self.exporter.start_exporting()

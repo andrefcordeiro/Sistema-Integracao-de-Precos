@@ -25,12 +25,12 @@ def parse_avaliacoes(avaliacoes):
             votos_aval_util = votos_aval_util.split(" ", 1)[0]
 
         aval.append({
-            'nome_avaliador': avaliacao.xpath('*//span[@class="a-profile-name"]/text()').get(),
+            'nomeAvaliador': avaliacao.xpath('*//span[@class="a-profile-name"]/text()').get(),
             'titulo': avaliacao.xpath('*//a[@data-hook="review-title"]/span/text()').get(),
             'data': avaliacao.xpath('*//span[@data-hook="review-date"]/text()').get().split(" ", 4)[4],
             'texto': avaliacao.xpath('*//div[@data-hook="review-collapsed"]/span').get().replace("\n", "").replace(
                 "<span>", "").replace("</span>", "").replace("<br>", "").lstrip().rstrip(),
-            'votos_aval_util': votos_aval_util,
+            'votosAvalUtil': votos_aval_util,
             'estrelas': avaliacao.xpath('*//i[@data-hook="review-star-rating"]/span/text()').get()[:1],
         })
 
@@ -76,8 +76,8 @@ def parse_perguntas(response):
         prs.append({
             'pergunta': perg_resp_container.xpath('*//span[@class="a-declarative"]/text()').get().strip(),
             'resposta': parse_resposta(p),
-            'data_resposta': parse_data_resposta(p),
-            'votos_perg_util': p.xpath('*//ul[@class="vote voteAjax"]/li/span[@class="count"]/text()').get()
+            'dataResposta': parse_data_resposta(p),
+            'votosPergUtil': p.xpath('*//ul[@class="vote voteAjax"]/li/span[@class="count"]/text()').get()
         })
 
     game['perguntas'] = prs
@@ -114,14 +114,14 @@ def parse_game(response):  # Pega as informações da página do jogo
         response.xpath('*//ul[@class="a-unordered-list a-nostyle a-vertical a-spacing-none detail-bullet-list"]')[0]
 
     game = {
-        'titulo': response.css('#productTitle::text').extract_first().strip(' '),
-        'preco': response.xpath('//span[@class="a-price a-text-price a-size-medium"]/span/text()').get(),
+        'titulo': response.css('#productTitle::text').extract_first().upper().strip(' '),
+        'preco': response.xpath('//span[@class="a-price aok-align-center priceToPay"]/span/text()').get(),
         'descricao': desc.xpath('//p/span/text()').get(),
         'vendedora': parse_vendedora(response),
         'transportadora': response.xpath('//div[@class="tabular-buybox-text a-spacing-none"]/span/text()').get(),
         'parcelas': parcelado,
-        'url_capa': capa,
-        'data_lancamento': parse_data_lancamento(detalhes),
+        'urlCapa': capa,
+        'dataLancamento': parse_data_lancamento(detalhes),
         'avaliacoes': parse_avaliacoes(avaliacoes),
         'perguntas': []
     }
