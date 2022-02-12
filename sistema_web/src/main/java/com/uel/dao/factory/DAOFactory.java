@@ -2,6 +2,7 @@ package com.uel.dao.factory;
 
 import com.uel.dao.JogoLojaDAO;
 import com.uel.dao.LojaDAO;
+import com.uel.dao.ScriptCrawlingDAO;
 import com.uel.jdbc.ConnectionFactory;
 import java.io.IOException;
 import java.sql.Connection;
@@ -77,6 +78,8 @@ public abstract class DAOFactory implements AutoCloseable {
   public abstract LojaDAO getLojaDAO();
 
   public abstract JogoLojaDAO getJogoLojaDAO();
+
+  public abstract ScriptCrawlingDAO getScriptCrawlingDAO();
 
   @Override
   public void close() throws SQLException {

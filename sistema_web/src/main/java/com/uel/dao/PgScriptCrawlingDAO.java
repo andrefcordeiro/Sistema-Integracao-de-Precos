@@ -20,12 +20,15 @@ public class PgScriptCrawlingDAO implements ScriptCrawlingDAO {
           + "VALUES(?, ?)"
           + "RETURNING num";
 
+  private static final String GET_SCRIPT_QUERY =
+      "SELECT * FROM integ_preco.script_crawling WHERE nome_loja=? AND funcao_script=?";
+
   private static final String CREATE_VERSAO_SCRIPT_QUERY =
       "INSERT INTO integ_preco.versao_script (num_versao, num_script, data_utilizacao, algoritmo) "
           + "VALUES(?, ?, ?, ?)";
 
   private static final String GET_LAST_NUM_VERSAO_QUERY =
-      "SELECT MAX(num_versao) FROM integ_preco.versao_script WHERE num_script = ?";
+      "SELECT MAX(num_versao) AS num_versao FROM integ_preco.versao_script WHERE num_script = ?";
 
   public PgScriptCrawlingDAO(Connection connection) {
     this.connection = connection;
@@ -35,13 +38,25 @@ public class PgScriptCrawlingDAO implements ScriptCrawlingDAO {
   public void create(ScriptDTO scriptDTO) throws SQLException {
 
     Integer numScript = null;
-    try (PreparedStatement statement = connection.prepareStatement(CREATE_SCRIPT_QUERY)) {
+    try (PreparedStatement stIns = connection.prepareStatement(CREATE_SCRIPT_QUERY);
+        PreparedStatement stGet = connection.prepareStatement(GET_SCRIPT_QUERY);) {
 
-      statement.setString(1, scriptDTO.getNomeLoja());
-      statement.setString(2, scriptDTO.getFuncaoScript());
-      statement.executeUpdate();
-      ResultSet result = statement.getResultSet();
-      numScript = result.getInt("num");
+      stGet.setString(1, scriptDTO.getNomeLoja());
+      stGet.setString(2, scriptDTO.getFuncaoScript());
+      stGet.executeQuery();
+      ResultSet r = stGet.getResultSet();
+
+      if (!r.next()) {
+        stIns.setString(1, scriptDTO.getNomeLoja());
+        stIns.setString(2, scriptDTO.getFuncaoScript());
+        stIns.executeQuery();
+        ResultSet result = stIns.getResultSet();
+        result.next();
+        numScript = result.getInt("num");
+
+      } else {
+        numScript = r.getInt("num");
+      }
 
     } catch (SQLException e) {
       Logger.getLogger(PgLojaDAO.class.getName()).log(Level.SEVERE, "DAO", e);

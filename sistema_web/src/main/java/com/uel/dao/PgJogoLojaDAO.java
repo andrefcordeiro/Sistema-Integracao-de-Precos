@@ -154,9 +154,9 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
         stIns.setBigDecimal(4, jogoLoja.getPrecoBigDecimal());
         stIns.setString(5, jogoLoja.getParcelas());
         stIns.setBigDecimal(6, jogoLoja.getMediaAval());
-      }
 
-      stIns.executeUpdate();
+        stIns.executeUpdate();
+      }
 
     } catch (SQLException e) {
       Logger.getLogger(PgLojaDAO.class.getName()).log(Level.SEVERE, "DAO", e);

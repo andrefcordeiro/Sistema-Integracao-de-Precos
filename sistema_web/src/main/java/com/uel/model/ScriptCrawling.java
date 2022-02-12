@@ -1,6 +1,5 @@
 package com.uel.model;
 
-
 public class ScriptCrawling {
 
   private Integer num;

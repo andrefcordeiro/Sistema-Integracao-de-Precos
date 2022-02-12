@@ -8,6 +8,8 @@ import com.uel.dao.JogoLojaDAO;
 import com.uel.dao.LojaDAO;
 import com.uel.dao.PgJogoLojaDAO;
 import com.uel.dao.PgLojaDAO;
+import com.uel.dao.PgScriptCrawlingDAO;
+import com.uel.dao.ScriptCrawlingDAO;
 import java.sql.Connection;
 
 public class PgDAOFactory extends DAOFactory {
@@ -24,5 +26,10 @@ public class PgDAOFactory extends DAOFactory {
   @Override
   public JogoLojaDAO getJogoLojaDAO() {
     return new PgJogoLojaDAO(this.connection);
+  }
+
+  @Override
+  public ScriptCrawlingDAO getScriptCrawlingDAO() {
+    return new PgScriptCrawlingDAO(this.connection);
   }
 }

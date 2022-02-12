@@ -8,6 +8,7 @@ import com.uel.dao.DAO;
 import com.uel.dao.factory.DAOFactory;
 import com.uel.model.JogoLojaDTO;
 import com.uel.model.Loja;
+import com.uel.model.ScriptDTO;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -52,6 +53,7 @@ public class CrawlingServlet extends HttpServlet {
 
     String pathOutputJson = null;
     String pathScript = null;
+    String funcaoScript = null;
 
     switch (servletPath) {
 
@@ -93,12 +95,12 @@ public class CrawlingServlet extends HttpServlet {
               fi.write(uploadedFile);
 
             } else {
-              String funcaoScript = fi.getString();
+              funcaoScript = fi.getString();
             }
           }
 
           inserirJogos(nomeLoja, pathOutputJson);
-//          inserirScriptCrawling(pathScript);
+          inserirScriptCrawling(nomeLoja, funcaoScript, pathScript);
 
           dispatcher = request.getRequestDispatcher("/view/crawling/sucessCreate.jsp");
           dispatcher.forward(request, response);
@@ -121,7 +123,8 @@ public class CrawlingServlet extends HttpServlet {
   }
 
   private List<JogoLojaDTO> lerArquivoJson(String pathOutputJson) {
-    try (FileInputStream fis = new FileInputStream(new File(pathOutputJson));
+
+    try (FileInputStream fis = new FileInputStream(pathOutputJson);
         InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
         BufferedReader br = new BufferedReader(isr)) {
 
@@ -163,7 +166,8 @@ public class CrawlingServlet extends HttpServlet {
 
     String[] palavras = new String[]{
         "JOGO", "MÍDIA FÍSICA", "MIDIA FISICA", "PARA PS4", "PS4", "PARA PS5", "PS5", "-",
-        "PARA PLAYSTATION 4", "PLAYSTATION 4", "LACRADO", "MOSTRUÁRIO", "MOSTRUARIO", "(PLAYSTATION 4)",
+        "PARA PLAYSTATION 4", "PLAYSTATION 4", "LACRADO", "MOSTRUÁRIO", "MOSTRUARIO",
+        "(PLAYSTATION 4)",
         "()", "ORIGINAL", "NOVO"};
 
     String result = tituloJogo;
@@ -175,9 +179,45 @@ public class CrawlingServlet extends HttpServlet {
     return result;
   }
 
-//  private void inserirScriptCrawling(String pathScript) {
-//
-//  }
+  private String lerArquivoScript(String pathScript) throws IOException {
+
+    try (FileInputStream fis = new FileInputStream(pathScript);
+        InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
+        BufferedReader br = new BufferedReader(isr)) {
+
+      StringBuilder conteudo = new StringBuilder();
+      String line;
+      while ((line = br.readLine()) != null) {
+        conteudo.append(line);
+      }
+      return conteudo.toString();
+
+    } catch (IOException e) {
+      throw new IOException("Erro ao ler script de crawling");
+    }
+  }
+
+  private void inserirScriptCrawling(String nomeLoja, String funcaoScript, String pathScript)
+      throws SQLException, IOException {
+
+    ScriptDTO scriptDTO = new ScriptDTO();
+    scriptDTO.setFuncaoScript(funcaoScript);
+    scriptDTO.setNomeLoja(nomeLoja);
+
+    scriptDTO.setAlgoritmo(lerArquivoScript(pathScript));
+
+    try (DAOFactory daoFactory = DAOFactory.getInstance()) {
+
+      DAO<ScriptDTO> dao = daoFactory.getScriptCrawlingDAO();
+      dao.create(scriptDTO);
+
+    } catch (SQLException e) {
+      throw new SQLException("Erro ao inserir script de crawling no banco de dados.");
+
+    } catch (ClassNotFoundException | IOException e) {
+      throw new SQLException("Erro ao instaciar objeto DAO");
+    }
+  }
 
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
