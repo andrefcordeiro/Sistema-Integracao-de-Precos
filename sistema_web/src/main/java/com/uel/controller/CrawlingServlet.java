@@ -1,6 +1,15 @@
 package com.uel.controller;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import com.uel.model.JogoLojaDTO;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.lang.reflect.Type;
+import java.text.Normalizer;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,6 +39,11 @@ public class CrawlingServlet extends HttpServlet {
     HttpSession session = request.getSession();
     RequestDispatcher dispatcher;
 
+    String nomeLoja = request.getParameter("nome_loja");
+
+    String pathOutputJson = null;
+    String pathScript = null;
+
     switch (servletPath) {
 
       case "/crawling/create":
@@ -49,17 +63,23 @@ public class CrawlingServlet extends HttpServlet {
             if (!fi.isFormField()) { /* se não for um form normal */
               String fieldName = fi.getFieldName();
               String fileName = null;
+              String appPath = request.getServletContext().getRealPath("/");
+              String savePath = null;
+              new File(appPath + File.separator + SAVE_DIR_CRAWLING).mkdirs();
 
               if (fieldName.equals("output_crawling")) { /* arq de saída do crawling */
                 fileName = "games.json";
+                savePath =
+                    appPath + File.separator + SAVE_DIR_CRAWLING + File.separator + fileName;
+                pathOutputJson = savePath;
 
               } else if (fieldName.equals("script_crawling")) {
                 fileName = "script.py";
+                savePath =
+                    appPath + File.separator + SAVE_DIR_CRAWLING + File.separator + fileName;
+                pathScript = savePath;
               }
 
-              String appPath = request.getServletContext().getRealPath("/");
-              String savePath =
-                  appPath + File.separator + SAVE_DIR_CRAWLING + File.separator + fileName;
               File uploadedFile = new File(savePath);
               fi.write(uploadedFile);
 
@@ -68,8 +88,8 @@ public class CrawlingServlet extends HttpServlet {
             }
           }
 
-          inserirJogos();
-          inserirScriptCrawling();
+          inserirJogos(nomeLoja, pathOutputJson);
+//          inserirScriptCrawling(pathScript);
 
           dispatcher = request.getRequestDispatcher("/view/crawling/sucessCreate.jsp");
           dispatcher.forward(request, response);
@@ -85,13 +105,53 @@ public class CrawlingServlet extends HttpServlet {
     }
   }
 
-  private void inserirJogos() {
+  private void inserirJogos(String nomeLoja, String pathOutputJson) {
 
+    try (BufferedReader br = new BufferedReader(new FileReader(pathOutputJson))) {
+
+      Type listType = new TypeToken<List<JogoLojaDTO>>() {
+      }.getType();
+      Gson gson = new GsonBuilder().registerTypeAdapter(listType, new JogoDeserializer()).create();
+
+      List<JogoLojaDTO> jogos = gson.fromJson(br, listType);
+
+      for (JogoLojaDTO jogo : jogos) {
+        jogo.setTitulo(retirarPalavrasIndesejadasTituloJogo(jogo.getTitulo()));
+      }
+
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
-  private void inserirScriptCrawling() {
+  private String retirarPalavrasIndesejadasTituloJogo(String tituloJogo) {
+    String[] palavras = new String[]{
+        "JOGO", "MADIA FASICA", "MIDIA FISICA", "PS4", "PS5", "-", "PARA PLAYSTATION 4",
+        "PLAYSTATION 4", "LACRADO", "MOSTRUARIO", "(PLAYSTATION 4)", "()", "ORIGINAL", "NOVO"};
 
+    String result = tituloJogo;
+    StringBuilder sb = new StringBuilder(result.length());
+    result = Normalizer.normalize(result, Normalizer.Form.NFD);
+    for (char c : result.toCharArray()) {
+      if (c <= '\u007F') {
+        sb.append(c);
+      }
+    }
+    result = sb.toString();
+
+    for (String palavra : palavras) {
+      result = result.replace(palavra, "");
+    }
+    result = result.trim();
+    return result;
   }
+
+//  private void inserirScriptCrawling(String pathScript) {
+//
+//  }
 
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -109,7 +169,6 @@ public class CrawlingServlet extends HttpServlet {
         dispatcher.forward(request, response);
         break;
     }
-
   }
 
 }

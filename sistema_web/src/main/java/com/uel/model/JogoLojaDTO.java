@@ -1,5 +1,6 @@
 package com.uel.model;
 
+import com.google.gson.annotations.SerializedName;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -7,37 +8,57 @@ import java.util.List;
 public class JogoLojaDTO {
 
   private String nomeLoja;
-  private Jogo jogo;
 
+  private Integer idJogo;
+
+  private String titulo;
+
+  private String desenvolvedora;
+
+  private String urlCapa;
+
+  private String dataLancamento;
+
+  private String genero;
+
+  private String descricao;
+
+  private String multijogador;
+
+  private String fabricante;
+
+  private String marca;
+
+  @SerializedName("vendedora")
   private String nomeVendedor;
+
+  @SerializedName("transportadora")
   private String nomeTransportadora;
 
   private LocalDate dataColeta;
-  private BigDecimal preco;
-  private Integer qtdParcelas;
-  private BigDecimal valorParcela;
+
+  private String preco;
+
+  private String parcelas;
+
   private Double mediaAval;
+
+  private List<Avaliacao> avaliacoesClientes;
+
+  private List<PerguntaCliente> perguntasClientes;
 
   private List<HistJogoOfertado> histJogoOfertadoList;
 
   public String getNomeLoja() {
-    return nomeLoja;
+    return nomeLoja.trim();
   }
 
   public void setNomeLoja(String nomeLoja) {
     this.nomeLoja = nomeLoja;
   }
 
-  public Jogo getJogo() {
-    return jogo;
-  }
-
-  public void setJogo(Jogo jogo) {
-    this.jogo = jogo;
-  }
-
   public String getNomeVendedor() {
-    return nomeVendedor;
+    return nomeVendedor.trim();
   }
 
   public void setNomeVendedor(String nomeVendedor) {
@@ -45,7 +66,7 @@ public class JogoLojaDTO {
   }
 
   public String getNomeTransportadora() {
-    return nomeTransportadora;
+    return nomeTransportadora.trim();
   }
 
   public void setNomeTransportadora(String nomeTransportadora) {
@@ -60,28 +81,20 @@ public class JogoLojaDTO {
     this.dataColeta = dataColeta;
   }
 
-  public BigDecimal getPreco() {
+  public String getPreco() {
     return preco;
   }
 
-  public void setPreco(BigDecimal preco) {
+  public void setPreco(String preco) {
     this.preco = preco;
   }
 
-  public Integer getQtdParcelas() {
-    return qtdParcelas;
+  public String getParcelas() {
+    return parcelas;
   }
 
-  public void setQtdParcelas(Integer qtdParcelas) {
-    this.qtdParcelas = qtdParcelas;
-  }
-
-  public BigDecimal getValorParcela() {
-    return valorParcela;
-  }
-
-  public void setValorParcela(BigDecimal valorParcela) {
-    this.valorParcela = valorParcela;
+  public void setParcelas(String parcelas) {
+    this.parcelas = parcelas;
   }
 
   public Double getMediaAval() {
@@ -90,6 +103,102 @@ public class JogoLojaDTO {
 
   public void setMediaAval(Double mediaAval) {
     this.mediaAval = mediaAval;
+  }
+
+  public Integer getIdJogo() {
+    return idJogo;
+  }
+
+  public void setIdJogo(Integer idJogo) {
+    this.idJogo = idJogo;
+  }
+
+  public String getTitulo() {
+    return titulo.trim();
+  }
+
+  public void setTitulo(String titulo) {
+    this.titulo = titulo;
+  }
+
+  public String getDesenvolvedora() {
+    return desenvolvedora.trim();
+  }
+
+  public void setDesenvolvedora(String desenvolvedora) {
+    this.desenvolvedora = desenvolvedora;
+  }
+
+  public String getUrlCapa() {
+    return urlCapa;
+  }
+
+  public void setUrlCapa(String urlCapa) {
+    this.urlCapa = urlCapa;
+  }
+
+  public String getDataLancamento() {
+    return dataLancamento.trim();
+  }
+
+  public void setDataLancamento(String dataLancamento) {
+    this.dataLancamento = dataLancamento;
+  }
+
+  public String getGenero() {
+    return genero.trim();
+  }
+
+  public void setGenero(String genero) {
+    this.genero = genero;
+  }
+
+  public String getDescricao() {
+    return descricao.trim();
+  }
+
+  public void setDescricao(String descricao) {
+    this.descricao = descricao;
+  }
+
+  public String getMultijogador() {
+    return multijogador.trim();
+  }
+
+  public void setMultijogador(String multijogador) {
+    this.multijogador = multijogador;
+  }
+
+  public String getFabricante() {
+    return fabricante.trim();
+  }
+
+  public void setFabricante(String fabricante) {
+    this.fabricante = fabricante;
+  }
+
+  public String getMarca() {
+    return marca.trim();
+  }
+
+  public void setMarca(String marca) {
+    this.marca = marca;
+  }
+
+  public List<Avaliacao> getAvaliacoesClientes() {
+    return avaliacoesClientes;
+  }
+
+  public void setAvaliacoesClientes(List<Avaliacao> avaliacoesClientes) {
+    this.avaliacoesClientes = avaliacoesClientes;
+  }
+
+  public List<PerguntaCliente> getPerguntasClientes() {
+    return perguntasClientes;
+  }
+
+  public void setPerguntasClientes(List<PerguntaCliente> perguntasClientes) {
+    this.perguntasClientes = perguntasClientes;
   }
 
   public List<HistJogoOfertado> getHistJogoOfertadoList() {

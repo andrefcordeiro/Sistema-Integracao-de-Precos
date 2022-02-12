@@ -18,7 +18,7 @@
 
 <div class="container">
     <form class="form"
-          action="${pageContext.servletContext.contextPath}/crawling/create"
+          action="${pageContext.servletContext.contextPath}/crawling/create?nome_loja=${nome_loja}"
           enctype="multipart/form-data"
           method="POST">
 

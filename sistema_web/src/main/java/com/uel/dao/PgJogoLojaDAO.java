@@ -2,6 +2,7 @@ package com.uel.dao;
 
 import com.uel.model.Jogo;
 import com.uel.model.JogoLojaDTO;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -17,7 +18,7 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
   private final Connection connection;
 
   private static final String CREATE_JOGO_QUERY =
-      "INSERT INTO integ_preco.jogo (titulo, desenvolvedora, ano_lancamento, "
+      "INSERT INTO integ_preco.jogo (titulo, desenvolvedora, data_lancamento, "
           + "url_capa, fabricante, marca, descricao, multijogador, genero) "
           + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)"
           + "RETURNING id_jogo";
@@ -27,9 +28,8 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
           + "VALUES(?, ?, ?, ?)";
 
   private static final String CREATE_HIST_OFERTA_JOGO_QUERY =
-      "INSERT INTO integ_preco.historico_jogo_ofertado (nome_loja, id_jogo, data_coleta, qtd_parcelas, "
-          + "valor_parcela, media_aval) "
-          + "VALUES(?, ?, ?, ?, ?, ?)";
+      "INSERT INTO integ_preco.historico_jogo_ofertado (nome_loja, id_jogo, data_coleta, preco, "
+          + "parcelas, media_aval) VALUES(?, ?, ?, ?, ?. ?)";
 
   public PgJogoLojaDAO(Connection connection) {
     this.connection = connection;
@@ -38,7 +38,7 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
   @Override
   public void create(JogoLojaDTO jogoLoja) throws SQLException {
 
-    Integer idJogo = inserirJogo(jogoLoja.getJogo());
+    Integer idJogo = inserirJogo(jogoLoja);
 
     inserirOfertaJogo(jogoLoja, idJogo);
 
@@ -46,13 +46,13 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
 
   }
 
-  private Integer inserirJogo(Jogo jogo) throws SQLException {
+  private Integer inserirJogo(JogoLojaDTO jogo) throws SQLException {
 
     try (PreparedStatement statement = connection.prepareStatement(CREATE_JOGO_QUERY)) {
 
       statement.setString(1, jogo.getTitulo());
       statement.setString(2, jogo.getDesenvolvedora());
-      statement.setInt(3, jogo.getAnoLancamento());
+      statement.setString(3, jogo.getDataLancamento());
       statement.setString(4, jogo.getUrlCapa());
       statement.setString(5, jogo.getFabricante());
       statement.setString(6, jogo.getMarca());
@@ -107,9 +107,8 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
       statement.setString(1, jogoLoja.getNomeLoja());
       statement.setInt(2, idJogo);
       statement.setDate(3, Date.valueOf(LocalDate.now()));
-      statement.setBigDecimal(4, jogoLoja.getPreco());
-      statement.setInt(5, jogoLoja.getQtdParcelas());
-      statement.setBigDecimal(6, jogoLoja.getValorParcela());
+      statement.setBigDecimal(4, new BigDecimal(jogoLoja.getPreco()));
+      statement.setString(5, jogoLoja.getParcelas());
       statement.setDouble(6, jogoLoja.getMediaAval());
 
       statement.executeUpdate();
