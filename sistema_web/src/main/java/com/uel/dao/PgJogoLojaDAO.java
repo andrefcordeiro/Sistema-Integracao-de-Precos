@@ -23,13 +23,24 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
           + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)"
           + "RETURNING id_jogo";
 
+  private static final String GET_JOGO_QUERY =
+      "SELECT id_jogo FROM integ_preco.jogo WHERE titulo=?";
+
   private static final String CREATE_OFERTA_JOGO_QUERY =
       "INSERT INTO integ_preco.oferta_jogo (nome_loja, id_jogo, nome_vendedor, nome_transportadora) "
           + "VALUES(?, ?, ?, ?)";
 
+  private static final String GET_OFERTA_JOGO_QUERY =
+      "SELECT * FROM integ_preco.oferta_jogo WHERE nome_loja=? AND id_jogo=?";
+
   private static final String CREATE_HIST_OFERTA_JOGO_QUERY =
       "INSERT INTO integ_preco.historico_jogo_ofertado (nome_loja, id_jogo, data_coleta, preco, "
-          + "parcelas, media_aval) VALUES(?, ?, ?, ?, ?. ?)";
+          + "parcelas, media_aval) VALUES(?, ?, ?, ?, ?, ?)";
+
+  private static final String GET_HIST_OFERTA_JOGO_QUERY =
+      "SELECT * FROM integ_preco.historico_jogo_ofertado WHERE nome_loja=? AND id_jogo=? "
+          + "AND data_coleta=? ";
+
 
   public PgJogoLojaDAO(Connection connection) {
     this.connection = connection;
@@ -38,12 +49,23 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
   @Override
   public void create(JogoLojaDTO jogoLoja) throws SQLException {
 
-    Integer idJogo = inserirJogo(jogoLoja);
+    Integer idJogo;
+    try (PreparedStatement statement = connection.prepareStatement(GET_JOGO_QUERY)) {
+      statement.setString(1, jogoLoja.getTitulo());
+      statement.executeQuery();
 
-    inserirOfertaJogo(jogoLoja, idJogo);
+      ResultSet r = statement.getResultSet();
+      if (!r.next()) {
+        idJogo = inserirJogo(jogoLoja);
 
-    inserirHistOfertaJogo(jogoLoja, idJogo);
+      } else {
+        idJogo = r.getInt("id_jogo");
+      }
 
+      inserirOfertaJogo(jogoLoja, idJogo);
+
+      inserirHistOfertaJogo(jogoLoja, idJogo);
+    }
   }
 
   private Integer inserirJogo(JogoLojaDTO jogo) throws SQLException {
@@ -59,9 +81,10 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
       statement.setString(7, jogo.getDescricao());
       statement.setString(8, jogo.getMultijogador());
       statement.setString(9, jogo.getGenero());
-      statement.executeUpdate();
+      statement.executeQuery();
 
       ResultSet result = statement.getResultSet();
+      result.next();
       return result.getInt("id_jogo");
 
     } catch (SQLException e) {
@@ -69,6 +92,10 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
 
       if (e.getMessage().contains("not-null")) {
         throw new SQLException("Erro ao inserir jogo: campo em branco.");
+
+      }
+      if (e.getMessage().contains("un_jogo")) {
+        throw new SQLException("Erro ao inserir jogo: titulo já existente.");
 
       } else {
         throw new SQLException("Erro ao inserir jogo.");
@@ -79,14 +106,22 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
 
   private void inserirOfertaJogo(JogoLojaDTO jogoLoja, Integer idJogo) throws SQLException {
 
-    try (PreparedStatement statement = connection.prepareStatement(CREATE_OFERTA_JOGO_QUERY)) {
+    try (PreparedStatement stGet = connection.prepareStatement(GET_OFERTA_JOGO_QUERY);
+        PreparedStatement stIns = connection.prepareStatement(CREATE_OFERTA_JOGO_QUERY)) {
 
-      statement.setString(1, jogoLoja.getNomeLoja());
-      statement.setInt(2, idJogo);
-      statement.setString(3, jogoLoja.getNomeVendedor());
-      statement.setString(4, jogoLoja.getNomeTransportadora());
+      stGet.setString(1, jogoLoja.getNomeLoja());
+      stGet.setInt(2, idJogo);
+      stGet.executeQuery();
+      ResultSet r = stGet.getResultSet();
 
-      statement.executeUpdate();
+      if (!r.next()) {
+        stIns.setString(1, jogoLoja.getNomeLoja());
+        stIns.setInt(2, idJogo);
+        stIns.setString(3, jogoLoja.getNomeVendedor());
+        stIns.setString(4, jogoLoja.getNomeTransportadora());
+
+        stIns.executeUpdate();
+      }
 
     } catch (SQLException e) {
       Logger.getLogger(PgLojaDAO.class.getName()).log(Level.SEVERE, "DAO", e);
@@ -102,17 +137,26 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
 
   private void inserirHistOfertaJogo(JogoLojaDTO jogoLoja, Integer idJogo) throws SQLException {
 
-    try (PreparedStatement statement = connection.prepareStatement(CREATE_HIST_OFERTA_JOGO_QUERY)) {
+    try (PreparedStatement stIns = connection.prepareStatement(CREATE_HIST_OFERTA_JOGO_QUERY);
+        PreparedStatement stGet = connection.prepareStatement(GET_HIST_OFERTA_JOGO_QUERY);) {
 
-      statement.setString(1, jogoLoja.getNomeLoja());
-      statement.setInt(2, idJogo);
-      statement.setDate(3, Date.valueOf(LocalDate.now()));
-      statement.setBigDecimal(4, new BigDecimal(jogoLoja.getPreco()));
-      statement.setString(5, jogoLoja.getParcelas());
-      statement.setDouble(6, jogoLoja.getMediaAval());
+      stGet.setString(1, jogoLoja.getNomeLoja());
+      stGet.setInt(2, idJogo);
+      stGet.setDate(3, Date.valueOf(LocalDate.now()));
+      stGet.executeQuery();
+      ResultSet r = stGet.getResultSet();
 
-      statement.executeUpdate();
+      if (!r.next()) {
 
+        stIns.setString(1, jogoLoja.getNomeLoja());
+        stIns.setInt(2, idJogo);
+        stIns.setDate(3, Date.valueOf(LocalDate.now()));
+        stIns.setBigDecimal(4, jogoLoja.getPrecoBigDecimal());
+        stIns.setString(5, jogoLoja.getParcelas());
+        stIns.setBigDecimal(6, jogoLoja.getMediaAval());
+      }
+
+      stIns.executeUpdate();
 
     } catch (SQLException e) {
       Logger.getLogger(PgLojaDAO.class.getName()).log(Level.SEVERE, "DAO", e);

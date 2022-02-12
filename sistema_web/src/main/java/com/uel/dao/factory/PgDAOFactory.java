@@ -4,7 +4,9 @@
  */
 package com.uel.dao.factory;
 
+import com.uel.dao.JogoLojaDAO;
 import com.uel.dao.LojaDAO;
+import com.uel.dao.PgJogoLojaDAO;
 import com.uel.dao.PgLojaDAO;
 import java.sql.Connection;
 
@@ -17,5 +19,10 @@ public class PgDAOFactory extends DAOFactory {
   @Override
   public LojaDAO getLojaDAO() {
     return new PgLojaDAO(this.connection);
+  }
+
+  @Override
+  public JogoLojaDAO getJogoLojaDAO() {
+    return new PgJogoLojaDAO(this.connection);
   }
 }

@@ -4,7 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.reflect.TypeToken;
+import com.uel.dao.DAO;
+import com.uel.dao.factory.DAOFactory;
 import com.uel.model.JogoLojaDTO;
+import com.uel.model.Loja;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,6 +17,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
 import java.text.Normalizer;
 import java.util.List;
 import java.util.logging.Level;
@@ -116,8 +120,7 @@ public class CrawlingServlet extends HttpServlet {
     }
   }
 
-  private void inserirJogos(String nomeLoja, String pathOutputJson) {
-
+  private List<JogoLojaDTO> lerArquivoJson(String pathOutputJson) {
     try (FileInputStream fis = new FileInputStream(new File(pathOutputJson));
         InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
         BufferedReader br = new BufferedReader(isr)) {
@@ -127,22 +130,40 @@ public class CrawlingServlet extends HttpServlet {
       Gson gson = new GsonBuilder().registerTypeAdapter(listType, new JogoDeserializer())
           .create();
 
-      List<JogoLojaDTO> jogos = gson.fromJson(br, listType);
-
-      for (
-          JogoLojaDTO jogo : jogos) {
-        jogo.setTitulo(retirarPalavrasIndesejadasTituloJogo(jogo.getTitulo()));
-      }
+      return gson.fromJson(br, listType);
 
     } catch (JsonIOException | IOException e) {
       throw new JsonIOException("Erro ao ler arquivo JSON ");
     }
   }
 
-  private String retirarPalavrasIndesejadasTituloJogo(String tituloJogo) {
+  private void inserirJogos(String nomeLoja, String pathOutputJson) throws SQLException {
+
+    List<JogoLojaDTO> jogos = lerArquivoJson(pathOutputJson);
+
+    DAO<JogoLojaDTO> dao;
+    try (DAOFactory daoFactory = DAOFactory.getInstance()) {
+      dao = daoFactory.getJogoLojaDAO();
+
+      for (JogoLojaDTO jogo : jogos) {
+        jogo.setTitulo(formatarTituloJogo(jogo.getTitulo()));
+        jogo.setNomeLoja(nomeLoja);
+        dao.create(jogo);
+      }
+
+    } catch (SQLException e) {
+      throw new SQLException("Erro ao inserir jogos no banco de dados.");
+
+    } catch (ClassNotFoundException | IOException e) {
+      throw new SQLException("Erro ao instaciar objeto DAO");
+    }
+  }
+
+  private String formatarTituloJogo(String tituloJogo) {
+
     String[] palavras = new String[]{
         "JOGO", "MÍDIA FÍSICA", "MIDIA FISICA", "PARA PS4", "PS4", "PARA PS5", "PS5", "-",
-        "PARA PLAYSTATION 4", "PLAYSTATION 4", "LACRADO", "MOSTRUARIO", "(PLAYSTATION 4)",
+        "PARA PLAYSTATION 4", "PLAYSTATION 4", "LACRADO", "MOSTRUÁRIO", "MOSTRUARIO", "(PLAYSTATION 4)",
         "()", "ORIGINAL", "NOVO"};
 
     String result = tituloJogo;
