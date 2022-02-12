@@ -41,7 +41,7 @@ public class JogoLojaDTO {
 
   private String parcelas;
 
-  private Double mediaAval;
+  private BigDecimal mediaAval;
 
   private List<Avaliacao> avaliacoesClientes;
 
@@ -50,7 +50,7 @@ public class JogoLojaDTO {
   private List<HistJogoOfertado> histJogoOfertadoList;
 
   public String getNomeLoja() {
-    return nomeLoja.trim();
+    return nomeLoja != null ? nomeLoja.trim() : null;
   }
 
   public void setNomeLoja(String nomeLoja) {
@@ -58,7 +58,7 @@ public class JogoLojaDTO {
   }
 
   public String getNomeVendedor() {
-    return nomeVendedor.trim();
+    return nomeVendedor != null ? nomeVendedor.trim() : null;
   }
 
   public void setNomeVendedor(String nomeVendedor) {
@@ -66,7 +66,7 @@ public class JogoLojaDTO {
   }
 
   public String getNomeTransportadora() {
-    return nomeTransportadora.trim();
+    return nomeTransportadora != null ? nomeTransportadora.trim() : null;
   }
 
   public void setNomeTransportadora(String nomeTransportadora) {
@@ -85,6 +85,15 @@ public class JogoLojaDTO {
     return preco;
   }
 
+  public BigDecimal getPrecoBigDecimal() {
+
+    if (preco == null) {
+      return null;
+    }
+    String p = preco.replace("R$", "").replace(",", ".").trim();
+    return new BigDecimal(p);
+  }
+
   public void setPreco(String preco) {
     this.preco = preco;
   }
@@ -97,11 +106,11 @@ public class JogoLojaDTO {
     this.parcelas = parcelas;
   }
 
-  public Double getMediaAval() {
+  public BigDecimal getMediaAval() {
     return mediaAval;
   }
 
-  public void setMediaAval(Double mediaAval) {
+  public void setMediaAval(BigDecimal mediaAval) {
     this.mediaAval = mediaAval;
   }
 
@@ -114,7 +123,7 @@ public class JogoLojaDTO {
   }
 
   public String getTitulo() {
-    return titulo.trim();
+    return titulo != null ? titulo.trim() : null;
   }
 
   public void setTitulo(String titulo) {
@@ -122,7 +131,7 @@ public class JogoLojaDTO {
   }
 
   public String getDesenvolvedora() {
-    return desenvolvedora.trim();
+    return desenvolvedora != null ? desenvolvedora.trim() : null;
   }
 
   public void setDesenvolvedora(String desenvolvedora) {
@@ -138,7 +147,7 @@ public class JogoLojaDTO {
   }
 
   public String getDataLancamento() {
-    return dataLancamento.trim();
+    return dataLancamento != null ? dataLancamento.trim() : null;
   }
 
   public void setDataLancamento(String dataLancamento) {
@@ -146,7 +155,7 @@ public class JogoLojaDTO {
   }
 
   public String getGenero() {
-    return genero.trim();
+    return genero != null ? genero.trim() : null;
   }
 
   public void setGenero(String genero) {
@@ -154,7 +163,7 @@ public class JogoLojaDTO {
   }
 
   public String getDescricao() {
-    return descricao.trim();
+    return descricao != null ? descricao.trim() : null;
   }
 
   public void setDescricao(String descricao) {
@@ -162,7 +171,7 @@ public class JogoLojaDTO {
   }
 
   public String getMultijogador() {
-    return multijogador.trim();
+    return multijogador != null ? multijogador.trim() : null;
   }
 
   public void setMultijogador(String multijogador) {
@@ -170,7 +179,7 @@ public class JogoLojaDTO {
   }
 
   public String getFabricante() {
-    return fabricante.trim();
+    return fabricante != null ? fabricante.trim() : null;
   }
 
   public void setFabricante(String fabricante) {
@@ -178,7 +187,7 @@ public class JogoLojaDTO {
   }
 
   public String getMarca() {
-    return marca.trim();
+    return marca != null ? marca.trim() : null;
   }
 
   public void setMarca(String marca) {

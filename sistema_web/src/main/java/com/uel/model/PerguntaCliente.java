@@ -35,7 +35,7 @@ public class PerguntaCliente {
   }
 
   public String getTextoPergunta() {
-    return textoPergunta.trim();
+    return textoPergunta != null ? textoPergunta.trim() : null;
   }
 
   public void setTextoPergunta(String textoPergunta) {
@@ -43,7 +43,7 @@ public class PerguntaCliente {
   }
 
   public String getTextoResposta() {
-    return textoResposta.trim();
+    return textoResposta != null ? textoResposta.trim() : null;
   }
 
   public void setTextoResposta(String textoResposta) {
@@ -59,7 +59,7 @@ public class PerguntaCliente {
   }
 
   public String getDataPergunta() {
-    return dataPergunta.trim();
+    return dataPergunta != null ? dataPergunta.trim() : null;
   }
 
   public void setDataPergunta(String dataPergunta) {
@@ -67,7 +67,7 @@ public class PerguntaCliente {
   }
 
   public String getDataResposta() {
-    return dataResposta.trim();
+    return dataResposta != null ? dataResposta.trim() : null;
   }
 
   public void setDataResposta(String dataResposta) {

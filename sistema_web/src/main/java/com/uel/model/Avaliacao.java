@@ -26,7 +26,7 @@ public class Avaliacao {
   private String paisAvaliador;
 
   public String getTitulo() {
-    return titulo.trim();
+    return titulo != null ? titulo.trim() : null;
   }
 
   public void setTitulo(String titulo) {
@@ -42,7 +42,7 @@ public class Avaliacao {
   }
 
   public String getNomeLoja() {
-    return nomeLoja.trim();
+    return nomeLoja != null ? nomeLoja.trim() : null;
   }
 
   public void setNomeLoja(String nomeLoja) {
@@ -50,7 +50,7 @@ public class Avaliacao {
   }
 
   public String getTexto() {
-    return texto.trim();
+    return texto != null ? texto.trim() : null;
   }
 
   public void setTexto(String texto) {
@@ -58,7 +58,7 @@ public class Avaliacao {
   }
 
   public String getDataRealizacao() {
-    return dataRealizacao.trim();
+    return dataRealizacao != null ? dataRealizacao.trim() : null;
   }
 
   public void setDataRealizacao(String dataRealizacao) {
@@ -82,7 +82,7 @@ public class Avaliacao {
   }
 
   public String getNomeAvaliador() {
-    return nomeAvaliador.trim();
+    return nomeAvaliador != null ? nomeAvaliador.trim() : null;
   }
 
   public void setNomeAvaliador(String nomeAvaliador) {
@@ -90,7 +90,7 @@ public class Avaliacao {
   }
 
   public String getPaisAvaliador() {
-    return paisAvaliador.trim();
+    return paisAvaliador != null ? paisAvaliador.trim() : null;
   }
 
   public void setPaisAvaliador(String paisAvaliador) {
