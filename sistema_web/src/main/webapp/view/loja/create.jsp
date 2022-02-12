@@ -16,16 +16,16 @@
 
 <jsp:include page="../header.jsp"/>
 
-<h1 class="display-3"> Cadastrar website/loja </h1>
 
-<div class="container">
+<div class="d-flex flex-column justify-content-center align-items-center">
+    <h1 class="display-3"> Cadastrar website/loja </h1>
     <form class="form"
           action="${pageContext.servletContext.contextPath}/loja/create"
           method="POST">
 
         <div class="form-group">
             <label class="control-label" for="website-nome">Nome</label>
-            <input id="website-nome" class="form-control" type="text" name="nome" />
+            <input id="website-nome" class="form-control" type="text" name="nome"/>
 
             <p class="help-block"></p>
         </div>

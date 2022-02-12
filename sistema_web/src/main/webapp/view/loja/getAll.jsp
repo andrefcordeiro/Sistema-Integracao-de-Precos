@@ -17,8 +17,8 @@
 
 <jsp:include page="../header.jsp"/>
 
-<h1 class="display-3"> Lojas cadastradas </h1>
-<div class="container">
+<div class="d-flex flex-column justify-content-center align-items-center">
+    <h1 class="display-3"> Lojas cadastradas </h1>
     <jsp:useBean id="lojas" scope="request" type="java.util.List"/>
     <c:forEach items="${lojas}" var="item">
         <c:set var="loja" value="${item}" scope="request"/>

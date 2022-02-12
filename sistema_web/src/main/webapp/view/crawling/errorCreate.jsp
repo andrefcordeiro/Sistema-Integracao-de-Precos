@@ -13,8 +13,8 @@
 </head>
 <body>
 <jsp:include page="../header.jsp"/>
-<div class="position-relative">
-    <h1 class="position-absolute top-50 start-50 display-3"> Erro ao inserir dados </h1>
+<div class="d-flex flex-row justify-content-center align-items-center">
+    <h1 class="display-3"> Erro ao inserir dados </h1>
 </div>
 </body>
 </html>
