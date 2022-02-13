@@ -5,11 +5,19 @@ import com.uel.dao.factory.DAOFactory;
 import com.uel.model.Loja;
 import java.io.*;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+
 
 @WebServlet(name = "lojaServlet",
     urlPatterns = {
@@ -40,16 +48,31 @@ public class LojaServlet extends HttpServlet {
           loja.setNome(request.getParameter("nome"));
           loja.setNomeSecao(request.getParameter("nome_secao"));
 
+          validarLoja(loja);
+
           dao.create(loja);
 
           dispatcher = request.getRequestDispatcher("/index.jsp");
           dispatcher.forward(request, response);
 
-        } catch (ClassNotFoundException | SQLException e) {
-          request.getSession().setAttribute("error", e.getMessage());
-          response.sendRedirect(request.getContextPath() + "/loja/create");
+        } catch (ClassNotFoundException | SQLException | ConstraintViolationException e) {
+          httpSession.setAttribute("error", e.getMessage());
+          dispatcher = request.getRequestDispatcher("/view/loja/errorCreate.jsp");
+          dispatcher.forward(request, response);
         }
         break;
+    }
+  }
+
+  private void validarLoja(Loja loja) throws ConstraintViolationException {
+
+    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+    Validator validator = factory.getValidator();
+
+    Set<ConstraintViolation<Loja>> violations = validator.validate(loja);
+
+    if (!violations.isEmpty()) {
+      throw new ConstraintViolationException(violations);
     }
   }
 

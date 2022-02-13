@@ -1,8 +1,6 @@
 package com.uel.dao;
 
-import com.uel.model.Jogo;
 import com.uel.model.JogoLojaDTO;
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -41,7 +39,6 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
       "SELECT * FROM integ_preco.historico_jogo_ofertado WHERE nome_loja=? AND id_jogo=? "
           + "AND data_coleta=? ";
 
-
   public PgJogoLojaDAO(Connection connection) {
     this.connection = connection;
   }
@@ -65,7 +62,12 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
       inserirOfertaJogo(jogoLoja, idJogo);
 
       inserirHistOfertaJogo(jogoLoja, idJogo);
+
+      inserirAvaliacoes();
+
+      inserirPerguntasCliente();
     }
+
   }
 
   private Integer inserirJogo(JogoLojaDTO jogo) throws SQLException {
@@ -102,7 +104,6 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
       }
     }
   }
-
 
   private void inserirOfertaJogo(JogoLojaDTO jogoLoja, Integer idJogo) throws SQLException {
 
@@ -168,6 +169,14 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
         throw new SQLException("Erro ao inserir historico_oferta_jogo.");
       }
     }
+  }
+
+  private void inserirAvaliacoes(){
+
+  }
+
+  private void inserirPerguntasCliente(){
+
   }
 
   @Override

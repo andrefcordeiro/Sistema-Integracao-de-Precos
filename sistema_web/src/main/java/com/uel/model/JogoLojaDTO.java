@@ -4,23 +4,28 @@ import com.google.gson.annotations.SerializedName;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import javax.validation.constraints.NotBlank;
 
 public class JogoLojaDTO {
 
+  @NotBlank
   private String nomeLoja;
 
   private Integer idJogo;
 
+  @NotBlank
   private String titulo;
 
   private String desenvolvedora;
 
+  @NotBlank
   private String urlCapa;
 
   private String dataLancamento;
 
   private String genero;
 
+  @NotBlank
   private String descricao;
 
   private String multijogador;
@@ -29,14 +34,17 @@ public class JogoLojaDTO {
 
   private String marca;
 
+  @NotBlank
   @SerializedName("vendedora")
   private String nomeVendedor;
 
+  @NotBlank
   @SerializedName("transportadora")
   private String nomeTransportadora;
 
   private LocalDate dataColeta;
 
+  @NotBlank
   private String preco;
 
   private String parcelas;

@@ -14,7 +14,7 @@
 <body>
 <jsp:include page="../header.jsp"/>
 <div class="d-flex flex-column justify-content-center align-items-center">
-    <h1 class="display-3"> Erro ao inserir dados </h1>
+    <h1 class="display-3"> Erro ao inserir loja </h1>
     <%=session.getAttribute("error")%>
 </div>
 </body>

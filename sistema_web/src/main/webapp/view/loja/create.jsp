@@ -25,7 +25,7 @@
 
         <div class="form-group">
             <label class="control-label" for="website-nome">Nome</label>
-            <input id="website-nome" class="form-control" type="text" name="nome"/>
+            <input id="website-nome" class="form-control" type="text" name="nome" required/>
 
             <p class="help-block"></p>
         </div>
@@ -33,7 +33,7 @@
         <div class="form-group">
             <label class="control-label">Nome da seção no website</label>
             <input class="form-control password-input"
-                   type="text" name="nome_secao"/>
+                   type="text" name="nome_secao" required/>
         </div>
 
         <div class="text-center">

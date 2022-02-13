@@ -14,9 +14,9 @@
 <body>
 <jsp:include page="../header.jsp"/>
 
-<h1 class="display-3">Inserir dados - loja "${nome_loja}"</h1>
 
-<div class="container">
+<div class="d-flex flex-column justify-content-center align-items-center">
+    <h1 class="display-3">Inserir dados - loja "${nome_loja}"</h1>
     <form class="form"
           action="${pageContext.servletContext.contextPath}/crawling/create?nome_loja=${nome_loja}"
           enctype="multipart/form-data"
@@ -42,7 +42,7 @@
         </div>
 
         <div class="form-group">
-            <label class="control-label">Função do script</label>
+            <label class="control-label">Função do script: </label>
             <input class="form-control password-input"
                    type="text" name="funcao_script" required/>
         </div>

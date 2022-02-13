@@ -7,29 +7,33 @@ import com.google.gson.reflect.TypeToken;
 import com.uel.dao.DAO;
 import com.uel.dao.factory.DAOFactory;
 import com.uel.model.JogoLojaDTO;
-import com.uel.model.Loja;
 import com.uel.model.ScriptDTO;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
-import java.text.Normalizer;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validation;
+import javax.validation.ValidationException;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import javax.xml.transform.Source;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.xml.sax.SAXException;
 
 @WebServlet(name = "CrawlingServlet", urlPatterns = {
     "/crawling",
@@ -111,6 +115,12 @@ public class CrawlingServlet extends HttpServlet {
           dispatcher = request.getRequestDispatcher("/view/crawling/errorCreate.jsp");
           dispatcher.forward(request, response);
 
+        } catch (ConstraintViolationException e) {
+          Logger.getLogger(CrawlingServlet.class.getName()).log(Level.SEVERE, "Controller", e);
+          session.setAttribute("error", e.getMessage());
+          dispatcher = request.getRequestDispatcher("/view/crawling/errorCreate.jsp");
+          dispatcher.forward(request, response);
+
         } catch (Exception e) {
           Logger.getLogger(CrawlingServlet.class.getName()).log(Level.SEVERE, "Controller", e);
           session.setAttribute("error", "Erro ao fazer upload do arquivo.");
@@ -119,6 +129,44 @@ public class CrawlingServlet extends HttpServlet {
         }
 
         break;
+    }
+  }
+
+  private void inserirJogos(String nomeLoja, String pathOutputJson)
+      throws SQLException, ConstraintViolationException {
+
+    List<JogoLojaDTO> jogos = lerArquivoJson(pathOutputJson);
+
+    DAO<JogoLojaDTO> dao;
+    try (DAOFactory daoFactory = DAOFactory.getInstance()) {
+      dao = daoFactory.getJogoLojaDAO();
+
+      for (JogoLojaDTO jogo : jogos) {
+        jogo.setTitulo(formatarTituloJogo(jogo.getTitulo()));
+        jogo.setNomeLoja(nomeLoja);
+
+        validarJogoLoja(jogo);
+        dao.create(jogo);
+      }
+
+    } catch (SQLException e) {
+      throw new SQLException("Erro ao inserir jogos no banco de dados.");
+
+    } catch (ClassNotFoundException | IOException e) {
+      throw new SQLException("Erro ao instaciar objeto DAO");
+    }
+  }
+
+
+  private void validarJogoLoja(JogoLojaDTO jogo) throws ConstraintViolationException {
+
+    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+    Validator validator = factory.getValidator();
+
+    Set<ConstraintViolation<JogoLojaDTO>> violations = validator.validate(jogo);
+
+    if (!violations.isEmpty()) {
+      throw new ConstraintViolationException(violations);
     }
   }
 
@@ -140,28 +188,6 @@ public class CrawlingServlet extends HttpServlet {
     }
   }
 
-  private void inserirJogos(String nomeLoja, String pathOutputJson) throws SQLException {
-
-    List<JogoLojaDTO> jogos = lerArquivoJson(pathOutputJson);
-
-    DAO<JogoLojaDTO> dao;
-    try (DAOFactory daoFactory = DAOFactory.getInstance()) {
-      dao = daoFactory.getJogoLojaDAO();
-
-      for (JogoLojaDTO jogo : jogos) {
-        jogo.setTitulo(formatarTituloJogo(jogo.getTitulo()));
-        jogo.setNomeLoja(nomeLoja);
-        dao.create(jogo);
-      }
-
-    } catch (SQLException e) {
-      throw new SQLException("Erro ao inserir jogos no banco de dados.");
-
-    } catch (ClassNotFoundException | IOException e) {
-      throw new SQLException("Erro ao instaciar objeto DAO");
-    }
-  }
-
   private String formatarTituloJogo(String tituloJogo) {
 
     String[] palavras = new String[]{
@@ -177,24 +203,6 @@ public class CrawlingServlet extends HttpServlet {
     }
     result = result.trim();
     return result;
-  }
-
-  private String lerArquivoScript(String pathScript) throws IOException {
-
-    try (FileInputStream fis = new FileInputStream(pathScript);
-        InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
-        BufferedReader br = new BufferedReader(isr)) {
-
-      StringBuilder conteudo = new StringBuilder();
-      String line;
-      while ((line = br.readLine()) != null) {
-        conteudo.append(line);
-      }
-      return conteudo.toString();
-
-    } catch (IOException e) {
-      throw new IOException("Erro ao ler script de crawling");
-    }
   }
 
   private void inserirScriptCrawling(String nomeLoja, String funcaoScript, String pathScript)
@@ -216,6 +224,24 @@ public class CrawlingServlet extends HttpServlet {
 
     } catch (ClassNotFoundException | IOException e) {
       throw new SQLException("Erro ao instaciar objeto DAO");
+    }
+  }
+
+  private String lerArquivoScript(String pathScript) throws IOException {
+
+    try (FileInputStream fis = new FileInputStream(pathScript);
+        InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
+        BufferedReader br = new BufferedReader(isr)) {
+
+      StringBuilder conteudo = new StringBuilder();
+      String line;
+      while ((line = br.readLine()) != null) {
+        conteudo.append(line);
+      }
+      return conteudo.toString();
+
+    } catch (IOException e) {
+      throw new IOException("Erro ao ler script de crawling");
     }
   }
 
