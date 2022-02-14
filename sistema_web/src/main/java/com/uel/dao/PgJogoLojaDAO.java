@@ -81,8 +81,7 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
       } else {
         idJogo = r.getInt("id_jogo");
 
-        // TODO
-        //    atualizarJogo(jogoLoja, idJogo, r);
+        atualizarJogo(jogoLoja, idJogo, r);
       }
 
       inserirOfertaJogo(jogoLoja, idJogo);
@@ -92,52 +91,53 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
     }
 
   }
-  // TODO
-  //  private void atualizarJogo(JogoLojaDTO jogo, Integer idJogo, ResultSet r) throws SQLException {
-  //
-  //    StringBuilder updateJogoQuery =
-  //        new StringBuilder("UPDATE integ_preco.jogo SET");
-  //
-  //    boolean achouNulo = false;
-  //
-  //    if (r.getString("descricao") == null && jogo.getDescricao() != null) {
-  //      updateJogoQuery.append(" descricao= '").append(jogo.getDescricao()).append("',");
-  //      achouNulo = true;
-  //    }
-  //    if (r.getString("desenvolvedora") == null && jogo.getDesenvolvedora() != null) {
-  //      updateJogoQuery.append(" desenvolvedora= '").append(jogo.getDesenvolvedora()).append("',");
-  //      achouNulo = true;
-  //    }
-  //    if (r.getString("data_lancamento") == null && jogo.getDataLancamento() != null) {
-  //      updateJogoQuery.append(" data_lancamento= '").append(jogo.getDataLancamento()).append("',");
-  //      achouNulo = true;
-  //    }
-  //    if (r.getString("fabricante") == null && jogo.getFabricante() != null) {
-  //      updateJogoQuery.append(" fabricante= '").append(jogo.getFabricante()).append("',");
-  //      achouNulo = true;
-  //    }
-  //    if (r.getString("marca") == null && jogo.getMarca() != null) {
-  //      updateJogoQuery.append(" marca= '").append(jogo.getMarca()).append("',");
-  //      achouNulo = true;
-  //    }
-  //    if (r.getString("multijogador") == null && jogo.getMultijogador() != null) {
-  //      updateJogoQuery.append(" multijogador= '").append(jogo.getMultijogador()).append("',");
-  //      achouNulo = true;
-  //    }
-  //    if (r.getString("genero") == null && jogo.getGenero() != null) {
-  //      updateJogoQuery.append(" genero= '").append(jogo.getGenero()).append("',");
-  //      achouNulo = true;
-  //    }
-  //
-  //    updateJogoQuery.deleteCharAt(updateJogoQuery.length() - 1); /* excluindo última vírgula */
-  //
-  //    if (achouNulo) {
-  //      updateJogoQuery.append(" WHERE id_jogo=' ").append(idJogo).append(" '");
-  //
-  //      PreparedStatement st = connection.prepareStatement(updateJogoQuery.toString());
-  //    }
-  //
-  //  }
+
+  private void atualizarJogo(JogoLojaDTO jogo, Integer idJogo, ResultSet r) throws SQLException {
+
+    StringBuilder updateJogoQuery =
+        new StringBuilder("UPDATE integ_preco.jogo SET");
+
+    boolean achouNulo = false;
+
+    if (r.getString("descricao") == null && jogo.getDescricao() != null) {
+      updateJogoQuery.append(" descricao= '").append(jogo.getDescricao()).append("',");
+      achouNulo = true;
+    }
+    if (r.getString("desenvolvedora") == null && jogo.getDesenvolvedora() != null) {
+      updateJogoQuery.append(" desenvolvedora= '").append(jogo.getDesenvolvedora()).append("',");
+      achouNulo = true;
+    }
+    if (r.getString("data_lancamento") == null && jogo.getDataLancamento() != null) {
+      updateJogoQuery.append(" data_lancamento= '").append(jogo.getDataLancamento()).append("',");
+      achouNulo = true;
+    }
+    if (r.getString("fabricante") == null && jogo.getFabricante() != null) {
+      updateJogoQuery.append(" fabricante= '").append(jogo.getFabricante()).append("',");
+      achouNulo = true;
+    }
+    if (r.getString("marca") == null && jogo.getMarca() != null) {
+      updateJogoQuery.append(" marca= '").append(jogo.getMarca()).append("',");
+      achouNulo = true;
+    }
+    if (r.getString("multijogador") == null && jogo.getMultijogador() != null) {
+      updateJogoQuery.append(" multijogador= '").append(jogo.getMultijogador()).append("',");
+      achouNulo = true;
+    }
+    if (r.getString("genero") == null && jogo.getGenero() != null) {
+      updateJogoQuery.append(" genero= '").append(jogo.getGenero()).append("',");
+      achouNulo = true;
+    }
+
+    updateJogoQuery.deleteCharAt(updateJogoQuery.length() - 1); /* excluindo última vírgula */
+
+    if (achouNulo) {
+      updateJogoQuery.append(" WHERE id_jogo=' ").append(idJogo).append(" '");
+
+      PreparedStatement st = connection.prepareStatement(updateJogoQuery.toString());
+      st.executeUpdate();
+    }
+
+  }
 
   private Integer inserirJogo(JogoLojaDTO jogo) throws SQLException {
 
