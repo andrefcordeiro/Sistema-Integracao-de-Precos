@@ -1,6 +1,6 @@
 package com.uel.dao;
 
-import com.uel.model.ScriptDTO;
+import com.uel.model.ScriptCrawling;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -35,20 +35,20 @@ public class PgScriptCrawlingDAO implements ScriptCrawlingDAO {
   }
 
   @Override
-  public void create(ScriptDTO scriptDTO) throws SQLException {
+  public void create(ScriptCrawling scriptCrawling) throws SQLException {
 
     Integer numScript = null;
     try (PreparedStatement stIns = connection.prepareStatement(CREATE_SCRIPT_QUERY);
         PreparedStatement stGet = connection.prepareStatement(GET_SCRIPT_QUERY);) {
 
-      stGet.setString(1, scriptDTO.getNomeLoja());
-      stGet.setString(2, scriptDTO.getFuncaoScript());
+      stGet.setString(1, scriptCrawling.getNomeLoja());
+      stGet.setString(2, scriptCrawling.getFuncaoScript());
       stGet.executeQuery();
       ResultSet r = stGet.getResultSet();
 
       if (!r.next()) {
-        stIns.setString(1, scriptDTO.getNomeLoja());
-        stIns.setString(2, scriptDTO.getFuncaoScript());
+        stIns.setString(1, scriptCrawling.getNomeLoja());
+        stIns.setString(2, scriptCrawling.getFuncaoScript());
         stIns.executeQuery();
         ResultSet result = stIns.getResultSet();
         result.next();
@@ -76,7 +76,7 @@ public class PgScriptCrawlingDAO implements ScriptCrawlingDAO {
       statement.setInt(1, numVersao);
       statement.setInt(2, numScript);
       statement.setDate(3, Date.valueOf(LocalDate.now()));
-      statement.setString(4, scriptDTO.getAlgoritmo());
+      statement.setString(4, scriptCrawling.getAlgoritmo());
       statement.executeUpdate();
 
     } catch (SQLException e) {
@@ -114,12 +114,12 @@ public class PgScriptCrawlingDAO implements ScriptCrawlingDAO {
   }
 
   @Override
-  public ScriptDTO read(Integer id) throws SQLException {
+  public ScriptCrawling read(Integer id) throws SQLException {
     return null;
   }
 
   @Override
-  public void update(ScriptDTO scriptDTO) throws SQLException {
+  public void update(ScriptCrawling scriptCrawling) throws SQLException {
 
   }
 
@@ -129,7 +129,7 @@ public class PgScriptCrawlingDAO implements ScriptCrawlingDAO {
   }
 
   @Override
-  public List<ScriptDTO> getAll() throws SQLException {
+  public List<ScriptCrawling> getAll() throws SQLException {
     return null;
   }
 }

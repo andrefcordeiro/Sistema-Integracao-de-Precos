@@ -1,7 +1,7 @@
 package com.uel.dao;
 
-import com.uel.model.ScriptDTO;
+import com.uel.model.ScriptCrawling;
 
-public interface ScriptCrawlingDAO extends DAO<ScriptDTO> {
+public interface ScriptCrawlingDAO extends DAO<ScriptCrawling> {
 
 }

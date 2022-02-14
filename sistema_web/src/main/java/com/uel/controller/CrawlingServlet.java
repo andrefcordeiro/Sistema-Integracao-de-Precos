@@ -7,7 +7,7 @@ import com.google.gson.reflect.TypeToken;
 import com.uel.dao.DAO;
 import com.uel.dao.factory.DAOFactory;
 import com.uel.model.JogoLojaDTO;
-import com.uel.model.ScriptDTO;
+import com.uel.model.ScriptCrawling;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,14 +26,11 @@ import java.io.IOException;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validation;
-import javax.validation.ValidationException;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import javax.xml.transform.Source;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.xml.sax.SAXException;
 
 @WebServlet(name = "CrawlingServlet", urlPatterns = {
     "/crawling",
@@ -205,26 +202,42 @@ public class CrawlingServlet extends HttpServlet {
   }
 
   private void inserirScriptCrawling(String nomeLoja, String funcaoScript, String pathScript)
-      throws SQLException, IOException {
+      throws SQLException, IOException, ConstraintViolationException {
 
-    ScriptDTO scriptDTO = new ScriptDTO();
-    scriptDTO.setFuncaoScript(funcaoScript);
-    scriptDTO.setNomeLoja(nomeLoja);
+    ScriptCrawling scriptCrawling = new ScriptCrawling();
+    scriptCrawling.setFuncaoScript(funcaoScript);
+    scriptCrawling.setNomeLoja(nomeLoja);
 
-    scriptDTO.setAlgoritmo(lerArquivoScript(pathScript));
+    scriptCrawling.setAlgoritmo(lerArquivoScript(pathScript));
+
+    validarScriptCrawling(scriptCrawling);
 
     try (DAOFactory daoFactory = DAOFactory.getInstance()) {
 
-      DAO<ScriptDTO> dao = daoFactory.getScriptCrawlingDAO();
-      dao.create(scriptDTO);
+      DAO<ScriptCrawling> dao = daoFactory.getScriptCrawlingDAO();
+      dao.create(scriptCrawling);
 
     } catch (SQLException e) {
-      throw new SQLException("Erro ao inserir script de crawling no banco de dados.");
+      throw new SQLException(
+          "Erro ao inserir script de crawling no banco de dados: " + e.getMessage());
 
     } catch (ClassNotFoundException | IOException e) {
       throw new SQLException("Erro ao instaciar objeto DAO");
     }
   }
+
+  private void validarScriptCrawling(ScriptCrawling scriptCrawling) {
+
+    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+    Validator validator = factory.getValidator();
+
+    Set<ConstraintViolation<ScriptCrawling>> violations = validator.validate(scriptCrawling);
+
+    if (!violations.isEmpty()) {
+      throw new ConstraintViolationException(violations);
+    }
+  }
+
 
   private String lerArquivoScript(String pathScript) throws IOException {
 
