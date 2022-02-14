@@ -1,10 +1,10 @@
 package com.uel.model;
 
-
 import com.google.gson.annotations.SerializedName;
-import java.time.LocalDate;
 
 public class Avaliacao {
+
+  private Integer numAval;
 
   private String titulo;
 
@@ -24,6 +24,14 @@ public class Avaliacao {
   private String nomeAvaliador;
 
   private String paisAvaliador;
+
+  public Integer getNumAval() {
+    return numAval;
+  }
+
+  public void setNumAval(Integer numAval) {
+    this.numAval = numAval;
+  }
 
   public String getTitulo() {
     return titulo != null ? titulo.trim() : null;

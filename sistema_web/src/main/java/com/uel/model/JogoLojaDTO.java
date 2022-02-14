@@ -25,7 +25,6 @@ public class JogoLojaDTO {
 
   private String genero;
 
-  @NotBlank
   private String descricao;
 
   private String multijogador;

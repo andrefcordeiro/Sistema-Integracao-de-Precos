@@ -1,6 +1,8 @@
 package com.uel.dao;
 
+import com.uel.model.Avaliacao;
 import com.uel.model.JogoLojaDTO;
+import com.uel.model.PerguntaCliente;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -22,7 +24,7 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
           + "RETURNING id_jogo";
 
   private static final String GET_JOGO_QUERY =
-      "SELECT id_jogo FROM integ_preco.jogo WHERE titulo=?";
+      "SELECT * FROM integ_preco.jogo WHERE titulo=?";
 
   private static final String CREATE_OFERTA_JOGO_QUERY =
       "INSERT INTO integ_preco.oferta_jogo (nome_loja, id_jogo, nome_vendedor, nome_transportadora) "
@@ -42,6 +44,24 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
       "SELECT * FROM integ_preco.historico_jogo_ofertado WHERE nome_loja=? AND id_jogo=? "
           + "AND data_coleta=? ";
 
+  private static final String CREATE_AVALIACAO_QUERY =
+      "INSERT INTO integ_preco.avaliacao (num_aval, id_jogo, nome_loja, titulo, texto, "
+          + "data_realizacao, qtd_estrelas, votos_aval_util, nome_avaliador, pais_avaliador) "
+          + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+  private static final String GET_LAST_NUM_AVALIACAO_QUERY =
+      "SELECT MAX(num_aval)+1 AS num_aval FROM integ_preco.avaliacao WHERE nome_loja=? "
+          + "AND id_jogo=?";
+
+  private static final String CREATE_PERGUNTA_CLIENTE_QUERY =
+      "INSERT INTO integ_preco.pergunta_cliente (num_perg, id_jogo, nome_loja, texto_pergunta, "
+          + "texto_resposta, votos_pergunta_util, data_resposta, data_pergunta) "
+          + "VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
+
+  private static final String GET_LAST_NUM_PERGUNTA_QUERY =
+      "SELECT MAX(num_perg)+1 AS num_perg FROM integ_preco.pergunta_cliente WHERE nome_loja=? "
+          + "AND id_jogo=?";
+
   public PgJogoLojaDAO(Connection connection) {
     this.connection = connection;
   }
@@ -60,18 +80,64 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
 
       } else {
         idJogo = r.getInt("id_jogo");
+
+        // TODO
+        //    atualizarJogo(jogoLoja, idJogo, r);
       }
 
       inserirOfertaJogo(jogoLoja, idJogo);
 
       inserirHistOfertaJogo(jogoLoja, idJogo);
 
-//      inserirAvaliacoes();
-
-//      inserirPerguntasCliente();
     }
 
   }
+  // TODO
+  //  private void atualizarJogo(JogoLojaDTO jogo, Integer idJogo, ResultSet r) throws SQLException {
+  //
+  //    StringBuilder updateJogoQuery =
+  //        new StringBuilder("UPDATE integ_preco.jogo SET");
+  //
+  //    boolean achouNulo = false;
+  //
+  //    if (r.getString("descricao") == null && jogo.getDescricao() != null) {
+  //      updateJogoQuery.append(" descricao= '").append(jogo.getDescricao()).append("',");
+  //      achouNulo = true;
+  //    }
+  //    if (r.getString("desenvolvedora") == null && jogo.getDesenvolvedora() != null) {
+  //      updateJogoQuery.append(" desenvolvedora= '").append(jogo.getDesenvolvedora()).append("',");
+  //      achouNulo = true;
+  //    }
+  //    if (r.getString("data_lancamento") == null && jogo.getDataLancamento() != null) {
+  //      updateJogoQuery.append(" data_lancamento= '").append(jogo.getDataLancamento()).append("',");
+  //      achouNulo = true;
+  //    }
+  //    if (r.getString("fabricante") == null && jogo.getFabricante() != null) {
+  //      updateJogoQuery.append(" fabricante= '").append(jogo.getFabricante()).append("',");
+  //      achouNulo = true;
+  //    }
+  //    if (r.getString("marca") == null && jogo.getMarca() != null) {
+  //      updateJogoQuery.append(" marca= '").append(jogo.getMarca()).append("',");
+  //      achouNulo = true;
+  //    }
+  //    if (r.getString("multijogador") == null && jogo.getMultijogador() != null) {
+  //      updateJogoQuery.append(" multijogador= '").append(jogo.getMultijogador()).append("',");
+  //      achouNulo = true;
+  //    }
+  //    if (r.getString("genero") == null && jogo.getGenero() != null) {
+  //      updateJogoQuery.append(" genero= '").append(jogo.getGenero()).append("',");
+  //      achouNulo = true;
+  //    }
+  //
+  //    updateJogoQuery.deleteCharAt(updateJogoQuery.length() - 1); /* excluindo última vírgula */
+  //
+  //    if (achouNulo) {
+  //      updateJogoQuery.append(" WHERE id_jogo=' ").append(idJogo).append(" '");
+  //
+  //      PreparedStatement st = connection.prepareStatement(updateJogoQuery.toString());
+  //    }
+  //
+  //  }
 
   private Integer inserirJogo(JogoLojaDTO jogo) throws SQLException {
 
@@ -125,6 +191,10 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
         stIns.setString(4, jogoLoja.getNomeTransportadora());
 
         stIns.executeUpdate();
+
+        inserirAvaliacoes(jogoLoja, idJogo);
+
+        inserirPerguntasCliente(jogoLoja, idJogo);
       }
 
     } catch (SQLException e) {
@@ -186,12 +256,100 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
     }
   }
 
-  private void inserirAvaliacoes() {
+  private void inserirAvaliacoes(JogoLojaDTO jogoLoja, Integer idJogo) throws SQLException {
 
+    try (PreparedStatement stGet = connection.prepareStatement(GET_LAST_NUM_AVALIACAO_QUERY);
+        PreparedStatement stIns = connection.prepareStatement(CREATE_AVALIACAO_QUERY);) {
+
+      for (Avaliacao aval : jogoLoja.getAvaliacoesClientes()) {
+
+        stGet.setString(1, jogoLoja.getNomeLoja());
+        stGet.setInt(2, idJogo);
+        stGet.executeQuery();
+        ResultSet rGet = stGet.getResultSet();
+        rGet.next();
+
+        int numAval = rGet.getInt("num_aval");
+        aval.setNumAval(numAval);
+        aval.setNomeLoja(jogoLoja.getNomeLoja());
+        aval.setIdJogo(idJogo);
+        inserirAvaliacao(aval, stIns);
+      }
+
+    } catch (SQLException e) {
+      Logger.getLogger(PgLojaDAO.class.getName()).log(Level.SEVERE, "DAO", e);
+
+      if (e.getMessage().contains("not-null")) {
+        throw new SQLException("Erro ao inserir avaliacao: campo em branco.");
+
+      } else {
+        throw new SQLException("Erro ao inserir avaliacao.");
+      }
+    }
   }
 
-  private void inserirPerguntasCliente() {
+  private void inserirAvaliacao(Avaliacao aval, PreparedStatement stIns)
+      throws SQLException {
 
+    stIns.setInt(1, aval.getNumAval());
+    stIns.setInt(2, aval.getIdJogo());
+    stIns.setString(3, aval.getNomeLoja());
+    stIns.setString(4, aval.getTitulo());
+    stIns.setString(5, aval.getTexto());
+    stIns.setString(6, aval.getDataRealizacao());
+    stIns.setInt(7, aval.getEstrelas());
+    stIns.setInt(8, aval.getVotosAvalUtil());
+    stIns.setString(9, aval.getNomeAvaliador());
+    stIns.setString(10, aval.getPaisAvaliador());
+
+    stIns.executeUpdate();
+  }
+
+  private void inserirPerguntasCliente(JogoLojaDTO jogoLoja, Integer idJogo) throws SQLException {
+
+    try (PreparedStatement stGet = connection.prepareStatement(GET_LAST_NUM_PERGUNTA_QUERY);
+        PreparedStatement stIns = connection.prepareStatement(CREATE_PERGUNTA_CLIENTE_QUERY);) {
+
+      for (PerguntaCliente perg : jogoLoja.getPerguntasClientes()) {
+
+        stGet.setString(1, jogoLoja.getNomeLoja());
+        stGet.setInt(2, idJogo);
+        stGet.executeQuery();
+        ResultSet rGet = stGet.getResultSet();
+        rGet.next();
+
+        int numPerg = rGet.getInt("num_perg");
+        perg.setNum(numPerg);
+        perg.setNomeLoja(jogoLoja.getNomeLoja());
+        perg.setIdJogo(idJogo);
+        inserirPergunta(perg, stIns);
+      }
+
+    } catch (SQLException e) {
+      Logger.getLogger(PgLojaDAO.class.getName()).log(Level.SEVERE, "DAO", e);
+
+      if (e.getMessage().contains("not-null")) {
+        throw new SQLException("Erro ao inserir pergunta_cliente: campo em branco.");
+
+      } else {
+        throw new SQLException("Erro ao inserir pergunta_cliente.");
+      }
+    }
+  }
+
+  private void inserirPergunta(PerguntaCliente perg, PreparedStatement stIns)
+      throws SQLException {
+
+    stIns.setInt(1, perg.getNum());
+    stIns.setInt(2, perg.getIdJogo());
+    stIns.setString(3, perg.getNomeLoja());
+    stIns.setString(4, perg.getTextoPergunta());
+    stIns.setString(5, perg.getTextoResposta());
+    stIns.setInt(6, perg.getVotosPergUtil());
+    stIns.setString(7, perg.getDataPergunta());
+    stIns.setString(8, perg.getDataResposta());
+
+    stIns.executeUpdate();
   }
 
   @Override

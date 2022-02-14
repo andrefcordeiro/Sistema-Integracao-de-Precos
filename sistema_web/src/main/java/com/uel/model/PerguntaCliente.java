@@ -1,6 +1,6 @@
 package com.uel.model;
 
-import java.time.LocalDate;
+import com.google.gson.annotations.SerializedName;
 
 public class PerguntaCliente {
 
@@ -8,8 +8,12 @@ public class PerguntaCliente {
 
   private Integer idJogo;
 
+  private String nomeLoja;
+
+  @SerializedName("pergunta")
   private String textoPergunta;
 
+  @SerializedName("resposta")
   private String textoResposta;
 
   private Integer votosPergUtil;
@@ -32,6 +36,14 @@ public class PerguntaCliente {
 
   public void setIdJogo(Integer idJogo) {
     this.idJogo = idJogo;
+  }
+
+  public String getNomeLoja() {
+    return nomeLoja;
+  }
+
+  public void setNomeLoja(String nomeLoja) {
+    this.nomeLoja = nomeLoja;
   }
 
   public String getTextoPergunta() {
