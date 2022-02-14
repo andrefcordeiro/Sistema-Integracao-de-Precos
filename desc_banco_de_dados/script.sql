@@ -2,16 +2,10 @@ CREATE SCHEMA "integ_preco";
 
 CREATE TABLE integ_preco.loja(
 	nome VARCHAR(20),
-	nome_secao VARCHAR(20) NOT NULL,
+	nome_secao VARCHAR(40) NOT NULL,
 	
 	CONSTRAINT pk_loja PRIMARY KEY(nome)
 );
-
--- SELECT * FROM integ_preco.loja;
-
--- DELETE FROM integ_preco.loja WHERE nome='';
-
--- UPDATE integ_preco.loja SET nome_secao='Jogos de PS4' WHERE nome='amazon'
 
 CREATE SEQUENCE id_jogo_seq START 1;
 
@@ -23,7 +17,7 @@ CREATE TABLE integ_preco.jogo(
 	url_capa VARCHAR NOT NULL,
 	fabricante VARCHAR(30),
 	marca VARCHAR(30),
-	descricao VARCHAR NOT NULL,
+	descricao VARCHAR,
 	multijogador CHAR(1),
 	genero VARCHAR(30),
 	
@@ -31,39 +25,18 @@ CREATE TABLE integ_preco.jogo(
 	CONSTRAINT un_jogo UNIQUE(titulo)
 );
 
--- DROP TABLE integ_preco.jogo CASCADE
-
--- ALTER TABLE integ_preco.jogo rename capa to url_capa
-
--- INSERT INTO integ_preco.jogo(titulo, ano_lancamento, url_capa, descricao) 
--- 	VALUES ('teste3', 2000, 'teste', 'teste') RETURNING id_jogo
-		
--- SELECT * FROM integ_preco.jogo
-
--- SELECT id_jogo FROM integ_preco.jogo WHERE titulo='FIFA 22'
-
--- DELETE FROM integ_preco.jogo;
--- DELETE FROM integ_preco.oferta_jogo;
--- DELETE FROM integ_preco.historico_jogo_ofertado;
-
 CREATE TABLE integ_preco.oferta_jogo(
 	nome_loja VARCHAR(20),
 	id_jogo INT,
-	nome_vendedor VARCHAR(20),
-	nome_transportadora VARCHAR(20), 
+	nome_vendedor VARCHAR(50),
+	nome_transportadora VARCHAR(50), 
 	
 	CONSTRAINT pk_oferta_jogo PRIMARY KEY(nome_loja, id_jogo),
 	CONSTRAINT fk_oferta_loja FOREIGN KEY(nome_loja)
-		REFERENCES integ_preco.loja(nome),
+		REFERENCES integ_preco.loja(nome) ON DELETE CASCADE,
 	CONSTRAINT fk_oferta_jogo FOREIGN KEY(id_jogo)
-		REFERENCES integ_preco.jogo(id_jogo)
+		REFERENCES integ_preco.jogo(id_jogo) ON DELETE CASCADE
 );
-
--- DELETE FROM integ_preco.oferta_jogo
-
--- SELECT * FROM integ_preco.oferta_jogo
-
--- SELECT * FROM integ_preco.oferta_jogo WHERE nome_loja='amazon'
 
 CREATE TABLE integ_preco.historico_jogo_ofertado(
 	num INT,
@@ -76,46 +49,41 @@ CREATE TABLE integ_preco.historico_jogo_ofertado(
 	
 	CONSTRAINT pk_hist_jogo_ofer PRIMARY KEY(num, nome_loja, id_jogo),
 	CONSTRAINT fk_hist_jogo_ofer FOREIGN KEY(nome_loja, id_jogo)
-		REFERENCES integ_preco.oferta_jogo(nome_loja, id_jogo),
+		REFERENCES integ_preco.oferta_jogo(nome_loja, id_jogo) ON DELETE CASCADE,
 	CONSTRAINT ck_oferta_media_aval CHECK (media_aval <= 5.0)
 );
 
--- SELECT * FROM integ_preco.historico_jogo_ofertado
-
--- DELETE FROM integ_preco.historico_jogo_ofertado
-
--- DROP TABLE integ_preco.historico_jogo_ofertado
-
 CREATE TABLE integ_preco.avaliacao(
+	num_aval INT,
 	titulo VARCHAR(100),
 	id_jogo INT,
 	nome_loja VARCHAR(20),
 	texto VARCHAR NOT NULL,
-	data_realizacao DATE,
+	data_realizacao VARCHAR,
 	qtd_estrelas INT NOT NULL,
 	votos_aval_util INT,
 	nome_avaliador VARCHAR(50),
 	pais_avaliador VARCHAR(30),
 	
-	CONSTRAINT pk_avaliacao PRIMARY KEY(titulo, nome_loja, id_jogo),
+	CONSTRAINT pk_avaliacao PRIMARY KEY(num_aval, nome_loja, id_jogo),
 	CONSTRAINT fk_avaliacao_oferta FOREIGN KEY(id_jogo, nome_loja)
-		REFERENCES integ_preco.oferta_jogo(id_jogo, nome_loja),
+		REFERENCES integ_preco.oferta_jogo(id_jogo, nome_loja) ON DELETE CASCADE,
 	CONSTRAINT ck_avaliacao_estrelas CHECK (qtd_estrelas <= 5)
 );
 
 CREATE TABLE integ_preco.pergunta_cliente(
-	num INT,
+	num_perg INT,
 	id_jogo INT,
 	nome_loja VARCHAR(20),
 	texto_pergunta VARCHAR NOT NULL,
 	texto_resposta VARCHAR,
 	votos_pergunta_util INT NOT NULL,
-	data_pergunta DATE,
-	data_resposta DATE,
+	data_pergunta VARCHAR,
+	data_resposta VARCHAR,
 	
-	CONSTRAINT pk_pergunta_cliente PRIMARY KEY(num, id_jogo, nome_loja),
-	CONSTRAINT fk_pergunta_oferta FOREIGN KEY(id_jogo, nome_loja)
-		REFERENCES integ_preco.oferta_jogo(id_jogo, nome_loja)
+	CONSTRAINT pk_pergunta_cliente PRIMARY KEY(num_perg, id_jogo, nome_loja),
+	CONSTRAINT fk_pergunta_oferta FOREIGN KEY(id_jogo, nome_loja) 
+		REFERENCES integ_preco.oferta_jogo(id_jogo, nome_loja) ON DELETE CASCADE
 );
 
 CREATE SEQUENCE script_crawl_seq START 1;
@@ -127,15 +95,9 @@ CREATE TABLE integ_preco.script_crawling(
 	
 	CONSTRAINT pk_script PRIMARY KEY(num),
 	CONSTRAINT fk_script FOREIGN KEY(nome_loja)
-		REFERENCES integ_preco.loja(nome),
+		REFERENCES integ_preco.loja(nome) ON DELETE CASCADE,
 	CONSTRAINT un_script UNIQUE(funcao_script)
 );
-
--- SELECT * FROM integ_preco.script_crawling;
-
--- DELETE FROM integ_preco.versao_script;
-
--- DROP TABLE integ_preco.script_crawling;
 
 CREATE TABLE integ_preco.versao_script(
 	num_versao INT,
@@ -144,14 +106,6 @@ CREATE TABLE integ_preco.versao_script(
 	algoritmo VARCHAR NOT NULL,
 	
 	CONSTRAINT pk_versao PRIMARY KEY(num_versao, num_script),
-	CONSTRAINT fk_versao FOREIGN KEY(num_script)
-		REFERENCES integ_preco.script_crawling(num)
+	CONSTRAINT fk_versao FOREIGN KEY(num_script) 
+		REFERENCES integ_preco.script_crawling(num) ON DELETE CASCADE
 );
-
--- DROP TABLE integ_preco.versao_script
-
--- SELECT * FROM integ_preco.versao_script;
-
--- DELETE FROM integ_preco.versao_script;
-
--- SELECT MAX(num_versao) FROM integ_preco.versao_script;
