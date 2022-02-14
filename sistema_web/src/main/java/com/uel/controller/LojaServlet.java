@@ -5,7 +5,6 @@ import com.uel.dao.factory.DAOFactory;
 import com.uel.model.Loja;
 import java.io.*;
 import java.sql.SQLException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.servlet.RequestDispatcher;
@@ -52,7 +51,7 @@ public class LojaServlet extends HttpServlet {
 
           dao.create(loja);
 
-          dispatcher = request.getRequestDispatcher("/index.jsp");
+          dispatcher = request.getRequestDispatcher("/view/loja/sucessCreate.jsp");
           dispatcher.forward(request, response);
 
         } catch (ClassNotFoundException | SQLException | ConstraintViolationException e) {

@@ -1,6 +1,5 @@
 package com.uel.controller;
 
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -10,7 +9,6 @@ import com.google.gson.JsonParseException;
 import com.uel.model.Avaliacao;
 import com.uel.model.JogoLojaDTO;
 import com.uel.model.PerguntaCliente;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;

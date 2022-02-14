@@ -238,7 +238,6 @@ public class CrawlingServlet extends HttpServlet {
     }
   }
 
-
   private String lerArquivoScript(String pathScript) throws IOException {
 
     try (FileInputStream fis = new FileInputStream(pathScript);
