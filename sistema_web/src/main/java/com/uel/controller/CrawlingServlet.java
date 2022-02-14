@@ -115,7 +115,7 @@ public class CrawlingServlet extends HttpServlet {
           dispatcher = request.getRequestDispatcher("/view/crawling/errorCreate.jsp");
           dispatcher.forward(request, response);
 
-        } catch (ConstraintViolationException e) {
+        } catch (ConstraintViolationException | SQLException e) {
           Logger.getLogger(CrawlingServlet.class.getName()).log(Level.SEVERE, "Controller", e);
           session.setAttribute("error", e.getMessage());
           dispatcher = request.getRequestDispatcher("/view/crawling/errorCreate.jsp");
@@ -150,13 +150,12 @@ public class CrawlingServlet extends HttpServlet {
       }
 
     } catch (SQLException e) {
-      throw new SQLException("Erro ao inserir jogos no banco de dados.");
+      throw new SQLException("Erro ao inserir jogos no banco de dados: " + e.getMessage());
 
     } catch (ClassNotFoundException | IOException e) {
-      throw new SQLException("Erro ao instaciar objeto DAO");
+      throw new SQLException("Erro ao instanciar objeto DAO");
     }
   }
-
 
   private void validarJogoLoja(JogoLojaDTO jogo) throws ConstraintViolationException {
 

@@ -28,7 +28,7 @@ public class PgScriptCrawlingDAO implements ScriptCrawlingDAO {
           + "VALUES(?, ?, ?, ?)";
 
   private static final String GET_LAST_NUM_VERSAO_QUERY =
-      "SELECT MAX(num_versao) AS num_versao FROM integ_preco.versao_script WHERE num_script = ?";
+      "SELECT MAX(num_versao)+1 AS num_versao FROM integ_preco.versao_script WHERE num_script = ?";
 
   public PgScriptCrawlingDAO(Connection connection) {
     this.connection = connection;

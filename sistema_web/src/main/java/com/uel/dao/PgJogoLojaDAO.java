@@ -32,8 +32,11 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
       "SELECT * FROM integ_preco.oferta_jogo WHERE nome_loja=? AND id_jogo=?";
 
   private static final String CREATE_HIST_OFERTA_JOGO_QUERY =
-      "INSERT INTO integ_preco.historico_jogo_ofertado (nome_loja, id_jogo, data_coleta, preco, "
-          + "parcelas, media_aval) VALUES(?, ?, ?, ?, ?, ?)";
+      "INSERT INTO integ_preco.historico_jogo_ofertado (nome_loja, id_jogo, num, data_coleta, preco, "
+          + "parcelas, media_aval) VALUES(?, ?, ?, ?, ?, ?, ?)";
+
+  private static final String GET_LAST_NUM_HIST_OFERTA_JOGO_QUERY =
+      "SELECT MAX(num)+1 AS num FROM integ_preco.historico_jogo_ofertado WHERE nome_loja=? AND id_jogo=?";
 
   private static final String GET_HIST_OFERTA_JOGO_QUERY =
       "SELECT * FROM integ_preco.historico_jogo_ofertado WHERE nome_loja=? AND id_jogo=? "
@@ -63,9 +66,9 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
 
       inserirHistOfertaJogo(jogoLoja, idJogo);
 
-      inserirAvaliacoes();
+//      inserirAvaliacoes();
 
-      inserirPerguntasCliente();
+//      inserirPerguntasCliente();
     }
 
   }
@@ -138,8 +141,10 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
 
   private void inserirHistOfertaJogo(JogoLojaDTO jogoLoja, Integer idJogo) throws SQLException {
 
-    try (PreparedStatement stIns = connection.prepareStatement(CREATE_HIST_OFERTA_JOGO_QUERY);
-        PreparedStatement stGet = connection.prepareStatement(GET_HIST_OFERTA_JOGO_QUERY);) {
+    try (PreparedStatement stGet = connection.prepareStatement(GET_HIST_OFERTA_JOGO_QUERY);
+        PreparedStatement stGetLst = connection.prepareStatement(
+            GET_LAST_NUM_HIST_OFERTA_JOGO_QUERY);
+        PreparedStatement stIns = connection.prepareStatement(CREATE_HIST_OFERTA_JOGO_QUERY);) {
 
       stGet.setString(1, jogoLoja.getNomeLoja());
       stGet.setInt(2, idJogo);
@@ -147,14 +152,24 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
       stGet.executeQuery();
       ResultSet r = stGet.getResultSet();
 
-      if (!r.next()) {
+      if (!r.next()) { /* histórico daquela data ainda não inserido */
 
+        /* recebendo o último valor da coluna "num" */
+        stGetLst.setString(1, jogoLoja.getNomeLoja());
+        stGetLst.setInt(2, idJogo);
+        stGetLst.executeQuery();
+        ResultSet rGetlst = stGetLst.getResultSet();
+        rGetlst.next();
+        int num = rGetlst.getInt("num");
+
+        /* inserindo histórico */
         stIns.setString(1, jogoLoja.getNomeLoja());
         stIns.setInt(2, idJogo);
-        stIns.setDate(3, Date.valueOf(LocalDate.now()));
-        stIns.setBigDecimal(4, jogoLoja.getPrecoBigDecimal());
-        stIns.setString(5, jogoLoja.getParcelas());
-        stIns.setBigDecimal(6, jogoLoja.getMediaAval());
+        stIns.setInt(3, num);
+        stIns.setDate(4, Date.valueOf(LocalDate.now()));
+        stIns.setBigDecimal(5, jogoLoja.getPrecoBigDecimal());
+        stIns.setString(6, jogoLoja.getParcelas());
+        stIns.setBigDecimal(7, jogoLoja.getMediaAval());
 
         stIns.executeUpdate();
       }
@@ -171,11 +186,11 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
     }
   }
 
-  private void inserirAvaliacoes(){
+  private void inserirAvaliacoes() {
 
   }
 
-  private void inserirPerguntasCliente(){
+  private void inserirPerguntasCliente() {
 
   }
 
