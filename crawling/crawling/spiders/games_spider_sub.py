@@ -18,16 +18,16 @@ def parse_avaliacoes(avaliacoes):
 
     for avaliacao in avaliacoes:
         nome_dat_aval = avaliacao.xpath(
-            '*//div[@class="review__Flex-l45my2-0 review__User-l45my2-5 iZmFFt"]/text()').getall()
+            '*//div[@class="review__Flex-sc-l45my2-0 review__User-sc-l45my2-5 ffCSNM"]/text()').getall()
 
         aval.append({
             'nomeAvaliador': nome_dat_aval[0],
-            'titulo': avaliacao.xpath('*//h4[@class="review__Title-l45my2-3 cQPVrn"]/text()').get(),
+            'titulo': avaliacao.xpath('*//h4[@class="review__Title-sc-l45my2-3 hZdBa"]/text()').get(),
             'data': nome_dat_aval[2],
             'texto': avaliacao.xpath(
                 '*//span[@class="src__Text-sc-154pg0p-0 src__TextUI-sc-1ht81y0-0 ealAWO"]/text()').get(),
             'votosAvalUtil':
-                avaliacao.xpath('*//span[@class="review__LabelRecommentation-sc-4m3nj8-10 eklQuG"]/text()').getall()[1],
+                avaliacao.xpath('*//span[@class="review__LabelRecommentation-sc-l45my2-10 cttuJr"]/text()').getall()[1],
             'estrelas': len(avaliacao.xpath('*//polygon[@fill="#f2c832"]').getall())
         })
 
@@ -78,7 +78,7 @@ def parse_game(response):
     preco = response.xpath('//div[@class="src__BestPrice-sc-1jnodg3-5 ykHPU priceSales"]/text()').getall()
     capa = response.xpath('//div[@class="image__WrapperImages-sc-oakrdw-1 kOCIiH"]/div/picture/img/@src').get()
 
-    avaliacoes = response.xpath('//div[@class="review__Flex-l45my2-0 review__Wrapper-l45my2-1 kdCqbc"]')
+    avaliacoes = response.xpath('//div[@class="review__Flex-sc-l45my2-0 review__Wrapper-sc-l45my2-1 gZIEnN"]')
     script = response.xpath('//script[contains(., "window.__APOLLO_STATE__ =")]/text()').extract_first().lstrip()[
              26:]  # script onde serão buscadas as perguntas
 
