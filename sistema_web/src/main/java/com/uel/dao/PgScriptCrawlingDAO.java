@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -145,13 +146,10 @@ private static final String GET_SCRIPT_VERSIONS_QUERY =
     
       }
 
-    } catch (SQLException e) {
-      Logger.getLogger(PgLojaDAO.class.getName()).log(Level.SEVERE, "DAO", e);
-      throw new SQLException("Erro ao consultar tabela versao_script.");
-    }
+    } 
   
 
-  public List<ScriptCrawling> getVersoesScript(int num_script) throws SQLException {
+  public List<VersaoScript> getVersoesScript(int num_script) throws SQLException {
 
     try (PreparedStatement statement = connection.prepareStatement(GET_SCRIPT_VERSIONS_QUERY)) {
 
@@ -163,7 +161,7 @@ private static final String GET_SCRIPT_VERSIONS_QUERY =
         while (result.next()) {
           VersaoScript script = new VersaoScript();
           script.setNumVersao(result.getInt("num_versao"));
-          script.setNumScript(num_script);
+          script.setNumScript(result.getString("num_script"));
           script.setDataUtilizacao(result.getDate("data_utilizacao"));
           
 
@@ -191,7 +189,7 @@ private static final String GET_SCRIPT_VERSIONS_QUERY =
         while (result.next()) {
           ScriptCrawling script = new ScriptCrawling();
           script.setNum(result.getInt("num"));
-          script.setNomeLoja(nome_loja));
+          script.setNomeLoja("nome_loja");
           script.setFuncaoScript(result.getString("funcao_script"));
 
           listaScripts.add(script);
