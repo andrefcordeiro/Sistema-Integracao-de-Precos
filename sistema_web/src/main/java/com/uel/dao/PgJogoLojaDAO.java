@@ -1,6 +1,8 @@
 package com.uel.dao;
 
 import com.uel.model.Avaliacao;
+import com.uel.model.HistJogoOfertado;
+import com.uel.model.Jogo;
 import com.uel.model.JogoLojaDTO;
 import com.uel.model.PerguntaCliente;
 import java.sql.Connection;
@@ -9,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,18 +54,12 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
       "SELECT * FROM integ_preco.pergunta_cliente WHERE id_jogo=? AND nome_loja=?";
 
   private static final String GET_AVALIACOES_JOGO =
-      "SELECT * FROM integ_preco.avaliacao WHERE id_jogo=? AND nome_loja=?;
+      "SELECT * FROM integ_preco.avaliacao WHERE id_jogo=? AND nome_loja=?;";
 
- private static final String CREATE_HIST_OFERTA_JOGO_QUERY =
-      "INSERT INTO integ_preco.historico_jogo_ofertado (nome_loja, id_jogo, num, data_coleta, preco, "
-          + "parcelas, media_aval) VALUES(?, ?, ?, ?, ?, ?, ?)";
 
   private static final String GET_LAST_NUM_HIST_OFERTA_JOGO_QUERY =
       "SELECT MAX(num)+1 AS num FROM integ_preco.historico_jogo_ofertado WHERE nome_loja=? AND id_jogo=?";
 
-  private static final String GET_HIST_OFERTA_JOGO_QUERY =
-      "SELECT * FROM integ_preco.historico_jogo_ofertado WHERE nome_loja=? AND id_jogo=? "
-          + "AND data_coleta=? ";
 
   private static final String CREATE_AVALIACAO_QUERY =
       "INSERT INTO integ_preco.avaliacao (num_aval, id_jogo, nome_loja, titulo, texto, "
@@ -106,9 +103,9 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
 
       inserirHistOfertaJogo(jogoLoja, idJogo);
 
-      inserirAvaliacoes();
+      inserirAvaliacoes(jogoLoja, idJogo);
 
-      inserirPerguntasCliente();
+      inserirPerguntasCliente(jogoLoja, idJogo);
     }
 
   }
@@ -339,7 +336,7 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
           
           
           
-          return Jogo;
+          return jogo;
 
         } else {
           throw new SQLException("Erro ao consultar tabela versao_script.");
@@ -370,7 +367,8 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
 
           Jogo jogo = new Jogo();
           
-          jogo.setIdJogo(id_jogo);
+          
+		  jogo.setIdJogo(result.getInt("id_jogo"));
           jogo.setTitulo(result.getString("titulo"));
           jogo.setDesenvolvedora(result.getString("desenvolvedora"));
           jogo.setUrlCapa(result.getString("capa"));
@@ -417,11 +415,11 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
 
         while (result.next()) {
 
-          HistJogoOfertado historico = new HistoricoJogoOfertado();
+          HistJogoOfertado historico = new HistJogoOfertado();
           
           historico.setNomeLoja(nome_loja);
           historico.setIdJogo(id_jogo);
-          historico.setDataColeta(result.getDate("data_coleta"));
+          historico.setDataColeta( result.getDate("data_coleta"));
           historico.setPreco(result.getBigDecimal("preco"));
           historico.setQtdParcelas(result.getInt("qtd_parcelas"));
           historico.setValorParcela(result.getBigDecimal("valor_parcela"));
@@ -495,7 +493,7 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
           aval.setIdJogo(result.getInt("id_jogo"));
           aval.setNomeLoja(result.getString("nome_loja"));
           aval.setTexto(result.getString("texto"));
-          aval.setDataRealizacao(result.getDate("data_realizacao"));
+          aval.setDataRealizacao(result.getString("data_realizacao"));
           aval.setEstrelas(result.getInt("qtd_estrelas"));
           aval.setVotosAvalUtil(result.getInt("votos_aval_util"));
           aval.setNomeAvaliador(result.getString("nome_avaliador"));
