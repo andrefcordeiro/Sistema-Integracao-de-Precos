@@ -14,7 +14,7 @@
 </head>
 <body>
 
-<jsp:include page="../header.jsp"/>
+<jsp:include page="../../header.jsp"/>
 
 
 <div class="d-flex flex-column justify-content-center align-items-center">

@@ -51,12 +51,12 @@ public class LojaServlet extends HttpServlet {
 
           dao.create(loja);
 
-          dispatcher = request.getRequestDispatcher("/view/loja/sucessCreate.jsp");
+          dispatcher = request.getRequestDispatcher("/view/interface-privada/loja/sucessCreate.jsp");
           dispatcher.forward(request, response);
 
         } catch (ClassNotFoundException | SQLException | ConstraintViolationException e) {
           httpSession.setAttribute("error", e.getMessage());
-          dispatcher = request.getRequestDispatcher("/view/loja/errorCreate.jsp");
+          dispatcher = request.getRequestDispatcher("/view/interface-privada/loja/errorCreate.jsp");
           dispatcher.forward(request, response);
         }
         break;
@@ -86,7 +86,7 @@ public class LojaServlet extends HttpServlet {
     switch (request.getServletPath()) {
 
       case "/loja/create":
-        dispatcher = request.getRequestDispatcher("/view/loja/create.jsp");
+        dispatcher = request.getRequestDispatcher("/view/interface-privada/loja/create.jsp");
         dispatcher.forward(request, response);
         break;
 
@@ -97,7 +97,7 @@ public class LojaServlet extends HttpServlet {
           List lojas = dao.getAll();
 
           request.setAttribute("lojas", lojas);
-          dispatcher = request.getRequestDispatcher("/view/loja/getAll.jsp");
+          dispatcher = request.getRequestDispatcher("/view/interface-privada/loja/getAll.jsp");
           dispatcher.forward(request, response);
 
         } catch (ClassNotFoundException | SQLException e) {

@@ -103,25 +103,25 @@ public class CrawlingServlet extends HttpServlet {
           inserirJogos(nomeLoja, pathOutputJson);
           inserirScriptCrawling(nomeLoja, funcaoScript, pathScript);
 
-          dispatcher = request.getRequestDispatcher("/view/crawling/sucessCreate.jsp");
+          dispatcher = request.getRequestDispatcher("/view/interface-privada/crawling/sucessCreate.jsp");
           dispatcher.forward(request, response);
 
         } catch (JsonIOException e) {
           Logger.getLogger(CrawlingServlet.class.getName()).log(Level.SEVERE, "Controller", e);
           session.setAttribute("error", "Erro ao ler arquivo JSON");
-          dispatcher = request.getRequestDispatcher("/view/crawling/errorCreate.jsp");
+          dispatcher = request.getRequestDispatcher("/view/interface-privada/crawling/errorCreate.jsp");
           dispatcher.forward(request, response);
 
         } catch (ConstraintViolationException | SQLException e) {
           Logger.getLogger(CrawlingServlet.class.getName()).log(Level.SEVERE, "Controller", e);
           session.setAttribute("error", e.getMessage());
-          dispatcher = request.getRequestDispatcher("/view/crawling/errorCreate.jsp");
+          dispatcher = request.getRequestDispatcher("/view/interface-privada/crawling/errorCreate.jsp");
           dispatcher.forward(request, response);
 
         } catch (Exception e) {
           Logger.getLogger(CrawlingServlet.class.getName()).log(Level.SEVERE, "Controller", e);
           session.setAttribute("error", "Erro ao fazer upload do arquivo.");
-          dispatcher = request.getRequestDispatcher("/view/crawling/errorCreate.jsp");
+          dispatcher = request.getRequestDispatcher("/view/interface-privada/crawling/errorCreate.jsp");
           dispatcher.forward(request, response);
         }
 
@@ -268,7 +268,7 @@ public class CrawlingServlet extends HttpServlet {
         String nome = request.getParameter("nome_loja");
         request.setAttribute("nome_loja", nome);
 
-        dispatcher = request.getRequestDispatcher("/view/crawling/create.jsp");
+        dispatcher = request.getRequestDispatcher("/view/interface-privada/crawling/create.jsp");
         dispatcher.forward(request, response);
         break;
     }

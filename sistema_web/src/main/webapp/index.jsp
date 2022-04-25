@@ -8,7 +8,7 @@
 </head>
 <body>
 <div class="container d-flex flex-column align-items-center">
-    <h1 class="p-2 display-3">Página inicial </h1>
+<%--    <h1 class="p-2 display-3">Página inicial </h1>--%>
 
     <div class="d-flex justify-content-around align-items-center">
         <a class="btn btn-outline-dark" style="margin: 10px"
