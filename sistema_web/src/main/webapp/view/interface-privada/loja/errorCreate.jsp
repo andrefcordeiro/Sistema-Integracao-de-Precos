@@ -13,8 +13,8 @@
 </head>
 <body>
 <jsp:include page="../header.jsp"/>
-<div class="d-flex flex-column justify-content-center align-items-center">
-    <h1 class="display-3"> Erro ao inserir loja </h1>
+<div class="d-flex flex-column justify-content-center align-items-center mt-5">
+    <h1 class="display-3 pb-5"> Erro ao inserir loja </h1>
     <%=session.getAttribute("error")%>
 </div>
 </body>

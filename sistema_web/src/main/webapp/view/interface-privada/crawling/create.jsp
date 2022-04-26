@@ -15,8 +15,8 @@
 <jsp:include page="../header.jsp"/>
 
 
-<div class="d-flex flex-column justify-content-center align-items-center">
-    <h1 class="display-3">Inserir dados - loja "${nome_loja}"</h1>
+<div class="d-flex flex-column justify-content-center align-items-center mt-5">
+    <h1 class="display-3 pb-5">Inserir dados - loja "${nome_loja}"</h1>
     <form class="form"
           action="${pageContext.servletContext.contextPath}/crawling/create?nome_loja=${nome_loja}"
           enctype="multipart/form-data"

@@ -4,7 +4,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <%@include file="/view/head.jsp" %>
-    <title>Página inicial</title>
+    <title>Interface privada</title>
 </head>
 <body>
 <div class="container d-flex flex-column justify-content-center align-items-center" style="height: 100vh">
