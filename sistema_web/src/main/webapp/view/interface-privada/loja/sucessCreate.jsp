@@ -12,7 +12,7 @@
     <title>Dados inseridos corretamente</title>
 </head>
 <body>
-<jsp:include page="../../header.jsp"/>
+<jsp:include page="../header.jsp"/>
 <div class="d-flex flex-row justify-content-center align-items-center">
     <h1 class="display-3"> Dados da loja inseridos corretamente </h1>
 <%--    <img class="position-absolute top-50 start-50" src="https://img.icons8.com/external-bearicons-glyph-bearicons/64/000000--%>

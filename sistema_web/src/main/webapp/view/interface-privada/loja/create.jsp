@@ -14,14 +14,14 @@
 </head>
 <body>
 
-<jsp:include page="../../header.jsp"/>
+<jsp:include page="../header.jsp"/>
 
 
-<div class="d-flex flex-column justify-content-center align-items-center">
-    <h1 class="display-3"> Cadastrar website/loja </h1>
+<div class="d-flex flex-column justify-content-center align-items-center mt-5">
+    <h1 class="display-3 pb-5"> Cadastrar website/loja </h1>
     <form class="form"
           action="${pageContext.servletContext.contextPath}/loja/create"
-          method="POST">
+          method="POST" style="width: 100vh ">
 
         <div class="form-group">
             <label class="control-label" for="website-nome">Nome</label>

@@ -101,7 +101,7 @@ public class LojaServlet extends HttpServlet {
           dispatcher.forward(request, response);
 
         } catch (ClassNotFoundException | SQLException e) {
-          dispatcher = request.getRequestDispatcher("/index.jsp");
+          dispatcher = request.getRequestDispatcher("/main.jsp");
           dispatcher.forward(request, response);
         }
 

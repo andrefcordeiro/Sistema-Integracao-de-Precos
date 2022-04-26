@@ -13,9 +13,16 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-<%--        <a class="navbar-brand" href="../index.jsp">Início</a>--%>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
+                <div class="container d-flex flex-row mr-5">
+                    <li class="nav-item">
+                        <a class="navbar-brand"
+                           href="${pageContext.request.contextPath}/index.jsp">
+                            Início</a>
+                    </li>
+                </div>
+
                 <li class="nav-item">
                     <a class="navbar-brand"
                        href="${pageContext.servletContext.contextPath}/loja/create">
