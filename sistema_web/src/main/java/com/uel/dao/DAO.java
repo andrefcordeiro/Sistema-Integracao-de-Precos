@@ -5,13 +5,13 @@ import java.util.List;
 
 public interface DAO<T> {
 
-  public void create(T t) throws SQLException;
+  void create(T t) throws SQLException;
 
-  public T read(Integer id) throws SQLException;
+  T read(Integer id) throws SQLException;
 
-  public void update(T t) throws SQLException;
+  void update(T t) throws SQLException;
 
-  public void delete(Integer id) throws SQLException;
+  void delete(Integer id) throws SQLException;
 
-  public List<T> getAll() throws SQLException;
+  List<T> getAll() throws SQLException;
 }

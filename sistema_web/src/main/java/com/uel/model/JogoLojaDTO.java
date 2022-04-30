@@ -8,18 +8,15 @@ import javax.validation.constraints.NotBlank;
 
 public class JogoLojaDTO {
 
-  @NotBlank
-  private String nomeLoja;
+  @NotBlank private String nomeLoja;
 
   private Integer idJogo;
 
-  @NotBlank
-  private String titulo;
+  @NotBlank private String titulo;
 
   private String desenvolvedora;
 
-  @NotBlank
-  private String urlCapa;
+  @NotBlank private String urlCapa;
 
   private String dataLancamento;
 
@@ -43,8 +40,7 @@ public class JogoLojaDTO {
 
   private LocalDate dataColeta;
 
-  @NotBlank
-  private String preco;
+  @NotBlank private String preco;
 
   private String parcelas;
 
@@ -55,6 +51,8 @@ public class JogoLojaDTO {
   private List<PerguntaCliente> perguntasClientes;
 
   private List<HistJogoOfertado> histJogoOfertadoList;
+
+  private List<OfertaJogo> ofertasJogo;
 
   public String getNomeLoja() {
     return nomeLoja != null ? nomeLoja.trim() : null;
@@ -223,5 +221,13 @@ public class JogoLojaDTO {
 
   public void setHistJogoOfertadoList(List<HistJogoOfertado> histJogoOfertadoList) {
     this.histJogoOfertadoList = histJogoOfertadoList;
+  }
+
+  public List<OfertaJogo> getOfertasJogo() {
+    return ofertasJogo;
+  }
+
+  public void setOfertasJogo(List<OfertaJogo> ofertasJogo) {
+    this.ofertasJogo = ofertasJogo;
   }
 }
