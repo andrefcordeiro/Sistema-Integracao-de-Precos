@@ -40,7 +40,7 @@ public class JogoLojaDTO {
 
   private LocalDate dataColeta;
 
-  @NotBlank private String preco;
+  @NotBlank private BigDecimal preco;
 
   private String parcelas;
 
@@ -53,6 +53,8 @@ public class JogoLojaDTO {
   private List<HistJogoOfertado> histJogoOfertadoList;
 
   private List<OfertaJogo> ofertasJogo;
+
+  private HistJogoOfertado menorPrecoJogo;
 
   public String getNomeLoja() {
     return nomeLoja != null ? nomeLoja.trim() : null;
@@ -86,20 +88,11 @@ public class JogoLojaDTO {
     this.dataColeta = dataColeta;
   }
 
-  public String getPreco() {
+  public BigDecimal getPreco() {
     return preco;
   }
 
-  public BigDecimal getPrecoBigDecimal() {
-
-    if (preco == null) {
-      return null;
-    }
-    String p = preco.replace("R$", "").replace(",", ".").trim();
-    return new BigDecimal(p);
-  }
-
-  public void setPreco(String preco) {
+  public void setPreco(BigDecimal preco) {
     this.preco = preco;
   }
 
@@ -229,5 +222,13 @@ public class JogoLojaDTO {
 
   public void setOfertasJogo(List<OfertaJogo> ofertasJogo) {
     this.ofertasJogo = ofertasJogo;
+  }
+
+  public HistJogoOfertado getMenorPrecoJogo() {
+    return menorPrecoJogo;
+  }
+
+  public void setMenorPrecoJogo(HistJogoOfertado menorPrecoJogo) {
+    this.menorPrecoJogo = menorPrecoJogo;
   }
 }

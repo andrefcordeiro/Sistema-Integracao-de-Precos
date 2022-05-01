@@ -9,7 +9,7 @@ public class HistJogoOfertado {
   private Integer idJogo;
   private LocalDate dataColeta;
   private BigDecimal preco;
-  private Integer qtdParcelas;
+  private String parcelas;
   private BigDecimal valorParcela;
   private Double mediaAval;
 
@@ -45,12 +45,12 @@ public class HistJogoOfertado {
     this.preco = preco;
   }
 
-  public Integer getQtdParcelas() {
-    return qtdParcelas;
+  public String getParcelas() {
+    return parcelas;
   }
 
-  public void setQtdParcelas(Integer qtdParcelas) {
-    this.qtdParcelas = qtdParcelas;
+  public void setParcelas(String parcelas) {
+    this.parcelas = parcelas;
   }
 
   public BigDecimal getValorParcela() {

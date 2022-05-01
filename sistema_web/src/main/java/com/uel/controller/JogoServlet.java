@@ -2,6 +2,7 @@ package com.uel.controller;
 
 import com.uel.dao.JogoLojaDAO;
 import com.uel.dao.factory.DAOFactory;
+import com.uel.model.Avaliacao;
 import com.uel.model.JogoLojaDTO;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -18,7 +19,7 @@ import javax.servlet.http.HttpSession;
 
 @WebServlet(
     name = "jogoServlet",
-    urlPatterns = {"/jogo", "/jogo/buscarPorTitulo"})
+    urlPatterns = {"/jogo", "/jogo/buscarPorTitulo", "/jogo/buscarDadosJogoLoja"})
 public class JogoServlet extends HttpServlet {
 
   @Override
@@ -37,7 +38,7 @@ public class JogoServlet extends HttpServlet {
         try (DAOFactory daoFactory = DAOFactory.getInstance()) {
           dao = daoFactory.getJogoLojaDAO();
 
-          String titulo = request.getParameter("jogo-titulo");
+          String titulo = request.getParameter("jogo_titulo");
           List<JogoLojaDTO> jogos = dao.getJogosPorTitulo(titulo);
 
           request.setAttribute("jogos", jogos);
@@ -49,6 +50,33 @@ public class JogoServlet extends HttpServlet {
           session.setAttribute("error", e.getMessage());
 
           dispatcher = request.getRequestDispatcher("/view/interface-publica/main.jsp");
+          dispatcher.forward(request, response);
+        }
+        break;
+
+      case "/jogo/buscarDadosJogoLoja":
+        try (DAOFactory daoFactory = DAOFactory.getInstance()) {
+          dao = daoFactory.getJogoLojaDAO();
+
+          String nomeLoja = request.getParameter("nome_loja");
+          Integer idJogo = Integer.valueOf(request.getParameter("id_jogo"));
+
+          JogoLojaDTO jogo = dao.getDadosUltimoHistJogoLoja(idJogo, nomeLoja);
+          jogo.setNomeLoja(nomeLoja);
+          jogo.setIdJogo(idJogo);
+
+          List<Avaliacao> avaliacoes = dao.getAvaliacoes(idJogo, nomeLoja);
+          jogo.setAvaliacoesClientes(avaliacoes);
+
+          request.setAttribute("jogo", jogo);
+          dispatcher = request.getRequestDispatcher("/view/interface-publica/jogoLoja.jsp");
+          dispatcher.forward(request, response);
+
+        } catch (ClassNotFoundException | SQLException | IOException e) {
+          Logger.getLogger(CrawlingServlet.class.getName()).log(Level.SEVERE, "Controller", e);
+          session.setAttribute("error", e.getMessage());
+
+          dispatcher = request.getRequestDispatcher("/view/interface-publica/jogoLoja.jsp");
           dispatcher.forward(request, response);
         }
         break;

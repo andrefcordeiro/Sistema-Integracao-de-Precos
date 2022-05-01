@@ -13,6 +13,7 @@
 
 <div class="container d-flex flex-column align-items-center">
 
+    <%-- Input para pesquisa --%>
     <form class="form"
           style="padding-top: 50px; width: 75%; "
           action="${pageContext.servletContext.contextPath}/jogo/buscarPorTitulo"
@@ -20,9 +21,9 @@
 
         <div class="container d-flex flex-row align-items-center input-group mb-3"
              style="width: 100%">
-            <input id="jogo-titulo"
+            <input id="jogo_titulo"
                    class="form-control"
-                   type="text" name="jogo-titulo"
+                   type="text" name="jogo_titulo"
                    placeholder="Insira o titulo do jogo"
                    required/>
 
@@ -39,19 +40,33 @@
             </strong></p>
         </c:if>
 
+        <%--    Jogos retornados --%>
         <c:forEach items="${jogos}" var="item">
             <c:set var="jogo" value="${item}" scope="request"/>
+            <c:set var="texto_preco" value="O menor preço encontrado para este produto é "
+                   scope="request"/>
+            <c:set var="mostrar_dados_jogo" value="false" scope="request"/>
 
-            <div class="container mb-5">
+            <div class="container mt-5 p-3">
                 <jsp:include page="jogo.jsp"/>
 
                     <%-- Ofertas do jogo --%>
                 <div class="container ml-5">
                     <p class="text-dark "><strong> Lojas que ofertam este jogo: </strong></p>
                     <div class="container d-flex flex-row">
-                        <c:forEach items="${jogo.ofertasJogo}" var="item">
-                            <a id="oferta-jogo" class="btn text-white btn-dark mr-2"
-                               type="submit">${item.nomeLoja}</a>
+                        <c:forEach items="${jogo.ofertasJogo}" var="oferta">
+
+                            <%-- Botão para acessar página com dados de um jogo em uma loja --%>
+                            <form class="form"
+                                  action="${pageContext.servletContext.contextPath}/jogo/buscarDadosJogoLoja"
+                                  method="GET">
+
+                                <input type="hidden" name="nome_loja" value="${oferta.nomeLoja}"/>
+                                <input type="hidden" name="id_jogo" value="${item.idJogo}"/>
+
+                                <button id="oferta-jogo" class="btn btn-dark mr-2" type="submit">
+                                        ${oferta.nomeLoja}</button>
+                            </form>
                         </c:forEach>
                     </div>
                 </div>

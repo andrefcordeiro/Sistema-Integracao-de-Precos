@@ -83,6 +83,32 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
           + "WHERE oj.id_jogo = ?"
           + "AND oj.id_jogo = jogo.id_jogo";
 
+  private static final String GET_MENOR_PRECO_JOGO =
+      "SELECT nome_loja, data_coleta, parcelas, preco "
+          + "FROM integ_preco.historico_jogo_ofertado hist_a, "
+          + "(SELECT hist.id_jogo, MIN(hist.preco) min_preco "
+          + "FROM integ_preco.historico_jogo_ofertado hist "
+          + "WHERE hist.id_jogo = ? "
+          + "GROUP BY hist.id_jogo) hist_b "
+          + "WHERE hist_a.id_jogo = hist_b.id_jogo "
+          + "AND hist_a.preco = hist_b.min_preco";
+
+  private static final String GET_MENOR_PRECO_JOGO_LOJA_ULTIMO_HIST =
+      "SELECT * "
+          + "FROM integ_preco.historico_jogo_ofertado hist, "
+          + "integ_preco.jogo jogo, "
+          + "integ_preco.oferta_jogo oferta "
+          + "WHERE hist.data_coleta = ( "
+          + "SELECT MAX(data_coleta) FROM integ_preco.historico_jogo_ofertado "
+          + "WHERE hist.id_jogo = id_jogo "
+          + "AND hist.nome_loja = nome_loja "
+          + ") "
+          + "AND hist.id_jogo = jogo.id_jogo "
+          + "AND oferta.id_jogo = hist.id_jogo "
+          + "AND oferta.nome_loja = hist.nome_loja "
+          + "AND hist.nome_loja = ?"
+          + "AND hist.id_jogo = ?";
+
   public PgJogoLojaDAO(Connection connection) {
     this.connection = connection;
   }
@@ -254,7 +280,7 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
         stIns.setInt(2, idJogo);
         stIns.setInt(3, num);
         stIns.setDate(4, Date.valueOf(LocalDate.now()));
-        stIns.setBigDecimal(5, jogoLoja.getPrecoBigDecimal());
+        stIns.setBigDecimal(5, jogoLoja.getPreco());
         stIns.setString(6, jogoLoja.getParcelas());
         stIns.setBigDecimal(7, jogoLoja.getMediaAval());
 
@@ -460,7 +486,7 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
           historico.setIdJogo(id_jogo);
           //          historico.setDataColeta( result.getDate("data_coleta"));
           historico.setPreco(result.getBigDecimal("preco"));
-          historico.setQtdParcelas(result.getInt("qtd_parcelas"));
+          //          historico.setQtdParcelas(result.getInt("qtd_parcelas"));
           historico.setValorParcela(result.getBigDecimal("valor_parcela"));
           historico.setMediaAval(result.getDouble("media_aval"));
 
@@ -510,15 +536,16 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
     }
   }
 
-  public List<Avaliacao> getAvaliacoes(int id_jogo, String nome_loja) throws SQLException {
+  @Override
+  public List<Avaliacao> getAvaliacoes(int idJogo, String nomeLoja) throws SQLException {
 
     try (PreparedStatement statement = connection.prepareStatement(GET_AVALIACOES_JOGO)) {
 
-      statement.setInt(1, id_jogo);
-      statement.setString(2, nome_loja);
+      statement.setInt(1, idJogo);
+      statement.setString(2, nomeLoja);
       try (ResultSet result = statement.executeQuery()) {
 
-        List<Avaliacao> listaAval = new ArrayList<Avaliacao>();
+        List<Avaliacao> listaAval = new ArrayList<>();
 
         while (result.next()) {
           Avaliacao aval = new Avaliacao();
@@ -561,14 +588,7 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
 
         jogo.setIdJogo(rs1.getInt("id_jogo"));
         jogo.setTitulo(rs1.getString("titulo"));
-        jogo.setDesenvolvedora(rs1.getString("desenvolvedora"));
         jogo.setUrlCapa(rs1.getString("url_capa"));
-        jogo.setDataLancamento(rs1.getString("data_lancamento"));
-        jogo.setGenero(rs1.getString("genero"));
-        jogo.setDescricao(rs1.getString("descricao"));
-        jogo.setMultijogador(rs1.getString("multijogador"));
-        jogo.setFabricante(rs1.getString("fabricante"));
-        jogo.setMarca(rs1.getString("marca"));
 
         /* buscando ofertas do jogo */
         st2.setInt(1, jogo.getIdJogo());
@@ -585,6 +605,10 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
         }
         jogo.setOfertasJogo(ofertasJogo);
 
+        /* buscando menor preço do jogo em todas as lojas */
+        HistJogoOfertado h = getMenorPrecoJogo(jogo.getIdJogo());
+        jogo.setMenorPrecoJogo(h);
+
         jogos.add(jogo);
       }
 
@@ -594,6 +618,68 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
     }
 
     return jogos;
+  }
+
+  private HistJogoOfertado getMenorPrecoJogo(Integer idJogo) throws SQLException {
+
+    try (PreparedStatement st = connection.prepareStatement(GET_MENOR_PRECO_JOGO)) {
+      st.setInt(1, idJogo);
+      ResultSet rs1 = st.executeQuery();
+
+      HistJogoOfertado hj = new HistJogoOfertado();
+      while (rs1.next()) {
+
+        hj.setNomeLoja(rs1.getString("nome_loja"));
+        //      hj.setDataColeta(rs1.getDate("data_coleta"));
+        hj.setParcelas(rs1.getString("parcelas"));
+        hj.setPreco(rs1.getBigDecimal("preco"));
+      }
+      return hj;
+    }
+  }
+
+  @Override
+  public JogoLojaDTO getDadosUltimoHistJogoLoja(Integer idJogo, String nomeLoja)
+      throws SQLException {
+
+    JogoLojaDTO jogo = new JogoLojaDTO();
+
+    try (PreparedStatement st =
+        connection.prepareStatement(GET_MENOR_PRECO_JOGO_LOJA_ULTIMO_HIST)) {
+
+      st.setString(1, nomeLoja);
+      st.setInt(2, idJogo);
+      ResultSet rs = st.executeQuery();
+      rs.next();
+
+      jogo.setTitulo(rs.getString("titulo"));
+      jogo.setDesenvolvedora(rs.getString("desenvolvedora"));
+      jogo.setUrlCapa(rs.getString("url_capa"));
+      jogo.setDataLancamento(rs.getString("data_lancamento"));
+      jogo.setGenero(rs.getString("genero"));
+      jogo.setDescricao(rs.getString("descricao"));
+      jogo.setMultijogador(rs.getString("multijogador"));
+      jogo.setFabricante(rs.getString("fabricante"));
+      jogo.setMarca(rs.getString("marca"));
+
+      jogo.setNomeVendedor(rs.getString("nome_vendedor"));
+      jogo.setNomeTransportadora(rs.getString("nome_transportadora"));
+
+      HistJogoOfertado hj = new HistJogoOfertado();
+      hj.setNomeLoja(rs.getString("nome_loja"));
+      //      hj.setDataColeta(rs.getDate("data_coleta"));
+      hj.setParcelas(rs.getString("parcelas"));
+      hj.setPreco(rs.getBigDecimal("preco"));
+
+      jogo.setMenorPrecoJogo(hj);
+
+    } catch (SQLException e) {
+      Logger.getLogger(PgLojaDAO.class.getName()).log(Level.SEVERE, "DAO", e);
+      throw new SQLException(
+          "Erro ao listar dados do jogo com id = " + idJogo + " na loja " + nomeLoja + ".");
+    }
+
+    return jogo;
   }
 
   @Override
