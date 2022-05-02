@@ -109,6 +109,18 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
           + "AND hist.nome_loja = ?"
           + "AND hist.id_jogo = ?";
 
+  private static final String GET_MENOR_PRECO_HISTORICO_JOGO_LOJA =
+      "SELECT preco, parcelas, data_coleta "
+          + "FROM integ_preco.historico_jogo_ofertado hist_a,  "
+          + "( "
+          + "SELECT hist.nome_loja, hist.id_jogo, MIN(hist.preco) min_preco "
+          + "FROM integ_preco.historico_jogo_ofertado hist "
+          + "WHERE hist.nome_loja = ? "
+          + "AND hist.id_jogo = ? "
+          + "GROUP BY hist.nome_loja, hist.id_jogo) hist_b  "
+          + "WHERE hist_a.nome_loja = hist_b.nome_loja "
+          + "AND hist_a.preco = hist_b.min_preco ";
+
   public PgJogoLojaDAO(Connection connection) {
     this.connection = connection;
   }
@@ -502,26 +514,26 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
     }
   }
 
-  public List<PerguntaCliente> getPerguntas_Oferta(int id_jogo, String nome_loja)
+  public List<PerguntaCliente> getPerguntasOfertaJogo(int idJogo, String nomeLoja)
       throws SQLException {
 
     try (PreparedStatement statement = connection.prepareStatement(GET_ALL_QUESTIONS)) {
 
-      statement.setInt(1, id_jogo);
-      statement.setString(2, nome_loja);
+      statement.setInt(1, idJogo);
+      statement.setString(2, nomeLoja);
       try (ResultSet result = statement.executeQuery()) {
 
-        List<PerguntaCliente> listaPerguntas = new ArrayList<PerguntaCliente>();
+        List<PerguntaCliente> listaPerguntas = new ArrayList<>();
 
         while (result.next()) {
           PerguntaCliente pergunta = new PerguntaCliente();
-          pergunta.setNum(result.getInt("num"));
-          pergunta.setIdJogo(id_jogo);
-          pergunta.setNomeLoja(nome_loja);
+          pergunta.setNum(result.getInt("num_perg"));
+          pergunta.setIdJogo(idJogo);
+          pergunta.setNomeLoja(nomeLoja);
           pergunta.setTextoPergunta(result.getString("texto_pergunta"));
           pergunta.setTextoResposta(result.getString("texto_resposta"));
           pergunta.setVotosPergUtil(result.getInt("votos_pergunta_util"));
-          //          pergunta.setDataPergunta(result.getDate("data_pergunta"));
+          //                    pergunta.setDataPergunta(result.getDate("data_pergunta"));
           //          pergunta.setDataResposta(result.getDate("data_resposta"));
 
           listaPerguntas.add(pergunta);
@@ -537,7 +549,7 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
   }
 
   @Override
-  public List<Avaliacao> getAvaliacoes(int idJogo, String nomeLoja) throws SQLException {
+  public List<Avaliacao> getAvaliacoesOfertaJogo(int idJogo, String nomeLoja) throws SQLException {
 
     try (PreparedStatement statement = connection.prepareStatement(GET_AVALIACOES_JOGO)) {
 
@@ -680,6 +692,26 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
     }
 
     return jogo;
+  }
+
+  @Override
+  public HistJogoOfertado getMenorPrecoHistoricoJogoLoja(Integer idJogo, String nomeLoja)
+      throws SQLException {
+
+    try (PreparedStatement st = connection.prepareStatement(GET_MENOR_PRECO_HISTORICO_JOGO_LOJA)) {
+      st.setString(1, nomeLoja);
+      st.setInt(2, idJogo);
+      ResultSet rs1 = st.executeQuery();
+
+      HistJogoOfertado hj = new HistJogoOfertado();
+      while (rs1.next()) {
+
+        //      hj.setDataColeta(rs1.getDate("data_coleta"));
+        hj.setParcelas(rs1.getString("parcelas"));
+        hj.setPreco(rs1.getBigDecimal("preco"));
+      }
+      return hj;
+    }
   }
 
   @Override

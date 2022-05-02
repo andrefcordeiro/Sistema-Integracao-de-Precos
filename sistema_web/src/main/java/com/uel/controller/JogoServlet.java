@@ -3,7 +3,9 @@ package com.uel.controller;
 import com.uel.dao.JogoLojaDAO;
 import com.uel.dao.factory.DAOFactory;
 import com.uel.model.Avaliacao;
+import com.uel.model.HistJogoOfertado;
 import com.uel.model.JogoLojaDTO;
+import com.uel.model.PerguntaCliente;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
@@ -65,10 +67,17 @@ public class JogoServlet extends HttpServlet {
           jogo.setNomeLoja(nomeLoja);
           jogo.setIdJogo(idJogo);
 
-          List<Avaliacao> avaliacoes = dao.getAvaliacoes(idJogo, nomeLoja);
+          List<Avaliacao> avaliacoes = dao.getAvaliacoesOfertaJogo(idJogo, nomeLoja);
           jogo.setAvaliacoesClientes(avaliacoes);
 
+          List<PerguntaCliente> perguntas = dao.getPerguntasOfertaJogo(idJogo, nomeLoja);
+          jogo.setPerguntasClientes(perguntas);
           request.setAttribute("jogo", jogo);
+
+          /* Menor preço histórico deste jogo nesta loja */
+          HistJogoOfertado menorPrecoHist = dao.getMenorPrecoHistoricoJogoLoja(idJogo, nomeLoja);
+          request.setAttribute("menorPrecoHist", menorPrecoHist);
+
           dispatcher = request.getRequestDispatcher("/view/interface-publica/jogoLoja.jsp");
           dispatcher.forward(request, response);
 

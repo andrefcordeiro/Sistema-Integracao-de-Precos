@@ -53,7 +53,7 @@
                     <%-- Ofertas do jogo --%>
                 <div class="container ml-5">
                     <p class="text-dark "><strong> Lojas que ofertam este jogo: </strong></p>
-                    <div class="container d-flex flex-row">
+                    <div class="d-flex flex-row">
                         <c:forEach items="${jogo.ofertasJogo}" var="oferta">
 
                             <%-- Botão para acessar página com dados de um jogo em uma loja --%>

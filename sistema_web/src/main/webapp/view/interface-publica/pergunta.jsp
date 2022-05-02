@@ -13,22 +13,25 @@
 </head>
 <body>
 <div class="container d-flex flex-column border rounded p-4 m-2">
-    <p>"${avaliacao.titulo}"</p>
-    <p>"${avaliacao.texto}"</p>
-    <div class="d-flex flex-row ">
-        <strong>Autor: ${avaliacao.nomeAvaliador}</strong>
-        <div class="d-flex flex-row ml-5">
-            <c:forEach begin="1" end="${avaliacao.estrelas}" varStatus="loop">
-                <img src="https://img.icons8.com/color/48/000000/filled-star--v1.png"
-                     height="30px"/>
-            </c:forEach>
-        </div>
-        <p class="ml-5 mr-5">${avaliacao.dataRealizacao}</p>
+    <div class="d-flex flex-row">
+        <p><strong>"${pergunta.textoPergunta}"</strong></p>
+        <c:if test="${pergunta.dataPergunta != null}">
+            <p class="ml-5 mr-5"> Data:${pergunta.dataPergunta}</p>
+        </c:if>
         <div class="d-flex flex-row ml-auto">
-            <p class="ml-5 mr-2">${avaliacao.votosAvalUtil}</p>
+            <p class="ml-5 mr-2">${pergunta.votosPergUtil}</p>
             <img src="https://img.icons8.com/external-kmg-design-glyph-kmg-design/32/000000/external-like-feedback-kmg-design-glyph-kmg-design.png"
                  height="20px"/>
         </div>
+    </div>
+
+    <div class="d-flex flex-row">
+        <c:if test="${pergunta.textoResposta != ''}">
+            <p>R: "${pergunta.textoResposta}"</p>
+            <c:if test="${pergunta.dataPergunta != null}">
+                <p class="ml-5 mr-5"> Data: ${pergunta.dataPergunta}</p>
+            </c:if>
+        </c:if>
     </div>
 
 </div>
