@@ -75,10 +75,15 @@ public class JogoServlet extends HttpServlet {
             mediaAval += a.getEstrelas();
           }
           mediaAval = mediaAval / avaliacoes.size();
-          request.setAttribute("mediaAval", mediaAval);
+          request.setAttribute("mediaAval", String.format("%.2f", mediaAval));
 
           List<PerguntaCliente> perguntas = dao.getPerguntasOfertaJogo(idJogo, nomeLoja);
           jogo.setPerguntasClientes(perguntas);
+
+          /* Histórico de ofertas daquele jogo naquela loja */
+          List<HistJogoOfertado> h = dao.getHistoricoJogo(idJogo, nomeLoja);
+          jogo.setHistorico(h);
+
           request.setAttribute("jogo", jogo);
 
           /* Menor preço histórico deste jogo nesta loja */

@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface JogoLojaDAO extends DAO<JogoLojaDTO> {
 
+  List<HistJogoOfertado> getHistoricoJogo(int idJogo, String nomeLoja) throws SQLException;
+
   List<PerguntaCliente> getPerguntasOfertaJogo(int idJogo, String nomeLoja) throws SQLException;
 
   List<Avaliacao> getAvaliacoesOfertaJogo(int idJogo, String nomeLoja) throws SQLException;
@@ -17,6 +19,6 @@ public interface JogoLojaDAO extends DAO<JogoLojaDTO> {
 
   JogoLojaDTO getDadosUltimoHistJogoLoja(Integer idJogo, String nomeLoja) throws SQLException;
 
-  HistJogoOfertado getMenorPrecoHistoricoJogoLoja(Integer idJogo, String nomeLoja) throws SQLException;
-
+  HistJogoOfertado getMenorPrecoHistoricoJogoLoja(Integer idJogo, String nomeLoja)
+      throws SQLException;
 }

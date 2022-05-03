@@ -10,7 +10,6 @@ public class HistJogoOfertado {
   private LocalDate dataColeta;
   private BigDecimal preco;
   private String parcelas;
-  private BigDecimal valorParcela;
   private Double mediaAval;
 
   public String getNomeLoja() {
@@ -51,14 +50,6 @@ public class HistJogoOfertado {
 
   public void setParcelas(String parcelas) {
     this.parcelas = parcelas;
-  }
-
-  public BigDecimal getValorParcela() {
-    return valorParcela;
-  }
-
-  public void setValorParcela(BigDecimal valorParcela) {
-    this.valorParcela = valorParcela;
   }
 
   public Double getMediaAval() {

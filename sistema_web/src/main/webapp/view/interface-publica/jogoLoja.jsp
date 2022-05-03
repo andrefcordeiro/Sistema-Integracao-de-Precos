@@ -38,24 +38,7 @@
     </div>
 
     <%-- Estatísticas --%>
-    <div class="d-flex flex-column align-items-center m-5">
-        <h2 class="text-dark"> Estatísticas </h2>
-        <div class="d-flex mt-5">
-            <div class="p-5 border rounded m-2">
-                <p>O menor preço histórico deste jogo nesta loja é </p>
-                <p style="font-size: 30px; font-weight: bold; color: darkgreen; margin-left: 20px">
-                    R$ ${menorPrecoHist.preco}
-                </p>
-                ${menorPrecoHist.parcelas} em ${menorPrecoHist.dataColeta}.
-            </div>
-            <div class="border rounded p-5 m-2">
-                <p>Média das avaliações </p>
-                <p style="font-size: 30px; font-weight: bold; margin-left: 20px">
-                    ${mediaAval}
-                </p>
-            </div>
-        </div>
-    </div>
+    <jsp:include page="estatisticas.jsp"/>
 
     <div class="d-flex flex-row mt-5">
         <jsp:include page="linkSecaoDown.jsp">

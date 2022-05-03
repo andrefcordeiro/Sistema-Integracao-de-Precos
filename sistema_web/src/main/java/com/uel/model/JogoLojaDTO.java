@@ -50,7 +50,7 @@ public class JogoLojaDTO {
 
   private List<PerguntaCliente> perguntasClientes;
 
-  private List<HistJogoOfertado> histJogoOfertadoList;
+  private List<HistJogoOfertado> historico;
 
   private List<OfertaJogo> ofertasJogo;
 
@@ -208,12 +208,12 @@ public class JogoLojaDTO {
     this.perguntasClientes = perguntasClientes;
   }
 
-  public List<HistJogoOfertado> getHistJogoOfertadoList() {
-    return histJogoOfertadoList;
+  public List<HistJogoOfertado> getHistorico() {
+    return historico;
   }
 
-  public void setHistJogoOfertadoList(List<HistJogoOfertado> histJogoOfertadoList) {
-    this.histJogoOfertadoList = histJogoOfertadoList;
+  public void setHistorico(List<HistJogoOfertado> historico) {
+    this.historico = historico;
   }
 
   public List<OfertaJogo> getOfertasJogo() {

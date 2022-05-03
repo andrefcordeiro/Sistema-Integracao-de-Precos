@@ -12,6 +12,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -48,8 +49,7 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
       "SELECT MAX(num)+1 AS num FROM integ_preco.historico_jogo_ofertado WHERE nome_loja=? AND id_jogo=?";
 
   private static final String GET_HIST_OFERTA_JOGO_QUERY =
-      "SELECT * FROM integ_preco.historico_jogo_ofertado WHERE nome_loja=? AND id_jogo=? "
-          + "AND data_coleta=? ";
+      "SELECT * FROM integ_preco.historico_jogo_ofertado WHERE nome_loja=? AND id_jogo=? ";
 
   private static final String GET_ALL_QUESTIONS =
       "SELECT * FROM integ_preco.pergunta_cliente WHERE id_jogo=? AND nome_loja=?";
@@ -478,15 +478,15 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
     }
   }
 
-  public List<HistJogoOfertado> get_Historico_jogo(int id_jogo, String nome_loja)
-      throws SQLException {
+  @Override
+  public List<HistJogoOfertado> getHistoricoJogo(int idJogo, String nomeLoja) throws SQLException {
 
     try (PreparedStatement statement = connection.prepareStatement(GET_HIST_OFERTA_JOGO_QUERY)) {
 
-      statement.setString(1, nome_loja);
-      statement.setInt(2, id_jogo);
+      statement.setString(1, nomeLoja);
+      statement.setInt(2, idJogo);
 
-      List<HistJogoOfertado> histCompleto = new ArrayList<HistJogoOfertado>();
+      List<HistJogoOfertado> histCompleto = new ArrayList<>();
 
       try (ResultSet result = statement.executeQuery()) {
 
@@ -494,12 +494,12 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
 
           HistJogoOfertado historico = new HistJogoOfertado();
 
-          historico.setNomeLoja(nome_loja);
-          historico.setIdJogo(id_jogo);
-          //          historico.setDataColeta( result.getDate("data_coleta"));
+          historico.setNomeLoja(nomeLoja);
+          historico.setIdJogo(idJogo);
+          historico.setDataColeta(result.getDate("data_coleta").toLocalDate());
+
           historico.setPreco(result.getBigDecimal("preco"));
-          //          historico.setQtdParcelas(result.getInt("qtd_parcelas"));
-          historico.setValorParcela(result.getBigDecimal("valor_parcela"));
+          historico.setParcelas(result.getString("parcelas"));
           historico.setMediaAval(result.getDouble("media_aval"));
 
           histCompleto.add(historico);
@@ -510,7 +510,7 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
 
     } catch (SQLException e) {
       Logger.getLogger(PgLojaDAO.class.getName()).log(Level.SEVERE, "DAO", e);
-      throw new SQLException("Erro ao consultar tabela versao_script.");
+      throw new SQLException("Erro ao consultar tabela historico_jogo_ofertado.");
     }
   }
 
