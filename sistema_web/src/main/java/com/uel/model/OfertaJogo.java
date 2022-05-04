@@ -18,6 +18,8 @@ public class OfertaJogo {
   @SerializedName("transportadora")
   private String nomeTransportadora;
 
+  private HistJogoOfertado ultimoHistorico;
+
   public String getNomeLoja() {
     return nomeLoja;
   }
@@ -48,5 +50,13 @@ public class OfertaJogo {
 
   public void setNomeTransportadora(String nomeTransportadora) {
     this.nomeTransportadora = nomeTransportadora;
+  }
+
+  public HistJogoOfertado getUltimoHistorico() {
+    return ultimoHistorico;
+  }
+
+  public void setUltimoHistorico(HistJogoOfertado ultimoHistorico) {
+    this.ultimoHistorico = ultimoHistorico;
   }
 }

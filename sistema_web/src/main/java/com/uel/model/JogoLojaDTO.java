@@ -54,7 +54,7 @@ public class JogoLojaDTO {
 
   private List<OfertaJogo> ofertasJogo;
 
-  private HistJogoOfertado menorPrecoJogo;
+  private HistJogoOfertado precoJogo;
 
   public String getNomeLoja() {
     return nomeLoja != null ? nomeLoja.trim() : null;
@@ -224,11 +224,11 @@ public class JogoLojaDTO {
     this.ofertasJogo = ofertasJogo;
   }
 
-  public HistJogoOfertado getMenorPrecoJogo() {
-    return menorPrecoJogo;
+  public HistJogoOfertado getPrecoJogo() {
+    return precoJogo;
   }
 
-  public void setMenorPrecoJogo(HistJogoOfertado menorPrecoJogo) {
-    this.menorPrecoJogo = menorPrecoJogo;
+  public void setPrecoJogo(HistJogoOfertado precoJogo) {
+    this.precoJogo = precoJogo;
   }
 }

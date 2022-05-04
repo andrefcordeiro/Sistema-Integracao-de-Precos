@@ -29,11 +29,11 @@
             <div class="d-flex flex-column border rounded m-3 p-3">
                 <p> ${texto_preco} </p>
                 <p style="font-size: 30px; font-weight: bold; color: darkgreen; margin-left: 20px">
-                    R$ ${jogo.menorPrecoJogo.preco}
+                    R$ ${jogo.precoJogo.preco}
                 </p>
-                ${jogo.menorPrecoJogo.parcelas} na loja
-                ${jogo.menorPrecoJogo.nomeLoja}
-                em ${jogo.menorPrecoJogo.dataColeta}.
+                ${jogo.precoJogo.parcelas} na loja
+                ${jogo.precoJogo.nomeLoja}
+                em ${jogo.precoJogo.dataColeta}.
                 <p><strong>Transportado por: ${jogo.nomeTransportadora}</strong> <strong>Vendido
                     por: ${jogo.nomeVendedor}</strong></p>
             </div>

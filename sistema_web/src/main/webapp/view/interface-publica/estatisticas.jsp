@@ -64,14 +64,19 @@
         </div>
         <div class="border rounded p-5 m-2">
             <p>Média das avaliações </p>
-            <p style="font-size: 30px; font-weight: bold; margin-left: 20px">
-                ${mediaAval}
-            </p>
-        </div>
+            <div class="d-flex flex-row">
+                <p style="font-size: 30px; font-weight: bold; margin-left: 20px">
+                    ${mediaAval}
+                </p>
+                <p class="mt-3 ml-2">estrelas</p>
+            </div>
 
+        </div>
     </div>
+
+
     <div class="border rounded p-5 m-5">
-        <canvas id="historico_preco" width="500" height="250"></canvas>
+        <canvas id="historico_preco" width="400" height="250"></canvas>
     </div>
 
 </div>

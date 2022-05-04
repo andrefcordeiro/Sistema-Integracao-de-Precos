@@ -84,22 +84,42 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
           + "AND oj.id_jogo = jogo.id_jogo";
 
   private static final String GET_MENOR_PRECO_JOGO =
-      "SELECT nome_loja, data_coleta, parcelas, preco "
-          + "FROM integ_preco.historico_jogo_ofertado hist_a, "
-          + "(SELECT hist.id_jogo, MIN(hist.preco) min_preco "
+      "SELECT hist_a.nome_loja, hist_a.data_coleta,  "
+          + "hist_a.parcelas, hist_a.preco, "
+          + "oferta.nome_transportadora, oferta.nome_vendedor "
+          + " "
+          + "FROM integ_preco.historico_jogo_ofertado hist_a,  "
+          + "integ_preco.oferta_jogo oferta "
+          + "WHERE (hist_a.id_jogo, hist_a.preco) IN "
+          + "( "
+          + "SELECT hist.id_jogo, MIN(hist.preco) min_preco "
+          + "FROM ( "
+          + "SELECT hist.id_jogo, hist.preco "
           + "FROM integ_preco.historico_jogo_ofertado hist "
-          + "WHERE hist.id_jogo = ? "
-          + "GROUP BY hist.id_jogo) hist_b "
-          + "WHERE hist_a.id_jogo = hist_b.id_jogo "
-          + "AND hist_a.preco = hist_b.min_preco";
+          + "WHERE hist.num = ( "
+          + "SELECT MAX(num) FROM integ_preco.historico_jogo_ofertado "
+          + "WHERE hist.id_jogo = id_jogo "
+          + "AND hist.nome_loja = nome_loja "
+          + ") "
+          + " AND hist.id_jogo = ?"
+          + ") hist "
+          + "GROUP BY hist.id_jogo "
+          + ") "
+          + "AND hist_a.num = ( "
+          + "SELECT MAX(num) FROM integ_preco.historico_jogo_ofertado "
+          + "WHERE hist_a.id_jogo = id_jogo "
+          + "AND hist_a.nome_loja = nome_loja "
+          + ") "
+          + "AND oferta.id_jogo = hist_a.id_jogo "
+          + "AND oferta.nome_loja = hist_a.nome_loja";
 
-  private static final String GET_MENOR_PRECO_JOGO_LOJA_ULTIMO_HIST =
+  private static final String GET_DADOS_JOGO_LOJA_ULTIMO_HIST =
       "SELECT * "
           + "FROM integ_preco.historico_jogo_ofertado hist, "
           + "integ_preco.jogo jogo, "
           + "integ_preco.oferta_jogo oferta "
-          + "WHERE hist.data_coleta = ( "
-          + "SELECT MAX(data_coleta) FROM integ_preco.historico_jogo_ofertado "
+          + "WHERE hist.num = ( "
+          + "SELECT MAX(num) FROM integ_preco.historico_jogo_ofertado "
           + "WHERE hist.id_jogo = id_jogo "
           + "AND hist.nome_loja = nome_loja "
           + ") "
@@ -618,8 +638,10 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
         jogo.setOfertasJogo(ofertasJogo);
 
         /* buscando menor preço do jogo em todas as lojas */
-        HistJogoOfertado h = getMenorPrecoJogo(jogo.getIdJogo());
-        jogo.setMenorPrecoJogo(h);
+        OfertaJogo oj = getMenorPrecoJogo(jogo.getIdJogo());
+        jogo.setPrecoJogo(oj.getUltimoHistorico());
+        jogo.setNomeVendedor(oj.getNomeVendedor());
+        jogo.setNomeTransportadora(oj.getNomeTransportadora());
 
         jogos.add(jogo);
       }
@@ -632,21 +654,26 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
     return jogos;
   }
 
-  private HistJogoOfertado getMenorPrecoJogo(Integer idJogo) throws SQLException {
+  private OfertaJogo getMenorPrecoJogo(Integer idJogo) throws SQLException {
 
     try (PreparedStatement st = connection.prepareStatement(GET_MENOR_PRECO_JOGO)) {
       st.setInt(1, idJogo);
       ResultSet rs1 = st.executeQuery();
 
-      HistJogoOfertado hj = new HistJogoOfertado();
-      while (rs1.next()) {
+      OfertaJogo oj = new OfertaJogo();
 
+      while (rs1.next()) {
+        oj.setNomeVendedor(rs1.getString("nome_vendedor"));
+        oj.setNomeTransportadora(rs1.getString("nome_transportadora"));
+
+        HistJogoOfertado hj = new HistJogoOfertado();
         hj.setNomeLoja(rs1.getString("nome_loja"));
         //      hj.setDataColeta(rs1.getDate("data_coleta"));
         hj.setParcelas(rs1.getString("parcelas"));
         hj.setPreco(rs1.getBigDecimal("preco"));
+        oj.setUltimoHistorico(hj);
       }
-      return hj;
+      return oj;
     }
   }
 
@@ -656,8 +683,7 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
 
     JogoLojaDTO jogo = new JogoLojaDTO();
 
-    try (PreparedStatement st =
-        connection.prepareStatement(GET_MENOR_PRECO_JOGO_LOJA_ULTIMO_HIST)) {
+    try (PreparedStatement st = connection.prepareStatement(GET_DADOS_JOGO_LOJA_ULTIMO_HIST)) {
 
       st.setString(1, nomeLoja);
       st.setInt(2, idJogo);
@@ -683,7 +709,7 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
       hj.setParcelas(rs.getString("parcelas"));
       hj.setPreco(rs.getBigDecimal("preco"));
 
-      jogo.setMenorPrecoJogo(hj);
+      jogo.setPrecoJogo(hj);
 
     } catch (SQLException e) {
       Logger.getLogger(PgLojaDAO.class.getName()).log(Level.SEVERE, "DAO", e);

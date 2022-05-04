@@ -19,7 +19,7 @@
           action="${pageContext.servletContext.contextPath}/jogo/buscarPorTitulo"
           method="GET">
 
-        <div class="container d-flex flex-row align-items-center input-group mb-3"
+        <div class="container d-flex flex-row align-items-center input-group mb-3 mt-5"
              style="width: 100%">
             <input id="jogo_titulo"
                    class="form-control"
