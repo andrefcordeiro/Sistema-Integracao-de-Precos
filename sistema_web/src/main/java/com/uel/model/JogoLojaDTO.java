@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 public class JogoLojaDTO {
 
@@ -40,7 +41,8 @@ public class JogoLojaDTO {
 
   private LocalDate dataColeta;
 
-  @NotBlank private BigDecimal preco;
+  @NotNull
+  private BigDecimal preco;
 
   private String parcelas;
 
@@ -53,8 +55,6 @@ public class JogoLojaDTO {
   private List<HistJogoOfertado> historico;
 
   private List<OfertaJogo> ofertasJogo;
-
-  private HistJogoOfertado precoJogo;
 
   public String getNomeLoja() {
     return nomeLoja != null ? nomeLoja.trim() : null;
@@ -222,13 +222,5 @@ public class JogoLojaDTO {
 
   public void setOfertasJogo(List<OfertaJogo> ofertasJogo) {
     this.ofertasJogo = ofertasJogo;
-  }
-
-  public HistJogoOfertado getPrecoJogo() {
-    return precoJogo;
-  }
-
-  public void setPrecoJogo(HistJogoOfertado precoJogo) {
-    this.precoJogo = precoJogo;
   }
 }

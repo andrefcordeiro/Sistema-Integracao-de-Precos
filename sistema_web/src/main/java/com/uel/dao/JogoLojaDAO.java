@@ -21,4 +21,6 @@ public interface JogoLojaDAO extends DAO<JogoLojaDTO> {
 
   HistJogoOfertado getMenorPrecoHistoricoJogoLoja(Integer idJogo, String nomeLoja)
       throws SQLException;
+
+  List<JogoLojaDTO> getJogosMaisBemAvaliados() throws SQLException;
 }

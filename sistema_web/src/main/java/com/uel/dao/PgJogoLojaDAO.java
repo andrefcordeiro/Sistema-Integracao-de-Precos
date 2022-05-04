@@ -141,6 +141,25 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
           + "WHERE hist_a.nome_loja = hist_b.nome_loja "
           + "AND hist_a.preco = hist_b.min_preco ";
 
+  private static final String GET_JOGOS_MAIS_BEM_AVALIADOS =
+      "SELECT jogo.id_jogo, jogo.titulo, TRUNC(media_total.media, 2) media_aval "
+          + "FROM integ_preco.jogo, ( "
+          + "SELECT id_jogo, AVG(media_loja) media "
+          + "FROM ( "
+          + "SELECT jogo.id_jogo, loja.nome, AVG(aval.qtd_estrelas) media_loja FROM "
+          + "integ_preco.jogo jogo, "
+          + "integ_preco.loja loja, "
+          + "integ_preco.avaliacao aval "
+          + "WHERE jogo.id_jogo = aval.id_jogo "
+          + "AND aval.nome_loja = loja.nome "
+          + "GROUP BY jogo.id_jogo, loja.nome "
+          + ") AS media_aval_lojas "
+          + "GROUP BY id_Jogo "
+          + "LIMIT 10 "
+          + ") media_total "
+          + "WHERE media_total.id_jogo = jogo.id_jogo "
+          + "ORDER BY media_total.media DESC ";
+
   public PgJogoLojaDAO(Connection connection) {
     this.connection = connection;
   }
@@ -292,7 +311,6 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
 
       stGet.setString(1, jogoLoja.getNomeLoja());
       stGet.setInt(2, idJogo);
-      stGet.setDate(3, Date.valueOf(LocalDate.now()));
       stGet.executeQuery();
       ResultSet r = stGet.getResultSet();
 
@@ -553,8 +571,8 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
           pergunta.setTextoPergunta(result.getString("texto_pergunta"));
           pergunta.setTextoResposta(result.getString("texto_resposta"));
           pergunta.setVotosPergUtil(result.getInt("votos_pergunta_util"));
-          //                    pergunta.setDataPergunta(result.getDate("data_pergunta"));
-          //          pergunta.setDataResposta(result.getDate("data_resposta"));
+          //                              pergunta.setDataPergunta(result.getDate("data_pergunta"));
+          //                    pergunta.setDataResposta(result.getDate("data_resposta"));
 
           listaPerguntas.add(pergunta);
         }
@@ -639,7 +657,9 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
 
         /* buscando menor preço do jogo em todas as lojas */
         OfertaJogo oj = getMenorPrecoJogo(jogo.getIdJogo());
-        jogo.setPrecoJogo(oj.getUltimoHistorico());
+        jogo.setPreco(oj.getUltimoHistorico().getPreco());
+        jogo.setNomeLoja(oj.getNomeLoja());
+        jogo.setDataColeta(oj.getUltimoHistorico().getDataColeta());
         jogo.setNomeVendedor(oj.getNomeVendedor());
         jogo.setNomeTransportadora(oj.getNomeTransportadora());
 
@@ -665,10 +685,10 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
       while (rs1.next()) {
         oj.setNomeVendedor(rs1.getString("nome_vendedor"));
         oj.setNomeTransportadora(rs1.getString("nome_transportadora"));
+        oj.setNomeLoja(rs1.getString("nome_loja"));
 
         HistJogoOfertado hj = new HistJogoOfertado();
-        hj.setNomeLoja(rs1.getString("nome_loja"));
-        //      hj.setDataColeta(rs1.getDate("data_coleta"));
+        hj.setDataColeta(rs1.getDate("data_coleta").toLocalDate());
         hj.setParcelas(rs1.getString("parcelas"));
         hj.setPreco(rs1.getBigDecimal("preco"));
         oj.setUltimoHistorico(hj);
@@ -703,13 +723,10 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
       jogo.setNomeVendedor(rs.getString("nome_vendedor"));
       jogo.setNomeTransportadora(rs.getString("nome_transportadora"));
 
-      HistJogoOfertado hj = new HistJogoOfertado();
-      hj.setNomeLoja(rs.getString("nome_loja"));
-      //      hj.setDataColeta(rs.getDate("data_coleta"));
-      hj.setParcelas(rs.getString("parcelas"));
-      hj.setPreco(rs.getBigDecimal("preco"));
-
-      jogo.setPrecoJogo(hj);
+      jogo.setNomeLoja(rs.getString("nome_loja"));
+      jogo.setParcelas(rs.getString("parcelas"));
+      jogo.setDataColeta(rs.getDate("data_coleta").toLocalDate());
+      jogo.setPreco(rs.getBigDecimal("preco"));
 
     } catch (SQLException e) {
       Logger.getLogger(PgLojaDAO.class.getName()).log(Level.SEVERE, "DAO", e);
@@ -737,6 +754,25 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
         hj.setPreco(rs1.getBigDecimal("preco"));
       }
       return hj;
+    }
+  }
+
+  @Override
+  public List<JogoLojaDTO> getJogosMaisBemAvaliados() throws SQLException {
+
+    try (PreparedStatement st = connection.prepareStatement(GET_JOGOS_MAIS_BEM_AVALIADOS)) {
+      ResultSet rs1 = st.executeQuery();
+
+      List<JogoLojaDTO> jogos = new ArrayList<>();
+
+      while (rs1.next()) {
+
+        JogoLojaDTO j = new JogoLojaDTO();
+        j.setTitulo(rs1.getString("titulo"));
+        j.setMediaAval(rs1.getBigDecimal("media_aval"));
+        jogos.add(j);
+      }
+      return jogos;
     }
   }
 

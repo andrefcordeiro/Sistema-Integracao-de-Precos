@@ -7,6 +7,7 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <html>
 <head>
     <title>Jogo</title>
@@ -29,11 +30,12 @@
             <div class="d-flex flex-column border rounded m-3 p-3">
                 <p> ${texto_preco} </p>
                 <p style="font-size: 30px; font-weight: bold; color: darkgreen; margin-left: 20px">
-                    R$ ${jogo.precoJogo.preco}
+                    R$ ${jogo.preco}
                 </p>
-                ${jogo.precoJogo.parcelas} na loja
-                ${jogo.precoJogo.nomeLoja}
-                em ${jogo.precoJogo.dataColeta}.
+                ${jogo.parcelas} na loja
+                ${jogo.nomeLoja}
+                em
+                <tags:localDate date="${jogo.dataColeta}"/>
                 <p><strong>Transportado por: ${jogo.nomeTransportadora}</strong> <strong>Vendido
                     por: ${jogo.nomeVendedor}</strong></p>
             </div>

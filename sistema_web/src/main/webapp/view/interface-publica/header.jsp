@@ -11,7 +11,7 @@
     <title>Header</title>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="position:fixed; width: 100%;">
     <div class="container-fluid">
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
@@ -21,18 +21,17 @@
                            href="${pageContext.request.contextPath}/index.jsp">
                             Início</a>
                     </li>
-                </div>
+                    <li class="nav-item">
+                        <form class="form"
+                              action="${pageContext.servletContext.contextPath}/estatisticasGerais"
+                              method="GET">
+                            <button id="buscar" class="btn navbar-brand" type="submit">
+                                Estatísticas gerais
+                            </button>
+                        </form>
 
-                <%--                <li class="nav-item">--%>
-                <%--                    <a class="navbar-brand"--%>
-                <%--                       href="${pageContext.servletContext.contextPath}/loja/create">--%>
-                <%--                        placeholder</a>--%>
-                <%--                </li>--%>
-                <%--                <li class="nav-item">--%>
-                <%--                    <a class="navbar-brand"--%>
-                <%--                       href="${pageContext.servletContext.contextPath}/loja/getAll">--%>
-                <%--                        placeholder</a>--%>
-                <%--                </li>--%>
+                    </li>
+                </div>
             </ul>
         </div>
     </div>
