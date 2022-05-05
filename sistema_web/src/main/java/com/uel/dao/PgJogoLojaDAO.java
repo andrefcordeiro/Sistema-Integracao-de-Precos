@@ -1,5 +1,6 @@
 package com.uel.dao;
 
+import com.uel.dao.queries.PgJogoLojaDAOQueries;
 import com.uel.model.Avaliacao;
 import com.uel.model.HistJogoOfertado;
 import com.uel.model.Jogo;
@@ -12,7 +13,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -22,144 +22,6 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
 
   private final Connection connection;
 
-  private static final String CREATE_JOGO_QUERY =
-      "INSERT INTO integ_preco.jogo (titulo, desenvolvedora, data_lancamento, "
-          + "url_capa, fabricante, marca, descricao, multijogador, genero) "
-          + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)"
-          + "RETURNING id_jogo";
-
-  private static final String GET_JOGO_QUERY = "SELECT * FROM integ_preco.jogo WHERE titulo=?";
-
-  private static final String GET_ATRIBUTOS_JOGO = "SELECT * FROM integ_preco.jogo WHERE id_jogo=?";
-
-  private static final String GET_JOGOS_LOJA = "SELECT * FROM integ_preco.jogo WHERE nome_loja=?";
-
-  private static final String CREATE_OFERTA_JOGO_QUERY =
-      "INSERT INTO integ_preco.oferta_jogo (nome_loja, id_jogo, nome_vendedor, nome_transportadora) "
-          + "VALUES(?, ?, ?, ?)";
-
-  private static final String GET_OFERTA_JOGO_QUERY =
-      "SELECT * FROM integ_preco.oferta_jogo WHERE nome_loja=? AND id_jogo=?";
-
-  private static final String CREATE_HIST_OFERTA_JOGO_QUERY =
-      "INSERT INTO integ_preco.historico_jogo_ofertado (nome_loja, id_jogo, num, data_coleta, preco, "
-          + "parcelas, media_aval) VALUES(?, ?, ?, ?, ?, ?, ?)";
-
-  private static final String GET_LAST_NUM_HIST_OFERTA_JOGO_QUERY =
-      "SELECT MAX(num)+1 AS num FROM integ_preco.historico_jogo_ofertado WHERE nome_loja=? AND id_jogo=?";
-
-  private static final String GET_HIST_OFERTA_JOGO_QUERY =
-      "SELECT * FROM integ_preco.historico_jogo_ofertado WHERE nome_loja=? AND id_jogo=? ";
-
-  private static final String GET_ALL_QUESTIONS =
-      "SELECT * FROM integ_preco.pergunta_cliente WHERE id_jogo=? AND nome_loja=?";
-
-  private static final String GET_AVALIACOES_JOGO =
-      "SELECT * FROM integ_preco.avaliacao WHERE id_jogo=? AND nome_loja=?;";
-
-  private static final String CREATE_AVALIACAO_QUERY =
-      "INSERT INTO integ_preco.avaliacao (num_aval, id_jogo, nome_loja, titulo, texto, "
-          + "data_realizacao, qtd_estrelas, votos_aval_util, nome_avaliador, pais_avaliador) "
-          + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-  private static final String GET_LAST_NUM_AVALIACAO_QUERY =
-      "SELECT MAX(num_aval)+1 AS num_aval FROM integ_preco.avaliacao WHERE nome_loja=? "
-          + "AND id_jogo=?";
-
-  private static final String CREATE_PERGUNTA_CLIENTE_QUERY =
-      "INSERT INTO integ_preco.pergunta_cliente (num_perg, id_jogo, nome_loja, texto_pergunta, "
-          + "texto_resposta, votos_pergunta_util, data_resposta, data_pergunta) "
-          + "VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
-
-  private static final String GET_LAST_NUM_PERGUNTA_QUERY =
-      "SELECT MAX(num_perg)+1 AS num_perg FROM integ_preco.pergunta_cliente WHERE nome_loja=? "
-          + "AND id_jogo=?";
-
-  private static final String GET_JOGOS_POR_TITULO =
-      "SELECT * FROM integ_preco.jogo WHERE position(UPPER(?) IN titulo) != 0";
-
-  private static final String GET_OFERTAS_JOGO =
-      "SELECT * FROM integ_preco.jogo jogo, integ_preco.oferta_jogo oj "
-          + "WHERE oj.id_jogo = ?"
-          + "AND oj.id_jogo = jogo.id_jogo";
-
-  private static final String GET_MENOR_PRECO_JOGO =
-      "SELECT hist_a.nome_loja, hist_a.data_coleta,  "
-          + "hist_a.parcelas, hist_a.preco, "
-          + "oferta.nome_transportadora, oferta.nome_vendedor "
-          + " "
-          + "FROM integ_preco.historico_jogo_ofertado hist_a,  "
-          + "integ_preco.oferta_jogo oferta "
-          + "WHERE (hist_a.id_jogo, hist_a.preco) IN "
-          + "( "
-          + "SELECT hist.id_jogo, MIN(hist.preco) min_preco "
-          + "FROM ( "
-          + "SELECT hist.id_jogo, hist.preco "
-          + "FROM integ_preco.historico_jogo_ofertado hist "
-          + "WHERE hist.num = ( "
-          + "SELECT MAX(num) FROM integ_preco.historico_jogo_ofertado "
-          + "WHERE hist.id_jogo = id_jogo "
-          + "AND hist.nome_loja = nome_loja "
-          + ") "
-          + " AND hist.id_jogo = ?"
-          + ") hist "
-          + "GROUP BY hist.id_jogo "
-          + ") "
-          + "AND hist_a.num = ( "
-          + "SELECT MAX(num) FROM integ_preco.historico_jogo_ofertado "
-          + "WHERE hist_a.id_jogo = id_jogo "
-          + "AND hist_a.nome_loja = nome_loja "
-          + ") "
-          + "AND oferta.id_jogo = hist_a.id_jogo "
-          + "AND oferta.nome_loja = hist_a.nome_loja";
-
-  private static final String GET_DADOS_JOGO_LOJA_ULTIMO_HIST =
-      "SELECT * "
-          + "FROM integ_preco.historico_jogo_ofertado hist, "
-          + "integ_preco.jogo jogo, "
-          + "integ_preco.oferta_jogo oferta "
-          + "WHERE hist.num = ( "
-          + "SELECT MAX(num) FROM integ_preco.historico_jogo_ofertado "
-          + "WHERE hist.id_jogo = id_jogo "
-          + "AND hist.nome_loja = nome_loja "
-          + ") "
-          + "AND hist.id_jogo = jogo.id_jogo "
-          + "AND oferta.id_jogo = hist.id_jogo "
-          + "AND oferta.nome_loja = hist.nome_loja "
-          + "AND hist.nome_loja = ?"
-          + "AND hist.id_jogo = ?";
-
-  private static final String GET_MENOR_PRECO_HISTORICO_JOGO_LOJA =
-      "SELECT preco, parcelas, data_coleta "
-          + "FROM integ_preco.historico_jogo_ofertado hist_a,  "
-          + "( "
-          + "SELECT hist.nome_loja, hist.id_jogo, MIN(hist.preco) min_preco "
-          + "FROM integ_preco.historico_jogo_ofertado hist "
-          + "WHERE hist.nome_loja = ? "
-          + "AND hist.id_jogo = ? "
-          + "GROUP BY hist.nome_loja, hist.id_jogo) hist_b  "
-          + "WHERE hist_a.nome_loja = hist_b.nome_loja "
-          + "AND hist_a.preco = hist_b.min_preco ";
-
-  private static final String GET_JOGOS_MAIS_BEM_AVALIADOS =
-      "SELECT jogo.id_jogo, jogo.titulo, TRUNC(media_total.media, 2) media_aval "
-          + "FROM integ_preco.jogo, ( "
-          + "SELECT id_jogo, AVG(media_loja) media "
-          + "FROM ( "
-          + "SELECT jogo.id_jogo, loja.nome, AVG(aval.qtd_estrelas) media_loja FROM "
-          + "integ_preco.jogo jogo, "
-          + "integ_preco.loja loja, "
-          + "integ_preco.avaliacao aval "
-          + "WHERE jogo.id_jogo = aval.id_jogo "
-          + "AND aval.nome_loja = loja.nome "
-          + "GROUP BY jogo.id_jogo, loja.nome "
-          + ") AS media_aval_lojas "
-          + "GROUP BY id_Jogo "
-          + "LIMIT 10 "
-          + ") media_total "
-          + "WHERE media_total.id_jogo = jogo.id_jogo "
-          + "ORDER BY media_total.media DESC ";
-
   public PgJogoLojaDAO(Connection connection) {
     this.connection = connection;
   }
@@ -168,7 +30,8 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
   public void create(JogoLojaDTO jogoLoja) throws SQLException {
 
     Integer idJogo;
-    try (PreparedStatement statement = connection.prepareStatement(GET_JOGO_QUERY)) {
+    try (PreparedStatement statement =
+        connection.prepareStatement(PgJogoLojaDAOQueries.GET_JOGO_QUERY)) {
       statement.setString(1, jogoLoja.getTitulo());
       statement.executeQuery();
 
@@ -235,7 +98,8 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
 
   private Integer inserirJogo(JogoLojaDTO jogo) throws SQLException {
 
-    try (PreparedStatement statement = connection.prepareStatement(CREATE_JOGO_QUERY)) {
+    try (PreparedStatement statement =
+        connection.prepareStatement(PgJogoLojaDAOQueries.CREATE_JOGO_QUERY)) {
 
       statement.setString(1, jogo.getTitulo());
       statement.setString(2, jogo.getDesenvolvedora());
@@ -269,8 +133,10 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
 
   private void inserirOfertaJogo(JogoLojaDTO jogoLoja, Integer idJogo) throws SQLException {
 
-    try (PreparedStatement stGet = connection.prepareStatement(GET_OFERTA_JOGO_QUERY);
-        PreparedStatement stIns = connection.prepareStatement(CREATE_OFERTA_JOGO_QUERY)) {
+    try (PreparedStatement stGet =
+            connection.prepareStatement(PgJogoLojaDAOQueries.GET_OFERTA_JOGO_QUERY);
+        PreparedStatement stIns =
+            connection.prepareStatement(PgJogoLojaDAOQueries.CREATE_OFERTA_JOGO_QUERY)) {
 
       stGet.setString(1, jogoLoja.getNomeLoja());
       stGet.setInt(2, idJogo);
@@ -304,10 +170,12 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
 
   private void inserirHistOfertaJogo(JogoLojaDTO jogoLoja, Integer idJogo) throws SQLException {
 
-    try (PreparedStatement stGet = connection.prepareStatement(GET_HIST_OFERTA_JOGO_QUERY);
+    try (PreparedStatement stGet =
+            connection.prepareStatement(PgJogoLojaDAOQueries.GET_HIST_OFERTA_JOGO_QUERY);
         PreparedStatement stGetLst =
-            connection.prepareStatement(GET_LAST_NUM_HIST_OFERTA_JOGO_QUERY);
-        PreparedStatement stIns = connection.prepareStatement(CREATE_HIST_OFERTA_JOGO_QUERY); ) {
+            connection.prepareStatement(PgJogoLojaDAOQueries.GET_LAST_NUM_HIST_OFERTA_JOGO_QUERY);
+        PreparedStatement stIns =
+            connection.prepareStatement(PgJogoLojaDAOQueries.CREATE_HIST_OFERTA_JOGO_QUERY); ) {
 
       stGet.setString(1, jogoLoja.getNomeLoja());
       stGet.setInt(2, idJogo);
@@ -351,8 +219,10 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
 
   private void inserirAvaliacoes(JogoLojaDTO jogoLoja, Integer idJogo) throws SQLException {
 
-    try (PreparedStatement stGet = connection.prepareStatement(GET_LAST_NUM_AVALIACAO_QUERY);
-        PreparedStatement stIns = connection.prepareStatement(CREATE_AVALIACAO_QUERY); ) {
+    try (PreparedStatement stGet =
+            connection.prepareStatement(PgJogoLojaDAOQueries.GET_LAST_NUM_AVALIACAO_QUERY);
+        PreparedStatement stIns =
+            connection.prepareStatement(PgJogoLojaDAOQueries.CREATE_AVALIACAO_QUERY); ) {
 
       for (Avaliacao aval : jogoLoja.getAvaliacoesClientes()) {
 
@@ -399,8 +269,10 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
 
   private void inserirPerguntasCliente(JogoLojaDTO jogoLoja, Integer idJogo) throws SQLException {
 
-    try (PreparedStatement stGet = connection.prepareStatement(GET_LAST_NUM_PERGUNTA_QUERY);
-        PreparedStatement stIns = connection.prepareStatement(CREATE_PERGUNTA_CLIENTE_QUERY); ) {
+    try (PreparedStatement stGet =
+            connection.prepareStatement(PgJogoLojaDAOQueries.GET_LAST_NUM_PERGUNTA_QUERY);
+        PreparedStatement stIns =
+            connection.prepareStatement(PgJogoLojaDAOQueries.CREATE_PERGUNTA_CLIENTE_QUERY); ) {
 
       for (PerguntaCliente perg : jogoLoja.getPerguntasClientes()) {
 
@@ -445,7 +317,8 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
 
   public Jogo getAtributos_jogo(int id_jogo) throws SQLException {
 
-    try (PreparedStatement statement = connection.prepareStatement(GET_ATRIBUTOS_JOGO)) {
+    try (PreparedStatement statement =
+        connection.prepareStatement(PgJogoLojaDAOQueries.GET_ATRIBUTOS_JOGO)) {
 
       statement.setInt(1, id_jogo);
 
@@ -481,7 +354,8 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
 
   public List<Jogo> getJogos_loja(String nome_loja) throws SQLException {
 
-    try (PreparedStatement statement = connection.prepareStatement(GET_JOGOS_LOJA)) {
+    try (PreparedStatement statement =
+        connection.prepareStatement(PgJogoLojaDAOQueries.GET_JOGOS_LOJA)) {
 
       statement.setString(1, nome_loja);
 
@@ -519,7 +393,8 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
   @Override
   public List<HistJogoOfertado> getHistoricoJogo(int idJogo, String nomeLoja) throws SQLException {
 
-    try (PreparedStatement statement = connection.prepareStatement(GET_HIST_OFERTA_JOGO_QUERY)) {
+    try (PreparedStatement statement =
+        connection.prepareStatement(PgJogoLojaDAOQueries.GET_HIST_OFERTA_JOGO_QUERY)) {
 
       statement.setString(1, nomeLoja);
       statement.setInt(2, idJogo);
@@ -555,7 +430,8 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
   public List<PerguntaCliente> getPerguntasOfertaJogo(int idJogo, String nomeLoja)
       throws SQLException {
 
-    try (PreparedStatement statement = connection.prepareStatement(GET_ALL_QUESTIONS)) {
+    try (PreparedStatement statement =
+        connection.prepareStatement(PgJogoLojaDAOQueries.GET_ALL_QUESTIONS)) {
 
       statement.setInt(1, idJogo);
       statement.setString(2, nomeLoja);
@@ -589,7 +465,8 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
   @Override
   public List<Avaliacao> getAvaliacoesOfertaJogo(int idJogo, String nomeLoja) throws SQLException {
 
-    try (PreparedStatement statement = connection.prepareStatement(GET_AVALIACOES_JOGO)) {
+    try (PreparedStatement statement =
+        connection.prepareStatement(PgJogoLojaDAOQueries.GET_AVALIACOES_JOGO)) {
 
       statement.setInt(1, idJogo);
       statement.setString(2, nomeLoja);
@@ -627,8 +504,10 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
 
     List<JogoLojaDTO> jogos = new ArrayList<>();
 
-    try (PreparedStatement st1 = connection.prepareStatement(GET_JOGOS_POR_TITULO);
-        PreparedStatement st2 = connection.prepareStatement(GET_OFERTAS_JOGO)) {
+    try (PreparedStatement st1 =
+            connection.prepareStatement(PgJogoLojaDAOQueries.GET_JOGOS_POR_TITULO);
+        PreparedStatement st2 =
+            connection.prepareStatement(PgJogoLojaDAOQueries.GET_OFERTAS_JOGO)) {
 
       st1.setString(1, titulo);
       ResultSet rs1 = st1.executeQuery();
@@ -676,7 +555,8 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
 
   private OfertaJogo getMenorPrecoJogo(Integer idJogo) throws SQLException {
 
-    try (PreparedStatement st = connection.prepareStatement(GET_MENOR_PRECO_JOGO)) {
+    try (PreparedStatement st =
+        connection.prepareStatement(PgJogoLojaDAOQueries.GET_MENOR_PRECO_JOGO)) {
       st.setInt(1, idJogo);
       ResultSet rs1 = st.executeQuery();
 
@@ -703,7 +583,8 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
 
     JogoLojaDTO jogo = new JogoLojaDTO();
 
-    try (PreparedStatement st = connection.prepareStatement(GET_DADOS_JOGO_LOJA_ULTIMO_HIST)) {
+    try (PreparedStatement st =
+        connection.prepareStatement(PgJogoLojaDAOQueries.GET_DADOS_JOGO_LOJA_ULTIMO_HIST)) {
 
       st.setString(1, nomeLoja);
       st.setInt(2, idJogo);
@@ -741,7 +622,8 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
   public HistJogoOfertado getMenorPrecoHistoricoJogoLoja(Integer idJogo, String nomeLoja)
       throws SQLException {
 
-    try (PreparedStatement st = connection.prepareStatement(GET_MENOR_PRECO_HISTORICO_JOGO_LOJA)) {
+    try (PreparedStatement st =
+        connection.prepareStatement(PgJogoLojaDAOQueries.GET_MENOR_PRECO_HISTORICO_JOGO_LOJA)) {
       st.setString(1, nomeLoja);
       st.setInt(2, idJogo);
       ResultSet rs1 = st.executeQuery();
@@ -760,7 +642,8 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
   @Override
   public List<JogoLojaDTO> getJogosMaisBemAvaliados() throws SQLException {
 
-    try (PreparedStatement st = connection.prepareStatement(GET_JOGOS_MAIS_BEM_AVALIADOS)) {
+    try (PreparedStatement st =
+        connection.prepareStatement(PgJogoLojaDAOQueries.GET_JOGOS_MAIS_BEM_AVALIADOS)) {
       ResultSet rs1 = st.executeQuery();
 
       List<JogoLojaDTO> jogos = new ArrayList<>();
