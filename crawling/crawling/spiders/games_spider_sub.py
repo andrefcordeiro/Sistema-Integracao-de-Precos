@@ -82,9 +82,9 @@ def parse_perguntas(script_json):
             })
 
     prs = []
-    indiceR = 0
+    indice_r = 0
     for p in perguntas:
-        r = respostas[indiceR]
+        r = respostas[indice_r]
         prs.append({
             'pergunta': p['pergunta'],
             'dataPergunta': formatarData(p['dataPergunta']),
@@ -92,7 +92,7 @@ def parse_perguntas(script_json):
             'dataResposta': formatarData(r['dataResposta']),
             'votosRespUtil': r['votosRespUtil']
         })
-        indiceR += 1
+        indice_r += 1
 
     return prs
 
@@ -103,7 +103,6 @@ def parse_jogo(response):
     preco = response.xpath('//div[@class="src__BestPrice-sc-1jnodg3-5 ykHPU priceSales"]/text()').getall()
     capa = response.xpath('//div[@class="image__WrapperImages-sc-oakrdw-1 kOCIiH"]/div/picture/img/@src').get()
 
-    avaliacoes = response.xpath('//div[@class="review__Flex-sc-l45my2-0 review__Wrapper-sc-l45my2-1 gZIEnN"]')
     script = response.xpath('//script[contains(., "window.__APOLLO_STATE__ =")]/text()').extract_first().lstrip()[
              26:]  # script onde serão buscadas as perguntas
     script_json = json.loads(script)
