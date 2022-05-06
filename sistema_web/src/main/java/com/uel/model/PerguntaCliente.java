@@ -63,7 +63,7 @@ public class PerguntaCliente {
   }
 
   public Integer getVotosPergUtil() {
-    return votosPergUtil;
+    return votosPergUtil != null ? votosPergUtil : 0;
   }
 
   public void setVotosPergUtil(Integer votosPergUtil) {

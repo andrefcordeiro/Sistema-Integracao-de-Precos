@@ -631,7 +631,7 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
       HistJogoOfertado hj = new HistJogoOfertado();
       while (rs1.next()) {
 
-        //      hj.setDataColeta(rs1.getDate("data_coleta"));
+        hj.setDataColeta(rs1.getDate("data_coleta").toLocalDate());
         hj.setParcelas(rs1.getString("parcelas"));
         hj.setPreco(rs1.getBigDecimal("preco"));
       }

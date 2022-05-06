@@ -32,10 +32,12 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
-@WebServlet(name = "CrawlingServlet", urlPatterns = {
-    "/crawling",
-    "/crawling/create",
-})
+@WebServlet(
+    name = "CrawlingServlet",
+    urlPatterns = {
+      "/crawling",
+      "/crawling/create",
+    })
 public class CrawlingServlet extends HttpServlet {
 
   private static final Integer MAX_FILE_SIZE = 1024 * 1024 * 4;
@@ -57,9 +59,7 @@ public class CrawlingServlet extends HttpServlet {
     String funcaoScript = null;
 
     switch (servletPath) {
-
       case "/crawling/create":
-
         DiskFileItemFactory factory = new DiskFileItemFactory();
         factory.setSizeThreshold(MAX_MEM_SIZE);
         factory.setRepository(new File("/tmp"));
@@ -72,23 +72,23 @@ public class CrawlingServlet extends HttpServlet {
 
           for (FileItem fi : fileItems) {
 
-            if (!fi.isFormField()) { /* se não for um form normal */
+            if (!fi.isFormField()) {
+                /* se não for um form normal */
               String fieldName = fi.getFieldName();
               String fileName = null;
               String appPath = request.getServletContext().getRealPath("/");
               String savePath = null;
               new File(appPath + File.separator + SAVE_DIR_CRAWLING).mkdirs();
 
-              if (fieldName.equals("output_crawling")) { /* arq de saída do crawling */
+              if (fieldName.equals("output_crawling")) {
+                  /* arq de saída do crawling */
                 fileName = "games.json";
-                savePath =
-                    appPath + File.separator + SAVE_DIR_CRAWLING + File.separator + fileName;
+                savePath = appPath + File.separator + SAVE_DIR_CRAWLING + File.separator + fileName;
                 pathOutputJson = savePath;
 
               } else if (fieldName.equals("script_crawling")) {
                 fileName = "script.py";
-                savePath =
-                    appPath + File.separator + SAVE_DIR_CRAWLING + File.separator + fileName;
+                savePath = appPath + File.separator + SAVE_DIR_CRAWLING + File.separator + fileName;
                 pathScript = savePath;
               }
 
@@ -103,25 +103,29 @@ public class CrawlingServlet extends HttpServlet {
           inserirJogos(nomeLoja, pathOutputJson);
           inserirScriptCrawling(nomeLoja, funcaoScript, pathScript);
 
-          dispatcher = request.getRequestDispatcher("/view/interface-privada/crawling/sucessCreate.jsp");
+          dispatcher =
+              request.getRequestDispatcher("/view/interface-privada/crawling/sucessCreate.jsp");
           dispatcher.forward(request, response);
 
         } catch (JsonIOException e) {
           Logger.getLogger(CrawlingServlet.class.getName()).log(Level.SEVERE, "Controller", e);
           session.setAttribute("error", "Erro ao ler arquivo JSON");
-          dispatcher = request.getRequestDispatcher("/view/interface-privada/crawling/errorCreate.jsp");
+          dispatcher =
+              request.getRequestDispatcher("/view/interface-privada/crawling/errorCreate.jsp");
           dispatcher.forward(request, response);
 
         } catch (ConstraintViolationException | SQLException e) {
           Logger.getLogger(CrawlingServlet.class.getName()).log(Level.SEVERE, "Controller", e);
           session.setAttribute("error", e.getMessage());
-          dispatcher = request.getRequestDispatcher("/view/interface-privada/crawling/errorCreate.jsp");
+          dispatcher =
+              request.getRequestDispatcher("/view/interface-privada/crawling/errorCreate.jsp");
           dispatcher.forward(request, response);
 
         } catch (Exception e) {
           Logger.getLogger(CrawlingServlet.class.getName()).log(Level.SEVERE, "Controller", e);
           session.setAttribute("error", "Erro ao fazer upload do arquivo.");
-          dispatcher = request.getRequestDispatcher("/view/interface-privada/crawling/errorCreate.jsp");
+          dispatcher =
+              request.getRequestDispatcher("/view/interface-privada/crawling/errorCreate.jsp");
           dispatcher.forward(request, response);
         }
 
@@ -140,6 +144,12 @@ public class CrawlingServlet extends HttpServlet {
 
       for (JogoLojaDTO jogo : jogos) {
         jogo.setTitulo(formatarTituloJogo(jogo.getTitulo()));
+        if (jogo.getUrlCapa() == null) {
+          jogo.setUrlCapa(
+              "https://images.tcdn.com.br/img/img_prod/886766/arq"
+                  + "uivo_de_corte_controle_video_game_696921381_1_"
+                  + "501b343a3803e46191272feea5ea1cb9.jpg");
+        }
         jogo.setNomeLoja(nomeLoja);
 
         validarJogoLoja(jogo);
@@ -172,10 +182,8 @@ public class CrawlingServlet extends HttpServlet {
         InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
         BufferedReader br = new BufferedReader(isr)) {
 
-      Type listType = new TypeToken<List<JogoLojaDTO>>() {
-      }.getType();
-      Gson gson = new GsonBuilder().registerTypeAdapter(listType, new JogoDeserializer())
-          .create();
+      Type listType = new TypeToken<List<JogoLojaDTO>>() {}.getType();
+      Gson gson = new GsonBuilder().registerTypeAdapter(listType, new JogoDeserializer()).create();
 
       return gson.fromJson(br, listType);
 
@@ -186,11 +194,26 @@ public class CrawlingServlet extends HttpServlet {
 
   private String formatarTituloJogo(String tituloJogo) {
 
-    String[] palavras = new String[]{
-        "JOGO", "MÍDIA FÍSICA", "MIDIA FISICA", "PARA PS4", "PS4", "PARA PS5", "PS5", "-",
-        "PARA PLAYSTATION 4", "PLAYSTATION 4", "LACRADO", "MOSTRUÁRIO", "MOSTRUARIO",
-        "(PLAYSTATION 4)",
-        "()", "ORIGINAL", "NOVO"};
+    String[] palavras =
+        new String[] {
+          "JOGO",
+          "MÍDIA FÍSICA",
+          "MIDIA FISICA",
+          "PARA PS4",
+          "PS4",
+          "PARA PS5",
+          "PS5",
+          "-",
+          "PARA PLAYSTATION 4",
+          "PLAYSTATION 4",
+          "LACRADO",
+          "MOSTRUÁRIO",
+          "MOSTRUARIO",
+          "(PLAYSTATION 4)",
+          "()",
+          "ORIGINAL",
+          "NOVO"
+        };
 
     String result = tituloJogo;
 
@@ -264,7 +287,6 @@ public class CrawlingServlet extends HttpServlet {
 
     switch (request.getServletPath()) {
       case "/crawling/create":
-
         String nome = request.getParameter("nome_loja");
         request.setAttribute("nome_loja", nome);
 
@@ -273,5 +295,4 @@ public class CrawlingServlet extends HttpServlet {
         break;
     }
   }
-
 }

@@ -31,18 +31,15 @@ public class JogoLojaDTO {
 
   private String marca;
 
-  @NotBlank
   @SerializedName("vendedora")
   private String nomeVendedor;
 
-  @NotBlank
   @SerializedName("transportadora")
   private String nomeTransportadora;
 
   private LocalDate dataColeta;
 
-  @NotNull
-  private BigDecimal preco;
+  @NotNull private BigDecimal preco;
 
   private String parcelas;
 
