@@ -7,26 +7,35 @@
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
 from scrapy.exporters import JsonItemExporter
+from datetime import datetime
+
+'''
 from scrapy.pipelines.images import ImagesPipeline
 
 
 class GamesImagePipeline(ImagesPipeline):
     def file_path(self, request, response=None, info=None, *, item=None):
         return request.url.split('/')[-1]
+'''
 
 
 class GamesPipeline(object):
     file = None
 
+    def __init__(self):
+        self.exporter = None
+
     def open_spider(self, spider):
+        now = datetime.now().strftime("%d-%m-%Y-%H.%M.%S")
+
         if spider.name == 'games_amazon':
-            self.file = open('../output/amazon/games.json', 'wb')
+            self.file = open('./output/amazon/games_amazon_' + now + '.json', 'wb')
         if spider.name == 'games_submarino':
-            self.file = open('../output/submarino/games.json', 'wb')
+            self.file = open('./output/submarino/games_submarino_' + now + '.json', 'wb')
         if spider.name == 'mercado_livre_jogos':
-            self.file = open('../output/mercado_livre/games.json', 'wb')
+            self.file = open('./output/mercado_livre/games_mercado_livre_' + now + '.json', 'wb')
         if spider.name == 'games_shoptime':
-            self.file = open('../output/shoptime/games.json', 'wb')
+            self.file = open('./output/shoptime/games_shoptime_' + now + '.json', 'wb')
 
         self.exporter = JsonItemExporter(self.file, indent=2, ensure_ascii=False)
         self.exporter.start_exporting()

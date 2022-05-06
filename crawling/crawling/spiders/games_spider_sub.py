@@ -7,12 +7,19 @@ API_KEY = '9d09f0e972138f5a01e92b085e617e60'
 
 
 def get_scraperapi_url(url):
-    payload = {'api_key': API_KEY, 'url': url, 'render': 'true'}
-    proxy_url = 'http://api.scraperapi.com/?' + urlencode(payload)
-    return proxy_url
+    # payload = {'api_key': API_KEY, 'url': url, 'render': 'true'}
+    # proxy_url = 'http://api.scraperapi.com/?' + urlencode(payload)
+    # return proxy_url
+    return url
+
+
+def formatarData(data):
+    data_aux = data.split('T')[0].split('-')
+    return data_aux[2] + '/' + data_aux[1] + '/' + data_aux[0]
 
 
 # Retorna as avaliacoes da página de um jogo
+'''
 def parse_avaliacoes(avaliacoes):
     aval = []
 
@@ -32,21 +39,39 @@ def parse_avaliacoes(avaliacoes):
         })
 
     return aval
+'''
+
+
+def parse_avaliacoes(script_json):
+    avaliacoes = []
+
+    # Procurando pelas perguntas e respostas nos atributos do objeto
+    for key, value in script_json.items():
+        if key.startswith('ReviewsResult'):
+            avaliacoes.append({
+                'nomeAvaliador': value['user'],
+                'titulo': value['title'],
+                'data': formatarData(value['date']),
+                'texto': value['review'],
+                'votosAvalUtil': value['positiveFeedback'],
+                'estrelas': value['rating']
+
+            })
+
+    return avaliacoes
 
 
 # Retorna as perguntas da página de um jogo
-def parse_perguntas(script):
-    obj = json.loads(script)
-
+def parse_perguntas(script_json):
     perguntas = []
     respostas = []
 
     # Procurando pelas perguntas e respostas nos atributos do objeto
-    for key, value in obj.items():
+    for key, value in script_json.items():
         if key.startswith('Question'):
             perguntas.append({
                 'pergunta': value['question'],
-                'data_pergunta': value['createdAt'],
+                'dataPergunta': value['createdAt'],
             })
 
         if key.startswith('Answer'):
@@ -62,10 +87,10 @@ def parse_perguntas(script):
         r = respostas[indiceR]
         prs.append({
             'pergunta': p['pergunta'],
-            'dataPergunta': p['data_pergunta'],
+            'dataPergunta': formatarData(p['dataPergunta']),
             'resposta': r['resposta'],
-            'dataResposta': r['data_resposta'],
-            'votosRespUtil': r['votos_resp_util']
+            'dataResposta': formatarData(r['dataResposta']),
+            'votosRespUtil': r['votosRespUtil']
         })
         indiceR += 1
 
@@ -73,7 +98,7 @@ def parse_perguntas(script):
 
 
 # Pega as informações da página do jogo
-def parse_game(response):
+def parse_jogo(response):
     desc_array = response.xpath('//div[@class="description__HTMLContent-sc-1o6bsvv-1 dGafvC"]/text()').getall()
     preco = response.xpath('//div[@class="src__BestPrice-sc-1jnodg3-5 ykHPU priceSales"]/text()').getall()
     capa = response.xpath('//div[@class="image__WrapperImages-sc-oakrdw-1 kOCIiH"]/div/picture/img/@src').get()
@@ -81,6 +106,7 @@ def parse_game(response):
     avaliacoes = response.xpath('//div[@class="review__Flex-sc-l45my2-0 review__Wrapper-sc-l45my2-1 gZIEnN"]')
     script = response.xpath('//script[contains(., "window.__APOLLO_STATE__ =")]/text()').extract_first().lstrip()[
              26:]  # script onde serão buscadas as perguntas
+    script_json = json.loads(script)
 
     trasportadora = response.xpath('//div[@class="offers-box__Wrapper-sc-fiox0-0 cOLhck"]/p/strong/text()').get()
     vendedora = response.xpath('//div[@class="offers-box__Wrapper-sc-fiox0-0 cOLhck"]/p/a/text()').get()
@@ -88,16 +114,15 @@ def parse_game(response):
         vendedora = trasportadora
 
     games = {
-        'titulo': response.xpath('//h1[@class="src__Title-sc-1xq3hsd-0 bHxjvB"]/text()').get().upper()
-            .lstrip(' ').rstrip(' '),
-        'preco': preco[0] + preco[1],
+        'titulo': response.xpath('//h1[@class="src__Title-sc-1xq3hsd-0 bHxjvB"]/text()').get().upper().strip(),
+        'preco': preco[1].replace(',', '.'),
         'descricao': '\n'.join(desc_array),
         'vendedora': vendedora,
         'transportadora': trasportadora,
         'parcelas': response.xpath('//p[@class="src__Text-sc-162utrw-0 ibyqZE"]/text()').getall()[0].split(' ')[1],
         'urlCapa': capa,
-        'avaliacoes': parse_avaliacoes(avaliacoes),
-        'perguntas': parse_perguntas(script)
+        'avaliacoes': parse_avaliacoes(script_json),
+        'perguntas': parse_perguntas(script_json)
 
     }
 
@@ -107,23 +132,21 @@ def parse_game(response):
 class GamesSpiderSubmarino(scrapy.Spider):
     name = 'games_submarino'
 
-    start_urls = ['https://www.submarino.com.br/categoria/games/playstation-4/m/playstation%204/g/tipo-de-produto'
-                  '-Jogo?ordenacao=relevance&origem=blanca']
+    start_urls = ['https://www.submarino.com.br/categoria/games/playstation-4/jogos-ps4']
 
     def parse(self, response):  # Pega todos os links da lista de jogos
 
-        grid_games = response.xpath('//div[@class="product-grid-item ProductGrid__GridColumn-sc-49j2r8-0 eZaEaE '
+        grid_jogos = response.xpath('//div[@class="product-grid-item ProductGrid__GridColumn-sc-49j2r8-0 eZaEaE '
                                     'ColUI-gjy0oc-0 ifczFg ViewUI-sc-1ijittn-6 iXIDWU"]')
-        links_games = grid_games.xpath('//a[@class="Link-bwhjk3-2 iDkmyz TouchableA-p6nnfn-0 joVuoc"]/@href').getall()
+        links_jogos = grid_jogos.xpath('//a[@class="Link-bwhjk3-2 iDkmyz TouchableA-p6nnfn-0 joVuoc"]/@href').getall()
 
-        for link_game in links_games:
-            url = response.urljoin(link_game)
-            yield scrapy.Request(url, callback=parse_game)
-            # yield scrapy.Request(get_scraperapi_url(url), callback=parse_game)
+        for link_jogo in links_jogos:
+            url = response.urljoin(link_jogo)
+            yield scrapy.Request(get_scraperapi_url(url), callback=parse_jogo)
 
         # Avança para a próxima página
         links_paginacao = response.xpath('*//ul[@class="pagination-product-grid pagination"]/li')
         next_pag = links_paginacao[len(links_paginacao) - 1].xpath('*//@href').get()
         if next_pag is not None:
-            yield response.follow(next_pag, callback=self.parse)  # visita proxima página
-            # yield response.follow(get_scraperapi_url(next_pag), callback=self.parse)  # visita proxima página
+            # visita proxima página
+            yield scrapy.Request(get_scraperapi_url(response.urljoin(next_pag)), callback=self.parse)
