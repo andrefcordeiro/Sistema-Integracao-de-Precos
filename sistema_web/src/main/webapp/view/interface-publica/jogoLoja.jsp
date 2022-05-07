@@ -18,11 +18,12 @@
 <jsp:include page="./header.jsp"/>
 <div class="container d-flex flex-column align-items-center p-3">
     <h1 class="mt-5 mb-5 text-dark"></h1>
-    <c:set var="texto_preco" value="O último preço encontrado para este produto foi de "
-           scope="request"/>
-    <c:set var="mostrar_dados_jogo" value="true"
-           scope="request"/>
-    <jsp:include page="jogo.jsp"/>
+    <jsp:include page="jogo.jsp">
+        <jsp:param name="texto_preco"
+                   value="O último preço encontrado para este produto foi de "/>
+        <jsp:param name="mostrar_dados_jogo"
+                   value="true"/>
+    </jsp:include>
 
     <c-rt:set var="pathSecao"
               value="${pageContext.request.getAttribute('javax.servlet.forward.request_uri')}?${pageContext.request.queryString}"

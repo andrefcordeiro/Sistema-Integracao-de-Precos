@@ -28,7 +28,7 @@
             <h3 class="text-dark m-3">${jogo.titulo}</h3>
 
             <div class="d-flex flex-column border rounded m-3 p-3">
-                <p> ${texto_preco} </p>
+                <p> ${pageContext.request.getParameter('texto_preco')} </p>
                 <p style="font-size: 30px; font-weight: bold; color: darkgreen; margin-left: 20px">
                     R$ ${jogo.preco}
                 </p>
@@ -40,7 +40,7 @@
                     por: ${jogo.nomeVendedor}</strong></p>
             </div>
 
-            <c:if test="${mostrar_dados_jogo == 'true'}">
+            <c:if test="${pageContext.request.getParameter('mostrar_dados_jogo') == 'true'}">
                 <p class="text-dark m-2 ml-3"><strong>Data de
                     lançamento:</strong> ${jogo.dataLancamento}
                 </p>

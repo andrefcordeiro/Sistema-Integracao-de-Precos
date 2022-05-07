@@ -43,12 +43,14 @@
         <%--    Jogos retornados --%>
         <c:forEach items="${jogos}" var="item">
             <c:set var="jogo" value="${item}" scope="request"/>
-            <c:set var="texto_preco" value="O menor preço encontrado para este produto é "
-                   scope="request"/>
-            <c:set var="mostrar_dados_jogo" value="false" scope="request"/>
 
             <div class="container mt-5 p-3">
-                <jsp:include page="jogo.jsp"/>
+                <jsp:include page="jogo.jsp">
+                    <jsp:param name="texto_preco"
+                               value="O menor preço encontrado para este produto é "/>
+                    <jsp:param name="mostrar_dados_jogo"
+                               value="false"/>
+                </jsp:include>
 
                     <%-- Ofertas do jogo --%>
                 <div class="container ml-5">
