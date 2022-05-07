@@ -2,9 +2,11 @@ package com.uel.dao.queries;
 
 public class PgScriptCrawlingDAOQueries {
 
+  private PgScriptCrawlingDAOQueries() {}
+
   public static final String CREATE_SCRIPT_QUERY =
-      "INSERT INTO integ_preco.script_crawling (nome_loja, funcao_script)"
-          + "VALUES(?, ?)"
+      "INSERT INTO integ_preco.script_crawling (nome_loja, funcao_script) "
+          + "VALUES(?, ?) "
           + "RETURNING num";
 
   public static final String GET_SCRIPT_QUERY =

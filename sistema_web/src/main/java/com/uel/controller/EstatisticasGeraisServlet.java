@@ -30,13 +30,15 @@ public class EstatisticasGeraisServlet extends HttpServlet {
     JogoLojaDAO dao;
 
     switch (request.getServletPath()) {
-
       case "/estatisticasGerais":
         try (DAOFactory daoFactory = DAOFactory.getInstance()) {
           dao = daoFactory.getJogoLojaDAO();
 
           List<JogoLojaDTO> jogos = dao.getJogosMaisBemAvaliados();
           request.setAttribute("maisBemAvaliados", jogos);
+
+          JogoLojaDTO jogoMaisBarato = dao.getJogoMaisBaratoAtualmente();
+          request.setAttribute("jogoMaisBarato", jogoMaisBarato);
 
           dispatcher =
               request.getRequestDispatcher("/view/interface-publica/estatisticasGerais.jsp");

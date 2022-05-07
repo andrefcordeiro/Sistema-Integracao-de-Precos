@@ -13,7 +13,6 @@
     <%@include file="/view/head.jsp" %>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js"></script>
 
-
     <script type="text/javascript">
       function drawCharts() {
 
@@ -36,19 +35,7 @@
               label: "Estrelas"
             }]
           }
-          // , options: {
-          //   scales: {
-          //     xAxes: {
-          //       type: 'time',
-          //       time: {
-          //         unit: 'day',
-          //         parser: 'yyyyMMdd'
-          //       }
-          //     }
-          //   }
-          // }
         });
-
       }
 
     </script>
@@ -57,10 +44,20 @@
 <body onload="drawCharts()">
 <jsp:include page="header.jsp"/>
 
-<div class="d-flex flex-column align-items-center justify-content-center" style="height: 100%">
-    <div class="d-flex flex-column align-items-center border rounded p-5" style="width: 70%">
+<div class="d-flex flex-column align-items-center p-5">
+    <div class="d-flex flex-column align-items-center border rounded p-5 " style="width: 70%">
         <h4> Jogos mais bem avaliados nas lojas </h4>
         <canvas id="maisBemAvaliados" width="800" height="250"></canvas>
+    </div>
+    <div class="d-flex flex-column align-items-center border rounded p-4 m-5">
+        <h4> Jogos mais barato encontrado </h4>
+        <c:set var="jogo" value="${jogoMaisBarato}" scope="request"/>
+        <jsp:include page="jogo.jsp">
+            <jsp:param name="texto_preco"
+                       value=" "/>
+            <jsp:param name="mostrar_dados_jogo"
+                       value="false"/>
+        </jsp:include>
     </div>
 </div>
 </body>

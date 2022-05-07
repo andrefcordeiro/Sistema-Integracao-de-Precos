@@ -26,4 +26,6 @@ public interface JogoLojaDAO extends DAO<JogoLojaDTO> {
       throws SQLException;
 
   List<JogoLojaDTO> getJogosMaisBemAvaliados() throws SQLException;
+
+  JogoLojaDTO getJogoMaisBaratoAtualmente() throws SQLException;
 }

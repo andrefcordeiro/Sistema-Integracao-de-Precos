@@ -690,6 +690,28 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
   }
 
   @Override
+  public JogoLojaDTO getJogoMaisBaratoAtualmente() throws SQLException {
+
+    try (PreparedStatement st =
+        connection.prepareStatement(PgJogoLojaDAOQueries.GET_JOGO_MAIS_BARATO_ATUALMENTE)) {
+      ResultSet rs = st.executeQuery();
+      rs.next();
+
+      JogoLojaDTO j = new JogoLojaDTO();
+      j.setTitulo(rs.getString("titulo"));
+      j.setUrlCapa(rs.getString("url_capa"));
+      j.setNomeLoja(rs.getString("nome_loja"));
+      j.setNomeTransportadora(rs.getString("nome_transportadora"));
+      j.setNomeVendedor(rs.getString("nome_vendedor"));
+      j.setPreco(rs.getBigDecimal("preco"));
+      j.setParcelas(rs.getString("parcelas"));
+      j.setDataColeta(rs.getDate("data_coleta").toLocalDate());
+
+      return j;
+    }
+  }
+
+  @Override
   public JogoLojaDTO read(Integer id) throws SQLException {
     return null;
   }

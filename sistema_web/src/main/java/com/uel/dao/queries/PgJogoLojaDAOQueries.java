@@ -141,4 +141,26 @@ public class PgJogoLojaDAOQueries {
           + ") media_total "
           + "WHERE media_total.id_jogo = jogo.id_jogo "
           + "ORDER BY media_total.media DESC ";
+
+  public static final String GET_JOGO_MAIS_BARATO_ATUALMENTE =
+      "SELECT titulo, preco, data_coleta, url_capa, parcelas,"
+          + "oferta.nome_loja, nome_transportadora, nome_vendedor "
+          + "FROM integ_preco.jogo jogo, "
+          + "integ_preco.historico_jogo_ofertado hist, "
+          + "integ_preco.oferta_jogo oferta "
+          + "WHERE hist.id_jogo = jogo.id_jogo "
+          + "AND oferta.nome_loja = hist.nome_loja "
+          + "AND oferta.id_jogo = jogo.id_jogo "
+          + "AND hist.preco = ( "
+          + "SELECT MIN(historicos.preco) "
+          + "FROM ( "
+          + "SELECT hist.id_jogo, hist.preco "
+          + "FROM integ_preco.historico_jogo_ofertado hist "
+          + "WHERE hist.num = ( "
+          + "SELECT MAX(num) FROM integ_preco.historico_jogo_ofertado "
+          + "WHERE hist.id_jogo = id_jogo "
+          + "AND hist.nome_loja = nome_loja "
+          + ") "
+          + ") historicos "
+          + ")";
 }
