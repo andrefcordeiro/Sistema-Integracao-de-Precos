@@ -73,7 +73,7 @@ public class CrawlingServlet extends HttpServlet {
           for (FileItem fi : fileItems) {
 
             if (!fi.isFormField()) {
-                /* se não for um form normal */
+              /* se não for um form normal */
               String fieldName = fi.getFieldName();
               String fileName = null;
               String appPath = request.getServletContext().getRealPath("/");
@@ -81,7 +81,7 @@ public class CrawlingServlet extends HttpServlet {
               new File(appPath + File.separator + SAVE_DIR_CRAWLING).mkdirs();
 
               if (fieldName.equals("output_crawling")) {
-                  /* arq de saída do crawling */
+                /* arq de saída do crawling */
                 fileName = "games.json";
                 savePath = appPath + File.separator + SAVE_DIR_CRAWLING + File.separator + fileName;
                 pathOutputJson = savePath;
@@ -197,6 +197,7 @@ public class CrawlingServlet extends HttpServlet {
     String[] palavras =
         new String[] {
           "JOGO",
+          "GAME",
           "MÍDIA FÍSICA",
           "MIDIA FISICA",
           "PARA PS4",
