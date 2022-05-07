@@ -112,6 +112,27 @@ def parse_jogo(response):
     if vendedora is None:
         vendedora = trasportadora
 
+    fabricante = ""
+    marca = ""
+    genero = ""
+    desenvolvedor = ""
+
+    # percorrendo tabela com detalhes sobre o jogo
+    detalhes = response.xpath('//tr[@class="src__View-sc-10qje1m-3 hIUuMp"]')
+
+    for detalhe in detalhes:
+        nome_valor = detalhe.xpath('.//td/text()').getall()
+        nome = nome_valor[0]
+
+        if nome == 'Fabricante':
+            fabricante = nome_valor[1]
+        if nome == 'Marca':
+            marca = nome_valor[1]
+        if nome == 'Gênero':
+            genero = nome_valor[1]
+        if nome == 'Desenvolvedor':
+            desenvolvedor = nome_valor[1]
+
     games = {
         'titulo': response.xpath('//h1[@class="src__Title-sc-1xq3hsd-0 bHxjvB"]/text()').get().upper().strip(),
         'preco': preco[1].replace(',', '.'),
@@ -120,9 +141,12 @@ def parse_jogo(response):
         'transportadora': trasportadora,
         'parcelas': response.xpath('//p[@class="src__Text-sc-162utrw-0 ibyqZE"]/text()').getall()[0].split(' ')[1],
         'urlCapa': capa,
+        'fabricante': fabricante,
+        'marca': marca,
+        'genero': genero,
+        'desenvolvedor': desenvolvedor,
         'avaliacoes': parse_avaliacoes(script_json),
         'perguntas': parse_perguntas(script_json)
-
     }
 
     yield games
