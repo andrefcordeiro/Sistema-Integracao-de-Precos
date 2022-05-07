@@ -5,6 +5,7 @@ import com.uel.dao.factory.DAOFactory;
 import com.uel.model.Avaliacao;
 import com.uel.model.HistJogoOfertado;
 import com.uel.model.JogoLojaDTO;
+import com.uel.model.OfertaJogo;
 import com.uel.model.PerguntaCliente;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -79,6 +80,10 @@ public class JogoServlet extends HttpServlet {
 
           List<PerguntaCliente> perguntas = dao.getPerguntasOfertaJogo(idJogo, nomeLoja);
           jogo.setPerguntasClientes(perguntas);
+
+          /* Histórico de ofertas daquele jogo em todas as lojas */
+          List<OfertaJogo> historicoLojas = dao.getHistoricoJogoTodasAsLojas(idJogo);
+          request.setAttribute("historicoLojas", historicoLojas);
 
           /* Histórico de ofertas daquele jogo naquela loja */
           List<HistJogoOfertado> h = dao.getHistoricoJogo(idJogo, nomeLoja);

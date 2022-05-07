@@ -392,6 +392,49 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
 
   @Override
   public List<HistJogoOfertado> getHistoricoJogo(int idJogo, String nomeLoja) throws SQLException {
+    return getHistoricoJogoLoja(idJogo, nomeLoja);
+  }
+
+  private List<OfertaJogo> getOfertasJogo(int idJogo) throws SQLException {
+
+    try (PreparedStatement st2 =
+        connection.prepareStatement(PgJogoLojaDAOQueries.GET_OFERTAS_JOGO)) {
+
+      st2.setInt(1, idJogo);
+      ResultSet rs2 = st2.executeQuery();
+      List<OfertaJogo> ofertasJogo = new ArrayList<>();
+
+      while (rs2.next()) {
+        OfertaJogo o = new OfertaJogo();
+        o.setNomeLoja(rs2.getString("nome_loja"));
+        o.setNomeVendedor(rs2.getString("nome_vendedor"));
+        o.setNomeTransportadora(rs2.getString("nome_transportadora"));
+
+        ofertasJogo.add(o);
+      }
+
+      return ofertasJogo;
+
+    } catch (SQLException e) {
+      Logger.getLogger(PgLojaDAO.class.getName()).log(Level.SEVERE, "DAO", e);
+      throw new SQLException("Erro ao listar ofertas do jogo com id = " + idJogo + ".");
+    }
+  }
+
+  @Override
+  public List<OfertaJogo> getHistoricoJogoTodasAsLojas(int idJogo) throws SQLException {
+
+    List<OfertaJogo> ofertasJogo = getOfertasJogo(idJogo);
+
+    for (OfertaJogo oferta : ofertasJogo) {
+      oferta.setHistoricos(getHistoricoJogo(idJogo, oferta.getNomeLoja()));
+    }
+
+    return ofertasJogo;
+  }
+
+  private List<HistJogoOfertado> getHistoricoJogoLoja(int idJogo, String nomeLoja)
+      throws SQLException {
 
     try (PreparedStatement statement =
         connection.prepareStatement(PgJogoLojaDAOQueries.GET_HIST_OFERTA_JOGO_QUERY)) {
@@ -505,9 +548,7 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
     List<JogoLojaDTO> jogos = new ArrayList<>();
 
     try (PreparedStatement st1 =
-            connection.prepareStatement(PgJogoLojaDAOQueries.GET_JOGOS_POR_TITULO);
-        PreparedStatement st2 =
-            connection.prepareStatement(PgJogoLojaDAOQueries.GET_OFERTAS_JOGO)) {
+        connection.prepareStatement(PgJogoLojaDAOQueries.GET_JOGOS_POR_TITULO); ) {
 
       st1.setString(1, titulo);
       ResultSet rs1 = st1.executeQuery();
@@ -520,18 +561,7 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
         jogo.setUrlCapa(rs1.getString("url_capa"));
 
         /* buscando ofertas do jogo */
-        st2.setInt(1, jogo.getIdJogo());
-        ResultSet rs2 = st2.executeQuery();
-        List<OfertaJogo> ofertasJogo = new ArrayList<>();
-
-        while (rs2.next()) {
-          OfertaJogo o = new OfertaJogo();
-          o.setNomeLoja(rs2.getString("nome_loja"));
-          o.setNomeVendedor(rs2.getString("nome_vendedor"));
-          o.setNomeTransportadora(rs2.getString("nome_transportadora"));
-
-          ofertasJogo.add(o);
-        }
+        List<OfertaJogo> ofertasJogo = getOfertasJogo(jogo.getIdJogo());
         jogo.setOfertasJogo(ofertasJogo);
 
         /* buscando menor preço do jogo em todas as lojas */

@@ -1,6 +1,7 @@
 package com.uel.model;
 
 import com.google.gson.annotations.SerializedName;
+import java.util.List;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -19,6 +20,8 @@ public class OfertaJogo {
   private String nomeTransportadora;
 
   private HistJogoOfertado ultimoHistorico;
+
+  private List<HistJogoOfertado> historicos;
 
   public String getNomeLoja() {
     return nomeLoja;
@@ -58,5 +61,13 @@ public class OfertaJogo {
 
   public void setUltimoHistorico(HistJogoOfertado ultimoHistorico) {
     this.ultimoHistorico = ultimoHistorico;
+  }
+
+  public List<HistJogoOfertado> getHistoricos() {
+    return historicos;
+  }
+
+  public void setHistoricos(List<HistJogoOfertado> historicos) {
+    this.historicos = historicos;
   }
 }
