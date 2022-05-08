@@ -1,5 +1,6 @@
 package com.uel.dao.factory;
 
+import com.uel.dao.JogoDAO;
 import com.uel.dao.JogoLojaDAO;
 import com.uel.dao.LojaDAO;
 import com.uel.dao.ScriptCrawlingDAO;
@@ -81,9 +82,10 @@ public abstract class DAOFactory implements AutoCloseable {
 
   public abstract ScriptCrawlingDAO getScriptCrawlingDAO();
 
+  public abstract JogoDAO getJogoDAO();
+
   @Override
   public void close() throws SQLException {
     closeConnection();
   }
-
 }

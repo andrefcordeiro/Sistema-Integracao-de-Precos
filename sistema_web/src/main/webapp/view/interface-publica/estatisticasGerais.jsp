@@ -12,10 +12,44 @@
     <title>Estatísticas gerais</title>
     <%@include file="/view/head.jsp" %>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js"></script>
+    <script src="${pageContext.request.contextPath}/view/js/randomColor.js"
+            type="text/javascript"></script>
 
     <script type="text/javascript">
       function drawCharts() {
+        /* desenha gráfico de barras de jogos mais bem avaliados */
+        drawMaisBemAvaliados();
 
+        /* desenha gráfico de pizza para representar o nnúmero de jogos em cada gênero  */
+        drawGeneros();
+      }
+
+      function drawGeneros() {
+
+        let labels = []
+        let data = []
+        let bgColors = []
+
+        <c:forEach items="${generos}" var="genero">
+        labels.push("${genero.genero}")
+        data.push(${genero.qtdJogos})
+        bgColors.push(Colors.random())
+        </c:forEach>
+
+        new Chart("contagemGenero", {
+          type: "pie",
+          data: {
+            labels: labels,
+            datasets: [{
+              label: "",
+              data: data,
+              backgroundColor: bgColors
+            }]
+          }
+        });
+      }
+
+      function drawMaisBemAvaliados() {
         const mediaAval = [];
         const titulos = [];
 
@@ -50,7 +84,7 @@
         <canvas id="maisBemAvaliados" width="800" height="250"></canvas>
     </div>
     <div class="d-flex flex-column align-items-center border rounded p-4 m-5">
-        <h4> Jogos mais barato encontrado </h4>
+        <h4> Jogo mais barato encontrado </h4>
         <c:set var="jogo" value="${jogoMaisBarato}" scope="request"/>
         <jsp:include page="jogo.jsp">
             <jsp:param name="texto_preco"
@@ -58,6 +92,10 @@
             <jsp:param name="mostrar_dados_jogo"
                        value="false"/>
         </jsp:include>
+    </div>
+    <div class="d-flex flex-column align-items-center border rounded p-5 " style="width: 70%">
+        <h4> Generos dos jogos </h4>
+        <canvas id="contagemGenero" width="250" height="250"></canvas>
     </div>
 </div>
 </body>

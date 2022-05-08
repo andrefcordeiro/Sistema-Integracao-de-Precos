@@ -1,7 +1,9 @@
 package com.uel.controller;
 
+import com.uel.dao.JogoDAO;
 import com.uel.dao.JogoLojaDAO;
 import com.uel.dao.factory.DAOFactory;
+import com.uel.model.GeneroJogo;
 import com.uel.model.JogoLojaDTO;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -28,6 +30,7 @@ public class EstatisticasGeraisServlet extends HttpServlet {
     RequestDispatcher dispatcher;
     HttpSession session = request.getSession();
     JogoLojaDAO dao;
+    JogoDAO jogoDao;
 
     switch (request.getServletPath()) {
       case "/estatisticasGerais":
@@ -40,12 +43,18 @@ public class EstatisticasGeraisServlet extends HttpServlet {
           JogoLojaDTO jogoMaisBarato = dao.getJogoMaisBaratoAtualmente();
           request.setAttribute("jogoMaisBarato", jogoMaisBarato);
 
+          jogoDao = daoFactory.getJogoDAO();
+
+          List<GeneroJogo> generos = jogoDao.getGeneroJogos();
+          request.setAttribute("generos", generos);
+
           dispatcher =
               request.getRequestDispatcher("/view/interface-publica/estatisticasGerais.jsp");
           dispatcher.forward(request, response);
 
         } catch (ClassNotFoundException | SQLException | IOException e) {
-          Logger.getLogger(CrawlingServlet.class.getName()).log(Level.SEVERE, "Controller", e);
+          Logger.getLogger(EstatisticasGeraisServlet.class.getName())
+              .log(Level.SEVERE, "Controller", e);
           session.setAttribute("error", e.getMessage());
 
           dispatcher = request.getRequestDispatcher("/view/interface-publica/main.jsp");

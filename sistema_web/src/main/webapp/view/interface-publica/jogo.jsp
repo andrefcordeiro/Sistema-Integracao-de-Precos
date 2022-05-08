@@ -44,23 +44,23 @@
                 <p class="text-dark m-2 ml-3"><strong>Data de
                     lançamento:</strong> ${jogo.dataLancamento}
                 </p>
-                <c:if test="${jogo.desenvolvedora} != null">
+                <c:if test="${jogo.desenvolvedora != null}">
                     <p class="text-dark m-2 ml-3"><strong>Desenvolvedora:</strong> ${jogo.descricao}
                     </p>
                 </c:if>
-                <c:if test="${jogo.genero} != null">
+                <c:if test="${jogo.genero != null}">
                     <p class="text-dark m-2 ml-3"><strong>Gênero:</strong> ${jogo.genero}</p>
                 </c:if>
-                <c:if test="${jogo.multijogador} != null">
+                <c:if test="${jogo.multijogador != null}">
                     <p class="text-dark m-2 ml-3">
                         <strong>Multijogador:</strong> ${jogo.multijogador}
                     </p>
                 </c:if>
-                <c:if test="${jogo.fabricante} != null">
+                <c:if test="${jogo.fabricante != null}">
                     <p class="text-dark m-2 ml-3"><strong>Fabricante:</strong> ${jogo.fabricante}
                     </p>
                 </c:if>
-                <c:if test="${jogo.marca} != null">
+                <c:if test="${jogo.marca != null}">
                     <p class="text-dark m-2 ml-3"><strong>Marca:</strong> ${jogo.marca}</p>
                 </c:if>
                 <p class="text-dark m-2 ml-3"><strong>Descrição:</strong> ${jogo.descricao}</p>

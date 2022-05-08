@@ -4,8 +4,10 @@
  */
 package com.uel.dao.factory;
 
+import com.uel.dao.JogoDAO;
 import com.uel.dao.JogoLojaDAO;
 import com.uel.dao.LojaDAO;
+import com.uel.dao.PgJogoDAO;
 import com.uel.dao.PgJogoLojaDAO;
 import com.uel.dao.PgLojaDAO;
 import com.uel.dao.PgScriptCrawlingDAO;
@@ -31,5 +33,10 @@ public class PgDAOFactory extends DAOFactory {
   @Override
   public ScriptCrawlingDAO getScriptCrawlingDAO() {
     return new PgScriptCrawlingDAO(this.connection);
+  }
+
+  @Override
+  public JogoDAO getJogoDAO() {
+    return new PgJogoDAO(this.connection);
   }
 }
