@@ -12,34 +12,50 @@
     <title>Dados do Jogo ${jogo.titulo}</title>
 </head>
 <body>
-<div class="d-flex flex-row justify-content-center align-items-center">
-    <p class="col-2" style="margin: 10px">Nome: ${jogo.titulo}</p>
-    <p class="col-2" style="margin: 10px">Seção: ${jogo.desenvolvedora}</p>
-    <p class="col-2" style="margin: 10px">Seção: ${jogo.anoLancamento}</p>
-    <p class="col-2" style="margin: 10px">Nome: ${jogo.fabricante}</p>
-    <p class="col-2" style="margin: 10px">Seção: ${jogo.marca}</p>
-    <p class="col-2" style="margin: 10px">Nome: ${jogo.multijogador}</p>
-    <p class="col-2" style="margin: 10px">Seção: ${jogo.genero}</p>
-    
-    
-    <div class="column col-6" style="margin: 10px">
-        <a href="${pageContext.servletContext.contextPath}/consultas/getHistorico?id=${jogo.num}&loja=${loja_nome}">
-            <button class="col-5 btn btn-outline-dark" style="margin: 10px" >Consultar historico de precos</button>
-        </a>
-        <a href="${pageContext.servletContext.contextPath}/consultas/getAvaliacoes?id=${jogo.num}&loja=${loja_nome}">
-            <button class="col-5 btn btn-outline-dark" style="margin: 10px" >Consultar Avaliações</button>
-        </a>
-        <a href="${pageContext.servletContext.contextPath}/consultas/getPerguntas?id=${jogo.num}&loja=${loja_nome}">
-            <button class="col-5 btn btn-outline-dark" style="margin: 10px" >Consultar Perguntas</button>
-        </a>
-        
-    </div>
-</div>
-            <img src="${jogo.urlCapa}">
-            
-            <h1>Descrição</h1>
-            
+<table>
+    <tr>
+        <td>
+
+
+            <img src="${jogo.urlCapa}" width="205"; height="250";>
+        </td>
+        <td>
+
+            <p class="col-2" style="margin: 10px">Nome: ${jogo.titulo}</p>
+            <p class="col-2" style="margin: 10px">Desenvolvedora: ${jogo.desenvolvedora}</p>
+            <p class="col-2" style="margin: 10px">Lançamento: ${jogo.dataLancamento}</p>
+            <p class="col-2" style="margin: 10px">Fabricante: ${jogo.fabricante}</p>
+            <p class="col-2" style="margin: 10px">Marca: ${jogo.marca}</p>
+            <p class="col-2" style="margin: 10px">Multijogador: ${jogo.multijogador}</p>
+            <p class="col-2" style="margin: 10px">Gênero: ${jogo.genero}</p>
+
+
+            <p>
+                <a href="${pageContext.servletContext.contextPath}/consultas/getHistorico?id=${jogo.idJogo}&loja=${loja}">
+                    <button class="col-5 btn btn-outline-dark" style="margin: 10px" >Consultar historico de precos</button>
+                </a>
+            </p>
+            <p>
+                <a href="${pageContext.servletContext.contextPath}/consultas/getAvaliacoes?id=${jogo.idJogo}&loja=${loja}">
+                    <button class="col-5 btn btn-outline-dark" style="margin: 10px" >Consultar Avaliações</button>
+                </a>
+            </p>
+            <p>
+                <a href="${pageContext.servletContext.contextPath}/consultas/getPerguntas?id=${jogo.idJogo}&loja=${loja}">
+                    <button class="col-5 btn btn-outline-dark" style="margin: 10px" >Consultar Perguntas</button>
+                </a>
+            </p>
+        </td>
+        <td>
+
+
+
+            <h3>Descrição</h3>
+
             <p>${jogo.descricao}</p>
+        </td>
+    </tr>
+</table>
 </body>
 </html>
 
