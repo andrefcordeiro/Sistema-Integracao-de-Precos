@@ -9,7 +9,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Registro do Jogo ${jogo.titulo} ${historico.dataColeta}</title>
+    <title>Registro do Jogo ${jogo.titulo}</title>
 </head>
 <body>
 <table>
