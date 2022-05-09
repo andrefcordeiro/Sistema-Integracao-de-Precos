@@ -20,7 +20,7 @@ public class PgScriptCrawlingDAOQueries {
       "SELECT MAX(num_versao)+1 AS num_versao FROM integ_preco.versao_script WHERE num_script = ?";
 
   public static final String GET_SCRIPT_VERSIONS_QUERY =
-      "SELECT num_versao, data_utilizacao, algoritmo FROM integ_preco.versao_script WHERE num_script=?";
+      "SELECT * FROM integ_preco.versao_script WHERE num_script=?";
 
   public static final String GET_ALGORITMO =
       "SELECT algoritmo FROM integ_preco.versao_script WHERE num_versao=? and num_script=?";
