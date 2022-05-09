@@ -20,7 +20,7 @@
         /* desenha gráfico de barras de jogos mais bem avaliados */
         drawMaisBemAvaliados();
 
-        /* desenha gráfico de pizza para representar o nnúmero de jogos em cada gênero  */
+        /* desenha gráfico de pizza para representar o número de jogos em cada gênero  */
         drawGeneros();
       }
 
@@ -93,9 +93,15 @@
                        value="false"/>
         </jsp:include>
     </div>
-    <div class="d-flex flex-column align-items-center border rounded p-5 " style="width: 70%">
+    <div class="d-flex flex-column align-items-center border rounded p-5 m-5">
         <h4> Generos dos jogos </h4>
-        <canvas id="contagemGenero" width="250" height="250"></canvas>
+        <canvas id="contagemGenero" width="650" height="250"></canvas>
+    </div>
+    <div class="d-flex flex-column align-items-center border rounded p-5" style="width: 50%">
+        <h4 class="text-center mb-5"> Jogos mais visitados (com base no número de perguntas e respostas) </h4>
+        <c:forEach items="${jogosMaisVisitados}" var="jogo" varStatus="theCount">
+            <p> <strong style="display:inline !important;">${theCount.index + 1} -</strong> ${jogo.titulo}</p>
+        </c:forEach>
     </div>
 </div>
 </body>

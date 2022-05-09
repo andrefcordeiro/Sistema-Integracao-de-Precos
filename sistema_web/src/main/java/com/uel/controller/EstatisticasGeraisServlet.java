@@ -4,6 +4,7 @@ import com.uel.dao.JogoDAO;
 import com.uel.dao.JogoLojaDAO;
 import com.uel.dao.factory.DAOFactory;
 import com.uel.model.GeneroJogo;
+import com.uel.model.Jogo;
 import com.uel.model.JogoLojaDTO;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -47,6 +48,9 @@ public class EstatisticasGeraisServlet extends HttpServlet {
 
           List<GeneroJogo> generos = jogoDao.getGeneroJogos();
           request.setAttribute("generos", generos);
+
+          List<Jogo> jogosMaisVisitados = jogoDao.getJogosMaisVisitados();
+          request.setAttribute("jogosMaisVisitados", jogosMaisVisitados);
 
           dispatcher =
               request.getRequestDispatcher("/view/interface-publica/estatisticasGerais.jsp");

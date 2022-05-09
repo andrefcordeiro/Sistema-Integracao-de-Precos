@@ -47,6 +47,30 @@ public class PgJogoDAO implements JogoDAO {
   }
 
   @Override
+  public List<Jogo> getJogosMaisVisitados() throws SQLException {
+    try (PreparedStatement st =
+        connection.prepareStatement(PgJogoDAOQueries.GET_JOGOS_MAIS_VISITADOS)) {
+
+      st.executeQuery();
+      ResultSet rs = st.getResultSet();
+      List<Jogo> jogos = new ArrayList<>();
+
+      while (rs.next()) {
+
+        Jogo j = new Jogo();
+        j.setTitulo(rs.getString("titulo"));
+        jogos.add(j);
+      }
+
+      return jogos;
+
+    } catch (SQLException e) {
+      Logger.getLogger(PgJogoDAO.class.getName()).log(Level.SEVERE, "DAO", e);
+      throw new SQLException("Erro ao listar jogos mais visitados.");
+    }
+  }
+
+  @Override
   public void create(Jogo jogo) throws SQLException {}
 
   @Override

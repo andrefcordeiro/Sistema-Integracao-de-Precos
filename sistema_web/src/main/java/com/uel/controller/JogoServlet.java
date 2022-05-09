@@ -75,8 +75,12 @@ public class JogoServlet extends HttpServlet {
           for (Avaliacao a : avaliacoes) {
             mediaAval += a.getEstrelas();
           }
-          mediaAval = mediaAval / avaliacoes.size();
-          request.setAttribute("mediaAval", String.format("%.2f", mediaAval));
+          if (mediaAval > 0) {
+            mediaAval = mediaAval / avaliacoes.size();
+            request.setAttribute("mediaAval", String.format("%.2f", mediaAval));
+          } else {
+            request.setAttribute("mediaAval", null);
+          }
 
           List<PerguntaCliente> perguntas = dao.getPerguntasOfertaJogo(idJogo, nomeLoja);
           jogo.setPerguntasClientes(perguntas);
