@@ -12,23 +12,30 @@
     <title>Avaliação do Jogo ${jogo.titulo}</title>
 </head>
 <body>
-<div class="d-flex flex-row justify-content-center align-items-center">
-    <p class="col-2" style="margin: 10px">Jogo: ${jogo.titulo}</p>
-    <p class="col-2" style="margin: 10px">Data: ${avaliacao.dataRealizacao}</p>
-    <p class="col-2" style="margin: 10px">Nota: ${avaliacao.estrelas}</p>
-    <p class="col-2" style="margin: 10px">Avaliador: ${avaliacao.nomeAvaliador}</p>
-    <p class="col-2" style="margin: 10px">País: ${avaliacao.paisAvaliador}</p>
-    <p class="col-2" style="margin: 10px">Votos: ${avaliacao.votosAvalUtil}</p>
-    
-    
-    
-    
-</div>
-            
-            
-            <h1>${avaliacao.titulo}</h1>
-            
+<table>
+    <tr>
+        <td>
+            <h4>${avaliacao.titulo}</h4>
+
             <p>${avaliacao.texto}</p>
+        </td>
+
+        <td>
+            <p class="col-2" style="margin: 10px">Jogo: ${jogo.titulo}</p>
+            <p class="col-2" style="margin: 10px">Data: ${avaliacao.dataRealizacao}</p>
+            <p class="col-2" style="margin: 10px">Nota: ${avaliacao.estrelas}</p>
+            <p class="col-2" style="margin: 10px">Avaliador: ${avaliacao.nomeAvaliador}</p>
+            <p class="col-2" style="margin: 10px">País: ${avaliacao.paisAvaliador}</p>
+            <p class="col-2" style="margin: 10px">Votos: ${avaliacao.votosAvalUtil}</p>
+
+        </td>
+
+
+
+    </tr>
+</table>
+
+
 </body>
 </html>
 
