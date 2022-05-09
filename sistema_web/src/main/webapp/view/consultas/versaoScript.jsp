@@ -8,7 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Dados do Script ${versao.numVersao} versão ${versao.numScript}</title>
+    <title>Dados do Script ${versao.numVersao}</title>
 </head>
 <body>
 <div class="d-flex flex-row justify-content-center align-items-center">
