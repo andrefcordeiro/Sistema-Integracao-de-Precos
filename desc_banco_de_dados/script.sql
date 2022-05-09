@@ -25,6 +25,8 @@ CREATE TABLE integ_preco.jogo(
 	CONSTRAINT un_jogo UNIQUE(titulo)
 );
 
+ALTER TABLE integ_preco.jogo ALTER COLUMN titulo SET DATA TYPE VARCHAR
+
 CREATE TABLE integ_preco.oferta_jogo(
 	nome_loja VARCHAR(20),
 	id_jogo INT,
@@ -53,6 +55,8 @@ CREATE TABLE integ_preco.historico_jogo_ofertado(
 	CONSTRAINT ck_oferta_media_aval CHECK (media_aval <= 5.0)
 );
 
+ALTER TABLE integ_preco.historico_jogo_ofertado ALTER COLUMN preco SET DATA TYPE Decimal(12,2) 
+
 CREATE TABLE integ_preco.avaliacao(
 	num_aval INT,
 	titulo VARCHAR(100),
@@ -70,6 +74,8 @@ CREATE TABLE integ_preco.avaliacao(
 		REFERENCES integ_preco.oferta_jogo(id_jogo, nome_loja) ON DELETE CASCADE,
 	CONSTRAINT ck_avaliacao_estrelas CHECK (qtd_estrelas <= 5)
 );
+
+ALTER TABLE integ_preco.avaliacao ALTER COLUMN nome_avaliador SET DATA TYPE VARCHAR(100)
 
 CREATE TABLE integ_preco.pergunta_cliente(
 	num_perg INT,
@@ -109,3 +115,140 @@ CREATE TABLE integ_preco.versao_script(
 	CONSTRAINT fk_versao FOREIGN KEY(num_script) 
 		REFERENCES integ_preco.script_crawling(num) ON DELETE CASCADE
 );
+
+--- CONSULTAS UTILIZADAS NO DESENVOLVIMENTO DA INTERFACE PÚBLICA DO SISTEMA
+
+-- GET_JOGOS_POR_TITULO
+-- procurando jogos com determinada string
+SELECT * FROM integ_preco.jogo WHERE position(UPPER('fifa') IN titulo) != 0
+
+-- GET_OFERTAS_JOGO
+-- retornando todas as ofertas de um jogo
+SELECT * 
+	FROM integ_preco.jogo jogo,
+		integ_preco.oferta_jogo oj
+	WHERE oj.id_jogo = 14  -- (?)
+		AND oj.id_jogo = jogo.id_jogo
+		
+-- GET_MENOR_PRECO_HISTORICO_JOGO_LOJA
+-- encontrar dados do menor preço historico de um jogo em uma loja a partir de seu id e nome da loja
+SELECT preco, parcelas, data_coleta
+	FROM integ_preco.historico_jogo_ofertado hist_a, 
+	(
+		SELECT hist.nome_loja, hist.id_jogo, MIN(hist.preco) min_preco
+		FROM integ_preco.historico_jogo_ofertado hist
+		WHERE hist.nome_loja = 'Amazon' -- (?)
+		AND hist.id_jogo = 14  -- (?)
+		GROUP BY hist.nome_loja, hist.id_jogo) hist_b
+	WHERE hist_a.nome_loja = hist_b.nome_loja
+		AND hist_a.preco = hist_b.min_preco
+		
+-- GET_DADOS_JOGO_LOJA_ULTIMO_HIST		
+-- encontrar dados do ultimo historico de preço de um jogo em uma loja
+SELECT *
+	FROM integ_preco.historico_jogo_ofertado hist,
+		integ_preco.jogo jogo, integ_preco.oferta_jogo oferta
+	WHERE hist.num = (
+		-- historico mais recente de uma oferta daquele jogo naquela loja
+		SELECT MAX(num) FROM integ_preco.historico_jogo_ofertado
+			WHERE hist.id_jogo = id_jogo
+			AND hist.nome_loja = nome_loja
+	)
+	AND hist.id_jogo = jogo.id_jogo
+	AND oferta.id_jogo = hist.id_jogo
+	AND oferta.nome_loja = hist.nome_loja
+	AND hist.nome_loja = 'Amazon' -- (?)
+	AND hist.id_jogo = 14  -- (?)
+
+-- GET_MENOR_PRECO_JOGO
+-- encontrar menor preço (dentre o historico mais recente inserido) de um jogo em todas as lojas
+SELECT hist_a.nome_loja, hist_a.data_coleta, 
+		hist_a.parcelas, hist_a.preco,
+		oferta.nome_transportadora, oferta.nome_vendedor
+		
+	FROM integ_preco.historico_jogo_ofertado hist_a, 
+		integ_preco.oferta_jogo oferta
+	WHERE (hist_a.id_jogo, hist_a.preco) IN
+	(
+		-- retorna o menor preço dentre todos os historicos de ofertas àquele jogo
+		SELECT hist.id_jogo, MIN(hist.preco) min_preco
+		FROM (
+			-- retorna o historico de cada oferta de jogo com a data mais recente
+			SELECT hist.id_jogo, hist.preco
+				FROM integ_preco.historico_jogo_ofertado hist
+				WHERE hist.num = (
+					-- historico mais recente de uma oferta daquele jogo naquela loja
+					SELECT MAX(num) FROM integ_preco.historico_jogo_ofertado
+						WHERE hist.id_jogo = id_jogo
+						AND hist.nome_loja = nome_loja
+				)
+ 				AND hist.id_jogo = 14  -- (?)	
+		) hist
+		GROUP BY hist.id_jogo
+	)
+	AND hist_a.num = (
+		-- historico mais recente de uma oferta daquele jogo naquela loja
+		SELECT MAX(num) FROM integ_preco.historico_jogo_ofertado
+			WHERE hist_a.id_jogo = id_jogo
+			AND hist_a.nome_loja = nome_loja
+	)
+	AND oferta.id_jogo = hist_a.id_jogo
+	AND oferta.nome_loja = hist_a.nome_loja
+	
+	
+-- GET_JOGOS_MAIS_BEM_AVALIADOS
+-- encontrar 10 produtos mais bem avaliados (média entre as avaliações e cada loja)
+SELECT jogo.id_jogo, jogo.titulo, TRUNC(media_total.media, 2)
+FROM integ_preco.jogo, (
+	SELECT id_jogo, AVG(media_loja) media
+		FROM (
+			-- média em cada loja 
+			SELECT jogo.id_jogo, loja.nome, AVG(aval.qtd_estrelas) media_loja FROM
+				integ_preco.jogo jogo,
+				integ_preco.loja loja,
+				integ_preco.avaliacao aval
+				WHERE jogo.id_jogo = aval.id_jogo
+					AND aval.nome_loja = loja.nome
+			GROUP BY jogo.id_jogo, loja.nome
+		) AS media_aval_lojas
+	GROUP BY id_Jogo
+) media_total
+WHERE media_total.id_jogo = jogo.id_jogo
+ORDER BY media_total.media DESC
+LIMIT 60
+
+-- GET_JOGO_MAIS_BARATO_ATUALMENTE
+-- retornar jogo mais barato atualmente
+SELECT titulo, preco, data_coleta, url_capa, parcelas, 
+		oferta.nome_loja, nome_transportadora, nome_vendedor 
+	FROM integ_preco.jogo jogo,
+		integ_preco.historico_jogo_ofertado hist,
+		integ_preco.oferta_jogo oferta
+	WHERE hist.id_jogo = jogo.id_jogo
+		AND oferta.nome_loja = hist.nome_loja
+ 		AND oferta.id_jogo = jogo.id_jogo
+		AND hist.preco = (
+			SELECT MIN(historicos.preco)
+				FROM (
+					-- retorna o menor preço dentre todos os historicos de ofertas à um jogo
+					SELECT hist.id_jogo, hist.preco
+						FROM integ_preco.historico_jogo_ofertado hist
+						WHERE hist.num = (
+							-- historico mais recente de uma oferta daquele jogo naquela loja
+							SELECT MAX(num) FROM integ_preco.historico_jogo_ofertado
+								WHERE hist.id_jogo = id_jogo
+								AND hist.nome_loja = nome_loja
+						)
+				) historicos
+		)
+		
+
+	
+-- GET_GENERO_JOGOS_QUERY
+-- retorna a quantidade de jogos em cada gênero 
+SELECT COUNT(genero) qtd_jogos, genero 
+	FROM integ_preco.jogo
+	WHERE genero IS NOT NULL
+	GROUP BY genero
+	
+	
