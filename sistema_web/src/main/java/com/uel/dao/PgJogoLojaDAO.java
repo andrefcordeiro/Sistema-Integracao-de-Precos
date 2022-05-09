@@ -179,6 +179,7 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
 
       stGet.setString(1, jogoLoja.getNomeLoja());
       stGet.setInt(2, idJogo);
+      stGet.setDate(3, Date.valueOf(LocalDate.now()));
       stGet.executeQuery();
       ResultSet r = stGet.getResultSet();
 
@@ -437,7 +438,7 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
       throws SQLException {
 
     try (PreparedStatement statement =
-        connection.prepareStatement(PgJogoLojaDAOQueries.GET_HIST_OFERTA_JOGO_QUERY)) {
+        connection.prepareStatement(PgJogoLojaDAOQueries.GET_ALL_HIST_OFERTA_JOGO_QUERY)) {
 
       statement.setString(1, nomeLoja);
       statement.setInt(2, idJogo);

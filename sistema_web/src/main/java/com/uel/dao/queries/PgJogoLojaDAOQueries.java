@@ -31,7 +31,10 @@ public class PgJogoLojaDAOQueries {
       "SELECT MAX(num)+1 AS num FROM integ_preco.historico_jogo_ofertado WHERE nome_loja=? AND id_jogo=?";
 
   public static final String GET_HIST_OFERTA_JOGO_QUERY =
-      "SELECT * FROM integ_preco.historico_jogo_ofertado WHERE nome_loja=? AND id_jogo=? ";
+      "SELECT * FROM integ_preco.historico_jogo_ofertado WHERE nome_loja=? AND id_jogo=? AND data_coleta=?";
+
+  public static final String GET_ALL_HIST_OFERTA_JOGO_QUERY =
+      "SELECT * FROM integ_preco.historico_jogo_ofertado WHERE nome_loja=? AND id_jogo=?";
 
   public static final String GET_ALL_QUESTIONS =
       "SELECT * FROM integ_preco.pergunta_cliente WHERE id_jogo=? AND nome_loja=?";
@@ -58,7 +61,7 @@ public class PgJogoLojaDAOQueries {
           + "AND id_jogo=?";
 
   public static final String GET_JOGOS_POR_TITULO =
-      "SELECT * FROM integ_preco.jogo WHERE position(UPPER(?) IN titulo) != 0 LIMIT 30";
+      "SELECT * FROM integ_preco.jogo WHERE position(UPPER(?) IN titulo) != 0 LIMIT 60";
 
   public static final String GET_OFERTAS_JOGO =
       "SELECT * FROM integ_preco.jogo jogo, integ_preco.oferta_jogo oj "
@@ -137,10 +140,10 @@ public class PgJogoLojaDAOQueries {
           + "GROUP BY jogo.id_jogo, loja.nome "
           + ") AS media_aval_lojas "
           + "GROUP BY id_Jogo "
-          + "LIMIT 10 "
           + ") media_total "
           + "WHERE media_total.id_jogo = jogo.id_jogo "
-          + "ORDER BY media_total.media DESC ";
+          + "ORDER BY media_total.media DESC "
+          + "LIMIT 10 ";
 
   public static final String GET_JOGO_MAIS_BARATO_ATUALMENTE =
       "SELECT titulo, preco, data_coleta, url_capa, parcelas,"
