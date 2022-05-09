@@ -8,7 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Dados dos Script</title>
+    <title>Dados dos Scripts</title>
 </head>
 <body>
 <table>
