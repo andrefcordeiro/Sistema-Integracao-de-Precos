@@ -12,13 +12,16 @@
 </head>
 <body>
 <div class="d-flex flex-row justify-content-center align-items-center">
-    <p class="col-2" style="margin: 10px">Data de utilização: ${versao.dataUtilizacao}</p>
-</div>   
-    
-            
-            <h1>Algoritmo</h1>
-            
-            <p>${versao.algoritmo}</p>
+    <p class="col-2" style="margin: 10px">Script: ${versao.numVersao}
+    </p>
+    <p class="col-2" style="margin: 10px">
+        Versão ${versao.numScript}
+    </p>
+</div>
+
+
+<h3>Algoritmo</h3>
+
+<p>${versao.algoritmo}</p>
 </body>
 </html>
-
