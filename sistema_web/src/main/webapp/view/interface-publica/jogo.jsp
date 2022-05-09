@@ -45,7 +45,7 @@
                     lançamento:</strong> ${jogo.dataLancamento}
                 </p>
                 <c:if test="${jogo.desenvolvedora != null}">
-                    <p class="text-dark m-2 ml-3"><strong>Desenvolvedora:</strong> ${jogo.descricao}
+                    <p class="text-dark m-2 ml-3"><strong>Desenvolvedora:</strong> ${jogo.desenvolvedora}
                     </p>
                 </c:if>
                 <c:if test="${jogo.genero != null}">

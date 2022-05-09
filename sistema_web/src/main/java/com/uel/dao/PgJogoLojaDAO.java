@@ -315,12 +315,12 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
     stIns.executeUpdate();
   }
 
-  public Jogo getAtributos_jogo(int id_jogo) throws SQLException {
+  public Jogo getAtributosJogo(int idJogo) throws SQLException {
 
     try (PreparedStatement statement =
         connection.prepareStatement(PgJogoLojaDAOQueries.GET_ATRIBUTOS_JOGO)) {
 
-      statement.setInt(1, id_jogo);
+      statement.setInt(1, idJogo);
 
       try (ResultSet result = statement.executeQuery()) {
 
@@ -328,11 +328,11 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
 
           Jogo jogo = new Jogo();
 
-          jogo.setIdJogo(id_jogo);
+          jogo.setIdJogo(idJogo);
           jogo.setTitulo(result.getString("titulo"));
           jogo.setDesenvolvedora(result.getString("desenvolvedora"));
           jogo.setUrlCapa(result.getString("capa"));
-          //          jogo.setAnoLancamento(result.getInt("ano_lancamento"));
+          jogo.setDataLancamento(result.getString("data_lancamento"));
           jogo.setGenero(result.getString("genero"));
           jogo.setDescricao(result.getString("descricao"));
           jogo.setMultijogador(result.getString("multijogador"));
@@ -352,16 +352,16 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
     }
   }
 
-  public List<Jogo> getJogos_loja(String nome_loja) throws SQLException {
+  public List<Jogo> getJogosLoja(String nomeLoja) throws SQLException {
 
     try (PreparedStatement statement =
         connection.prepareStatement(PgJogoLojaDAOQueries.GET_JOGOS_LOJA)) {
 
-      statement.setString(1, nome_loja);
+      statement.setString(1, nomeLoja);
 
       try (ResultSet result = statement.executeQuery()) {
 
-        List<Jogo> listaJogos = new ArrayList<Jogo>();
+        List<Jogo> listaJogos = new ArrayList<>();
 
         while (result.next()) {
 
@@ -370,8 +370,8 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
           jogo.setIdJogo(result.getInt("id_jogo"));
           jogo.setTitulo(result.getString("titulo"));
           jogo.setDesenvolvedora(result.getString("desenvolvedora"));
-          jogo.setUrlCapa(result.getString("capa"));
-          //          jogo.setAnoLancamento(result.getInt("ano_lancamento"));
+          jogo.setUrlCapa(result.getString("url_capa"));
+          jogo.setDataLancamento(result.getString("data_lancamento"));
           jogo.setGenero(result.getString("genero"));
           jogo.setDescricao(result.getString("descricao"));
           jogo.setMultijogador(result.getString("multijogador"));

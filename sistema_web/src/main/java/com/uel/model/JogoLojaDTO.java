@@ -15,6 +15,7 @@ public class JogoLojaDTO {
 
   @NotBlank private String titulo;
 
+  @SerializedName("desenvolvedor")
   private String desenvolvedora;
 
   @NotBlank private String urlCapa;
