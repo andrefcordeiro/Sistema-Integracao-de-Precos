@@ -9,7 +9,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Avaliação do Jogo ${jogo.titulo}</title>
+    <title>Avaliações do Jogo ${jogo.titulo}</title>
 </head>
 <body>
 <table>
