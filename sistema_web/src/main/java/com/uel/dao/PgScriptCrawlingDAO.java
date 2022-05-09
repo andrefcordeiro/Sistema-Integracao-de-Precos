@@ -138,6 +138,7 @@ public class PgScriptCrawlingDAO implements ScriptCrawlingDAO {
           VersaoScript script = new VersaoScript();
           script.setNumVersao(result.getInt("num_versao"));
           script.setNumScript(result.getString("num_script"));
+          script.setAlgoritmo(result.getString("algoritmo"));
           //          script.setDataUtilizacao(result.getDate("data_utilizacao"));
 
           listaVersoes.add(script);
