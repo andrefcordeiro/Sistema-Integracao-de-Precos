@@ -117,11 +117,14 @@
         </div>
         <div class="border rounded p-5 m-2">
             <p>Média das avaliações </p>
+
             <div class="d-flex flex-row">
-                <p style="font-size: 30px; font-weight: bold; margin-left: 20px">
-                    ${mediaAval}
-                </p>
-                <p class="mt-3 ml-2">estrelas</p>
+                <c:if test="${mediaAval != null}">
+                    <p style="font-size: 30px; font-weight: bold; margin-left: 20px">
+                            ${mediaAval}
+                    </p>
+                    <p class="mt-3 ml-2">estrelas</p>
+                </c:if>
             </div>
 
         </div>
