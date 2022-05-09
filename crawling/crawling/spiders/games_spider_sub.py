@@ -112,10 +112,7 @@ def parse_jogo(response):
     if vendedora is None:
         vendedora = trasportadora
 
-    fabricante = ""
-    marca = ""
-    genero = ""
-    desenvolvedor = ""
+    fabricante = marca = genero = desenvolvedor = None
 
     # percorrendo tabela com detalhes sobre o jogo
     detalhes = response.xpath('//tr[@class="src__View-sc-10qje1m-3 hIUuMp"]')
