@@ -27,6 +27,12 @@ CREATE TABLE integ_preco.jogo(
 
 ALTER TABLE integ_preco.jogo ALTER COLUMN titulo SET DATA TYPE VARCHAR
 
+ALTER TABLE integ_preco.jogo ALTER COLUMN desenvolvedora SET DATA TYPE VARCHAR(60);
+ALTER TABLE integ_preco.jogo ALTER COLUMN fabricante SET DATA TYPE VARCHAR(60);
+ALTER TABLE integ_preco.jogo ALTER COLUMN genero SET DATA TYPE VARCHAR(60);
+ALTER TABLE integ_preco.jogo ALTER COLUMN marca SET DATA TYPE VARCHAR(60);
+
+
 CREATE TABLE integ_preco.oferta_jogo(
 	nome_loja VARCHAR(20),
 	id_jogo INT,
@@ -250,5 +256,36 @@ SELECT COUNT(genero) qtd_jogos, genero
 	FROM integ_preco.jogo
 	WHERE genero IS NOT NULL
 	GROUP BY genero
+
+-- encontrar o historico de preco de um jogo em uma loja
+SELECT * 
+	FROM integ_preco.historico_jogo_ofertado hist, 
+	WHERE hist.nome_loja = 'a'
+		AND hist.id_jogo = '14'
+		
+-- retornar ofertas de jogos que estão na amazon e na submarino		
+SELECT * 
+	FROM integ_preco.oferta_jogo
+	WHERE nome_loja = 'Submarino'
+	AND oferta_jogo.id_jogo IN (
+		SELECT oferta_jogo.id_jogo
+			FROM integ_preco.oferta_jogo
+			WHERE nome_loja = 'Amazon'
+	)
 	
+
+-- 	GET_JOGOS_MAIS_VISITADOS
+-- retornar jogos mais visitados (com base na quantidade de perguntas e avaliações)	
+SELECT jogo.titulo
+FROM integ_preco.jogo, 
+(SELECT id_jogo, COUNT(*) c_aval
+	FROM integ_preco.avaliacao
+	group by id_jogo) aval, 
+(SELECT id_jogo, COUNT(*) c_perg
+	FROM integ_preco.pergunta_cliente
+	group by id_jogo) perg
+WHERE jogo.id_jogo = aval.id_jogo
+	AND jogo.id_jogo = perg.id_jogo
+ORDER BY (aval.c_aval + perg.c_perg) DESC
+LIMIT 10
 	
