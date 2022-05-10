@@ -16,7 +16,7 @@
     <tr>
 
         <td>Preço: ${historico.preco}</td>
-        <td>Parcelas: ${historico.qtdParcelas}</td>
+        <td>Parcelas: ${historico.parcelas}</td>
         <td>Média Avaliação: ${historico.mediaAval}</td>
 
 
