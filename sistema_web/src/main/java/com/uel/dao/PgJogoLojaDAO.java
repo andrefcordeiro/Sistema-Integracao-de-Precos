@@ -332,7 +332,7 @@ public class PgJogoLojaDAO implements JogoLojaDAO {
           jogo.setIdJogo(idJogo);
           jogo.setTitulo(result.getString("titulo"));
           jogo.setDesenvolvedora(result.getString("desenvolvedora"));
-          jogo.setUrlCapa(result.getString("capa"));
+          jogo.setUrlCapa(result.getString("url_capa"));
           jogo.setDataLancamento(result.getString("data_lancamento"));
           jogo.setGenero(result.getString("genero"));
           jogo.setDescricao(result.getString("descricao"));
