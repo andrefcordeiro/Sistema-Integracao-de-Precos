@@ -7,6 +7,7 @@
 --%>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
 <html>
 <head>
     <title>Dados do Jogo ${jogo.titulo}</title>
@@ -28,20 +29,23 @@
             <p class="col-2" style="margin: 10px">Marca: ${jogo.marca}</p>
             <p class="col-2" style="margin: 10px">Multijogador: ${jogo.multijogador}</p>
             <p class="col-2" style="margin: 10px">Gênero: ${jogo.genero}</p>
+            <p class="col-2" style="margin: 10px">Gênero: ${loja}</p>
+
+
 
 
             <p>
-                <a href="${pageContext.servletContext.contextPath}/consultas/getHistorico?id=${jogo.idJogo}&loja=${loja}">
+                <a href="${pageContext.servletContext.contextPath}/consultas/getHistorico?id=${jogo.idJogo}&loja=<%= request.getParameter("loja") %>">
                     <button class="col-5 btn btn-outline-dark" style="margin: 10px" >Consultar historico de precos</button>
                 </a>
             </p>
             <p>
-                <a href="${pageContext.servletContext.contextPath}/consultas/getAvaliacoes?id=${jogo.idJogo}&loja=${loja}">
+                <a href="${pageContext.servletContext.contextPath}/consultas/getAvaliacoes?id=${jogo.idJogo}&loja=<%= request.getParameter("loja") %>">
                     <button class="col-5 btn btn-outline-dark" style="margin: 10px" >Consultar Avaliações</button>
                 </a>
             </p>
             <p>
-                <a href="${pageContext.servletContext.contextPath}/consultas/getPerguntas?id=${jogo.idJogo}&loja=${loja}">
+                <a href="${pageContext.servletContext.contextPath}/consultas/getPerguntas?id=${jogo.idJogo}&loja=<%= request.getParameter("loja") %>">
                     <button class="col-5 btn btn-outline-dark" style="margin: 10px" >Consultar Perguntas</button>
                 </a>
             </p>
