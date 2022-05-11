@@ -9,23 +9,20 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Registro do Jogo ${jogo.titulo} ${historico.dataColeta}</title>
+    <title>Registro do Jogo ${jogo.titulo}</title>
 </head>
 <body>
-<div class="d-flex flex-row justify-content-center align-items-center">
-    <p class="col-2" style="margin: 10px">Preço: ${historico.preco}</p>
-    <p class="col-2" style="margin: 10px">Parcelas: ${historico.qtdParcelas}</p>
-    <p class="col-2" style="margin: 10px">Média Avaliação: ${historico.mediaAval}</p>
-    
-    
-    
-    
-    
-</div>
-            
-            
-            
-            
-      
+<table>
+    <tr>
+
+        <td>Preço: ${historico.preco}</td>
+        <td>Parcelas: ${historico.parcelas}</td>
+        <td>Média Avaliação: ${historico.mediaAval}</td>
+
+
+
+
+    </tr>
+</table>
 </body>
 </html>

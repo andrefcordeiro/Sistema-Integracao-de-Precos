@@ -11,18 +11,20 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <%@include file="/view/head.jsp" %>
-    <title>Jogos da loja - ${loja.nome}</title>
+    <title>Jogos da loja - ${nome_loja}</title>
 </head>
 <body>
 
 <jsp:include page="../header.jsp"/>
 
 <div class="d-flex flex-column justify-content-center align-items-center">
-    <h1 class="display-3"> Jogos cadastrados </h1>
+    <h1 class="display-3"> Jogos cadastrados - ${nome_loja} </h1>
     <jsp:useBean id="jogos" scope="request" type="java.util.List"/>
     <c:forEach items="${jogos}" var="item">
         <c:set var="jogo" value="${item}" scope="request"/>
-        <jsp:include page="jogo?loja=${loja.nome}.jsp"/>
+        <jsp:include page="jogo.jsp">
+            <jsp:param name="loja" value="${nome_loja}" />
+        </jsp:include>
     </c:forEach>
 </div>
 </body>

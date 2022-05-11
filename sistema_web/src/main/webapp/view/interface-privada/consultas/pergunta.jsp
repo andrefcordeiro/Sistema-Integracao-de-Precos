@@ -12,28 +12,31 @@
     <title>Pergunta do Jogo ${jogo.titulo}</title>
 </head>
 <body>
-<div class="d-flex flex-row justify-content-center align-items-center">
-    <p class="col-2" style="margin: 10px">Loja: ${pergunta.nomeLoja}</p>
-    <p class="col-2" style="margin: 10px">Data da pergunta: ${pergunta.dataPergunta}</p>
-    <p class="col-2" style="margin: 10px">Data da resposta: ${pergunta.dataResposta}</p>
-    <p class="col-2" style="margin: 10px">Votos de utilidade da pergunta: ${pergunta.votosPergUtil}</p>
-    
-    
-    
-    
-    
-</div>
-            
-            
-            <h1>Pergunta</h1>
-            
+<table>
+    <tr>
+        <td>
+            <h3>Pergunta</h3>
+
             <p>${pergunta.textoPergunta}</p>
-            
-            <h1>Resposta</h1>
-            
+
+            <h3>Resposta</h3>
+
             <p>${pergunta.textoResposta}</p>
+        </td>
+        <td>
+            <p class="col-2" style="margin: 10px">Loja: ${pergunta.nomeLoja}</p>
+            <p class="col-2" style="margin: 10px">Data da pergunta: ${pergunta.dataPergunta}</p>
+            <p class="col-2" style="margin: 10px">Data da resposta: ${pergunta.dataResposta}</p>
+            <p class="col-2" style="margin: 10px">Votos de utilidade da pergunta: ${pergunta.votosPergUtil}</p>
+
+
+
+
+
+        </td>
+
+
+    </tr>
+</table>
 </body>
 </html>
-
-
-

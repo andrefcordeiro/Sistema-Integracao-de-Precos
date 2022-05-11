@@ -55,10 +55,10 @@ public class ConsultaServlet extends HttpServlet{
 
                     int id_jogo = Integer.parseInt(request.getParameter("avaliacao.idJogo"));
 
-                    Jogo jogo = daoJogo.getAtributos_jogo(id_jogo);
+                    Jogo jogo = daoJogo.getAtributosJogo(id_jogo);
 
                     request.setAttribute("jogo", jogo);
-                    dispatcher = request.getRequestDispatcher("/consultas/avaliacao.jsp");
+                    dispatcher = request.getRequestDispatcher("/view/interface-privada/consultas/avaliacao.jsp");
                     dispatcher.forward(request, response);
 
                 } catch (ClassNotFoundException | SQLException e) {
@@ -75,16 +75,20 @@ public class ConsultaServlet extends HttpServlet{
                     int id_jogo = Integer.parseInt(request.getParameter("id"));
                     String nome_loja = request.getParameter("loja");
 
-                    List<Avaliacao> avaliacoes = daoJogo.getAvaliacoes(id_jogo, nome_loja);
+
+                    List avaliacoes = daoJogo.getAvaliacoesOfertaJogo(id_jogo, nome_loja);
+
+
+                    Jogo jogo = daoJogo.getAtributosJogo(id_jogo);
+
+                    request.setAttribute("jogo", jogo);
+
 
                     request.setAttribute("avaliacoes", avaliacoes);
 
 
-                    Jogo jogo = daoJogo.getAtributos_jogo(id_jogo);
 
-                    request.setAttribute("jogo", jogo);
-
-                    dispatcher = request.getRequestDispatcher("/consultas/avaliacao.jsp");
+                    dispatcher = request.getRequestDispatcher("/view/interface-privada/consultas/getAvaliacoes.jsp");
 
 
                     dispatcher.forward(request, response);
@@ -108,16 +112,16 @@ public class ConsultaServlet extends HttpServlet{
                     int id_jogo = Integer.parseInt(request.getParameter("id"));
                     String nome_loja = request.getParameter("loja");
 
-                    List<HistJogoOfertado> historico = daoJogo.get_Historico_jogo(id_jogo, nome_loja);
+                    List<HistJogoOfertado> historico = daoJogo.getHistoricoJogo(id_jogo, nome_loja);
 
                     request.setAttribute("historico_preco", historico);
 
 
-                    Jogo jogo = daoJogo.getAtributos_jogo(id_jogo);
+                    Jogo jogo = daoJogo.getAtributosJogo(id_jogo);
 
                     request.setAttribute("jogo", jogo);
 
-                    dispatcher = request.getRequestDispatcher("/consultas/avaliacao.jsp");
+                    dispatcher = request.getRequestDispatcher("/view/interface-privada/consultas/getHistorico.jsp");
 
 
                     dispatcher.forward(request, response);
@@ -135,11 +139,15 @@ public class ConsultaServlet extends HttpServlet{
 
 
                     String nome_loja = request.getParameter("nome_loja");
+                    request.setAttribute("nome_loja", nome_loja);
 
-                    List<Jogo> listaJogos = daoJogo.getJogos_loja(nome_loja);
+                    List<Jogo> listaJogos = daoJogo.getJogosLoja(nome_loja);
 
                     request.setAttribute("jogos", listaJogos);
-                    dispatcher = request.getRequestDispatcher("/consultas/getJogos.jsp");
+
+                    request.setAttribute("nome_loja", nome_loja);
+
+                    dispatcher = request.getRequestDispatcher("/view/interface-privada/consultas/getJogos.jsp");
                     dispatcher.forward(request, response);
 
                 } catch (ClassNotFoundException | SQLException e) {
@@ -159,10 +167,10 @@ public class ConsultaServlet extends HttpServlet{
                     int id_jogo = Integer.parseInt(request.getParameter("id"));
                     String nome_loja = request.getParameter("loja");
 
-                    List<PerguntaCliente> listaPerguntas = daoJogo.getPerguntas_Oferta(id_jogo, nome_loja);
+                    List<PerguntaCliente> listaPerguntas = daoJogo.getPerguntasOfertaJogo(id_jogo, nome_loja);
 
                     request.setAttribute("perguntas", listaPerguntas);
-                    dispatcher = request.getRequestDispatcher("/consultas/getPerguntas.jsp");
+                    dispatcher = request.getRequestDispatcher("/view/interface-privada/consultas/getPerguntas.jsp");
                     dispatcher.forward(request, response);
 
                 } catch (ClassNotFoundException | SQLException e) {
@@ -183,7 +191,7 @@ public class ConsultaServlet extends HttpServlet{
                     List<ScriptCrawling> listaScripts = daoScript.getScriptLojas(nome_loja);
 
                     request.setAttribute("scripts", listaScripts);
-                    dispatcher = request.getRequestDispatcher("/consultas/getScripts.jsp");
+                    dispatcher = request.getRequestDispatcher("/view/interface-privada/consultas/getScripts.jsp");
                     dispatcher.forward(request, response);
 
                 } catch (ClassNotFoundException | SQLException e) {
@@ -205,7 +213,7 @@ public class ConsultaServlet extends HttpServlet{
 
 
                     request.setAttribute("versoes", listaVersoes);
-                    dispatcher = request.getRequestDispatcher("/consultas/getVersoes.jsp");
+                    dispatcher = request.getRequestDispatcher("/view/interface-privada/consultas/getVersoes.jsp");
                     dispatcher.forward(request, response);
 
                 } catch (ClassNotFoundException | SQLException e) {
@@ -222,10 +230,10 @@ public class ConsultaServlet extends HttpServlet{
 
                     int id_jogo = Integer.parseInt(request.getParameter("historico.idJogo"));
 
-                    Jogo jogo = daoJogo.getAtributos_jogo(id_jogo);
+                    Jogo jogo = daoJogo.getAtributosJogo(id_jogo);
 
                     request.setAttribute("jogo", jogo);
-                    dispatcher = request.getRequestDispatcher("/consultas/historico.jsp");
+                    dispatcher = request.getRequestDispatcher("/view/interface-privada/consultas/historico.jsp");
                     dispatcher.forward(request, response);
 
                 } catch (ClassNotFoundException | SQLException e) {
@@ -242,10 +250,10 @@ public class ConsultaServlet extends HttpServlet{
 
                     int id_jogo = Integer.parseInt(request.getParameter("pergunta.idJogo"));
 
-                    Jogo jogo = daoJogo.getAtributos_jogo(id_jogo);
+                    Jogo jogo = daoJogo.getAtributosJogo(id_jogo);
 
                     request.setAttribute("jogo", jogo);
-                    dispatcher = request.getRequestDispatcher("/consultas/pergunta.jsp");
+                    dispatcher = request.getRequestDispatcher("/view/interface-privada/consultas/pergunta.jsp");
                     dispatcher.forward(request, response);
 
                 } catch (ClassNotFoundException | SQLException e) {
@@ -260,8 +268,4 @@ public class ConsultaServlet extends HttpServlet{
         }
 
     }
-
-}
-
-
-
+}        
