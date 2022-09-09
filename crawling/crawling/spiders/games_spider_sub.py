@@ -3,7 +3,7 @@ from urllib.parse import urlencode
 
 import scrapy
 
-API_KEY = '9d09f0e972138f5a01e92b085e617e60'
+API_KEY = ''
 
 
 def get_scraperapi_url(url):
@@ -99,16 +99,21 @@ def parse_perguntas(script_json):
 
 # Pega as informações da página do jogo
 def parse_jogo(response):
-    desc_array = response.xpath('//div[@class="description__HTMLContent-sc-1o6bsvv-1 dGafvC"]/text()').getall()
-    preco = response.xpath('//div[@class="src__BestPrice-sc-1jnodg3-5 ykHPU priceSales"]/text()').getall()
-    capa = response.xpath('//div[@class="image__WrapperImages-sc-oakrdw-1 kOCIiH"]/div/picture/img/@src').get()
+    desc_array = response.xpath(
+        '//div[@class="description__HTMLContent-sc-1o6bsvv-1 dGafvC"]/text()').getall()
+    preco = response.xpath(
+        '//div[@class="src__BestPrice-sc-1jnodg3-5 ykHPU priceSales"]/text()').getall()
+    capa = response.xpath(
+        '//div[@class="image__WrapperImages-sc-oakrdw-1 kOCIiH"]/div/picture/img/@src').get()
 
     script = response.xpath('//script[contains(., "window.__APOLLO_STATE__ =")]/text()').extract_first().lstrip()[
-             26:]  # script onde serão buscadas as perguntas
+        26:]  # script onde serão buscadas as perguntas
     script_json = json.loads(script)
 
-    trasportadora = response.xpath('//div[@class="offers-box__Wrapper-sc-fiox0-0 cOLhck"]/p/strong/text()').get()
-    vendedora = response.xpath('//div[@class="offers-box__Wrapper-sc-fiox0-0 cOLhck"]/p/a/text()').get()
+    trasportadora = response.xpath(
+        '//div[@class="offers-box__Wrapper-sc-fiox0-0 cOLhck"]/p/strong/text()').get()
+    vendedora = response.xpath(
+        '//div[@class="offers-box__Wrapper-sc-fiox0-0 cOLhck"]/p/a/text()').get()
     if vendedora is None:
         vendedora = trasportadora
 
@@ -152,21 +157,25 @@ def parse_jogo(response):
 class GamesSpiderSubmarino(scrapy.Spider):
     name = 'games_submarino'
 
-    start_urls = ['https://www.submarino.com.br/categoria/games/playstation-4/jogos-ps4']
+    start_urls = [
+        'https://www.submarino.com.br/categoria/games/playstation-4/jogos-ps4']
 
     def parse(self, response):  # Pega todos os links da lista de jogos
 
         grid_jogos = response.xpath('//div[@class="product-grid-item ProductGrid__GridColumn-sc-49j2r8-0 eZaEaE '
                                     'ColUI-gjy0oc-0 ifczFg ViewUI-sc-1ijittn-6 iXIDWU"]')
-        links_jogos = grid_jogos.xpath('//a[@class="Link-bwhjk3-2 iDkmyz TouchableA-p6nnfn-0 joVuoc"]/@href').getall()
+        links_jogos = grid_jogos.xpath(
+            '//a[@class="Link-bwhjk3-2 iDkmyz TouchableA-p6nnfn-0 joVuoc"]/@href').getall()
 
         for link_jogo in links_jogos:
             url = response.urljoin(link_jogo)
             yield scrapy.Request(get_scraperapi_url(url), callback=parse_jogo)
 
         # Avança para a próxima página
-        links_paginacao = response.xpath('*//ul[@class="pagination-product-grid pagination"]/li')
-        next_pag = links_paginacao[len(links_paginacao) - 1].xpath('*//@href').get()
+        links_paginacao = response.xpath(
+            '*//ul[@class="pagination-product-grid pagination"]/li')
+        next_pag = links_paginacao[len(
+            links_paginacao) - 1].xpath('*//@href').get()
         if next_pag is not None:
             # visita proxima página
             yield scrapy.Request(get_scraperapi_url(response.urljoin(next_pag)), callback=self.parse)
